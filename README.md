@@ -8,8 +8,5 @@ https://www.universal-robots.com/articles/ur/interface-communication/remote-cont
 For capturing log messages connection with Primary Client Interface is used. 
 
 As SQL server, MS SQL Server Express 2019 is used. For sending queries to server, 'pyodbc' library is used.  
-<<<<<<< HEAD
 
 In develop branch there is currently support for GUI deveoping. PyQt5 is used.
-=======
->>>>>>> e455e9b6e43f8e6ae84d563feb398e344a89cb48
