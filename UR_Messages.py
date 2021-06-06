@@ -36,8 +36,11 @@ class messageParser:
     def __init__(self, pr_cl_msg_cd=20):
         self.primary_client_messages_code = pr_cl_msg_cd
 
+<<<<<<< HEAD
 
     # Returns list of tuples: (robot message type, parsed raw message)
+=======
+>>>>>>> e455e9b6e43f8e6ae84d563feb398e344a89cb48
     def return_primary_client_messages(self, data_buffer):
 
         offset = 0
@@ -336,7 +339,10 @@ class message_decoding_manager:
     comm_msg_decoder = robot_comm_message_decoder(-1, -1, -1, '', 0, 0, '')
     run_msg_except_decoder = runtime_exception_message_decoder(-1, -1, '')
 
+<<<<<<< HEAD
     # Returns list of decoded messages
+=======
+>>>>>>> e455e9b6e43f8e6ae84d563feb398e344a89cb48
     def get_decoded_data(self, messages_list):
 
         self.last_decoded_messages_set.clear()
