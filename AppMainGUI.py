@@ -3,6 +3,7 @@ import PyQt5.QtGui as qtg
 import threading
 import time
 import queue
+import sys
 
 import UR_Connections
 import UR_Messages
@@ -299,8 +300,12 @@ class ur_app_gui(qtw.QWidget):
             time.sleep(0.05)
 
 
+  
+app = qtw.QApplication(sys.argv)
+win = QMainindow()
+win.setGeometry(300, 300, 300, 300)
+win.setWindowTitle("Demo App")
+win.show()
 
-app = qtw.QApplication([])
 app_main_gui = ur_app_gui()
-
 app.exec_()
