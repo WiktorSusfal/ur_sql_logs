@@ -64,11 +64,9 @@ class ur_app_gui(qtw.QWidget):
 
         self.show()
 
-
-
     def initialize_resources(self):
 
-        #Create necessary databases on the sql server once, at start
+        # Create necessary databases on the sql server once, at start
         self.sql_logger.create_logging_database()
         self.sql_logger.create_data_tables()
 
@@ -298,12 +296,6 @@ class ur_app_gui(qtw.QWidget):
                 thread_lock.acquire()
                 robot_name, decoded_messages = decoded_robot_messages_storage.get()
                 thread_lock.release()
-
-                """
-                print('\nRETRIEVING from DECODED storage: ')
-                for msg in decoded_messages:
-                    print(f'Robot Name: {robot_name}, {msg}')
-                """
 
                 # decoded_messages is a list of all messages from this robot
                 logger.create_robot_description_record(robot_name)

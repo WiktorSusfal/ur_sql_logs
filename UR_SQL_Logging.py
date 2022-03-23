@@ -1,4 +1,5 @@
 import pyodbc
+import xml.etree.ElementTree as ET
 
 
 class SqlConnCursor:
@@ -21,7 +22,6 @@ class SqlConnCursor:
 
 
 class SqlConnectionParams:
-
     connectionsParams = []
 
     def __init__(self, name, sql_ip, pwd, uid='sa', driver='SQL Server Native Client 11.0', database='master',
@@ -40,39 +40,17 @@ class SqlConnectionParams:
         return 'DRIVER={' + self.driver + '};SERVER=' + self.sql_ip + ';DATABASE=' + \
                self.database + ';UID=SA;PWD=' + self.uid + ';PWD=' + self.pwd + ';'
 
-    # def sql_connect(self):
-    #
-    #    conncetion_string = 'DRIVER={' + self.driver + '};SERVER=' + self.sql_ip + ';DATABASE=' + \
-    #                        self.database + ';UID=SA;PWD=' + self.uid + ';PWD=' + self.pwd + ';'
-    #    c = pyodbc.connect(conncetion_string, autocommit=True)
-    #
-    #    return c.cursor()
-
 
 class UR_messages_logger:
-    common_logged_data = [['robot_id', 'int', 'primary_key'], ['message_type', 'varchar(2)'],
-                          ['timestamp', 'varchar(30)'],
-                          ['date_time', 'datetime2(0)'], ['source', 'varchar(4)'], ['robot_message_type', 'varchar(2)']]
 
-    ver_msg_custom_columns = [['project_name', 'varchar(15)'], ['major_version', 'varchar(2)'],
-                              ['minor_version', 'varchar(2)'],
-                              ['bugfix_version', 'varchar(5)'], ['build_number', 'varchar(5)'],
-                              ['build_date', 'varchar(25)']]
-
-    key_msg_custom_columns = [['robot_message_code', 'varchar(3)'], ['robot_message_argument', 'varchar(3)'],
-                              ['robot_message_title', 'varchar(50)'], ['key_text_message', 'varchar(100)']]
-
-    saf_msg_custom_columns = [['robot_message_code', 'varchar(3)'], ['robot_message_argument', 'varchar(3)'],
-                              ['safety_mode_type', 'varchar(3)'], ['safety_mode_type_txt', 'varchar(20)'],
-                              ['report_data_type', 'varchar(5)'], ['report_data', 'varchar(20)']]
-
-    comm_msg_custom_columns = [['robot_message_code', 'varchar(3)'], ['robot_message_argument', 'varchar(3)'],
-                               ['report_level', 'varchar(5)'], ['report_level_txt', 'varchar(15)'],
-                               ['robot_message_data_type', 'varchar(5)'], ['robot_message_data', 'varchar(10)'],
-                               ['robot_comm_text_message', 'varchar(100)']]
-
-    rt_exc_msg_custom_columns = [['script_line_no', 'int'], ['script_column_no', 'int'],
-                                 ['runtime_exception_text_message', 'varchar(100)']]
+    # lists for storing sql table column structures - each list for one table
+    # data format - [(column name, column type, optional constraint), (...), ...]
+    common_logged_data = []
+    ver_msg_custom_columns = []
+    key_msg_custom_columns = []
+    saf_msg_custom_columns = []
+    comm_msg_custom_columns = []
+    rt_exc_msg_custom_columns = []
 
     def __init__(self, database_name, sqlConnectionParams, r_seq_name='robots_ids',
                  r_info_table_name='robots_info', log_count=0):
@@ -82,6 +60,30 @@ class UR_messages_logger:
         self.robot_info_table_name = r_info_table_name
         self.logged_msg_count = log_count
         self.sqlConnParams = sqlConnectionParams
+
+        # read sql tables structure from xml file
+        UR_messages_logger.common_logged_data = self.read_column_structure('common_logged_data')
+        UR_messages_logger.ver_msg_custom_columns = self.read_column_structure('ver_msg_custom_columns')
+        UR_messages_logger.key_msg_custom_columns = self.read_column_structure('key_msg_custom_columns')
+        UR_messages_logger.saf_msg_custom_columns = self.read_column_structure('saf_msg_custom_columns')
+        UR_messages_logger.comm_msg_custom_columns = self.read_column_structure('comm_msg_custom_columns')
+        UR_messages_logger.rt_exc_msg_custom_columns = self.read_column_structure('rt_exc_msg_custom_columns')
+
+    @classmethod
+    def read_column_structure(cls, table_node_name):
+
+        colStrTree = ET.parse('Resources/sql_columns_structure.xml')
+        tableNode = colStrTree.find(table_node_name)
+        colStr = []
+
+        for colInfo in tableNode:
+            colName = colInfo.find('name').text
+            colType = colInfo.find('type').text
+            colOptions = colInfo.find('options').text or ''
+
+            colStr.append((colName, colType, colOptions))
+
+        return colStr
 
     def create_logging_database(self):
 
@@ -93,7 +95,6 @@ class UR_messages_logger:
             """
 
         with SqlConnCursor(self.sqlConnParams) as cursor:
-
             cursor.execute(query, [self.database_name])
             cursor.execute('use ' + self.database_name)
 
@@ -176,7 +177,6 @@ class UR_messages_logger:
     def create_data_tables(self):
 
         with SqlConnCursor(self.sqlConnParams) as cursor:
-
             ver_msg_create_table_query = self.create_data_table_query('version_messages', self.ver_msg_custom_columns)
             cursor.execute(ver_msg_create_table_query)
 
@@ -226,7 +226,8 @@ class UR_messages_logger:
                         query = self.create_insert_data_query('version_messages', robot_id, msg, [1, 2, 3, 4, 5, 8, 9,
                                                                                                   10, 11, 12, 13])
                     elif msg[5] == 7:
-                        query = self.create_insert_data_query('key_messages', robot_id, msg, [1, 2, 3, 4, 5, 7, 8, 10, 11])
+                        query = self.create_insert_data_query('key_messages', robot_id, msg,
+                                                              [1, 2, 3, 4, 5, 7, 8, 10, 11])
                     elif msg[5] == 5:
                         query = self.create_insert_data_query('safety_messages', robot_id, msg, [1, 2, 3, 4, 5, 7,
                                                                                                  8, 9, 10, 11, 12])
@@ -234,8 +235,9 @@ class UR_messages_logger:
                         query = self.create_insert_data_query('comm_messages', robot_id, msg, [1, 2, 3, 4, 5, 7, 8,
                                                                                                9, 10, 11, 12, 13])
                     elif msg[5] == 10:
-                        query = self.create_insert_data_query('runtime_exceptions_messages', robot_id, msg, [1, 2, 3, 4, 5,
-                                                                                                             7, 8, 9])
+                        query = self.create_insert_data_query('runtime_exceptions_messages', robot_id, msg,
+                                                              [1, 2, 3, 4, 5,
+                                                               7, 8, 9])
                     if msg[5] in (3, 7, 5, 6, 10):
                         cursor.execute(query)
                         self.logged_msg_count += 1

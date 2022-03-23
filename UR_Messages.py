@@ -2,11 +2,13 @@ import struct
 import datetime
 from abc import ABC, abstractmethod
 
+
 def get_4_bytes_int_or_uint(int_type, data_buffer, offset):
     integer_value = struct.unpack(int_type, data_buffer[offset:offset + 4])[0]
     offset += 4
 
     return [integer_value, offset]
+
 
 def get_1_byte_int_or_uint(int_type, data_buffer, offset):
     integer_value = struct.unpack(int_type, data_buffer[offset:offset + 1])[0]
@@ -14,11 +16,13 @@ def get_1_byte_int_or_uint(int_type, data_buffer, offset):
 
     return [integer_value, offset]
 
+
 def get_8_bytes_int_or_uint(int_type, data_buffer, offset):
     integer_value = struct.unpack(int_type, data_buffer[offset:offset + 8])[0]
     offset += 8
 
     return [integer_value, offset]
+
 
 def get_char_array_as_string(data_buffer, offset, length):
     i = 0
@@ -29,13 +33,12 @@ def get_char_array_as_string(data_buffer, offset, length):
 
     return [char_array, (offset + length)]
 
-class messageParser:
 
-    last_primary_client_messages = []
+class messageParser:
 
     def __init__(self, pr_cl_msg_cd=20):
         self.primary_client_messages_code = pr_cl_msg_cd
-
+        self.last_primary_client_messages = []
 
     # Returns list of tuples: (robot message type, parsed raw message)
     def return_primary_client_messages(self, data_buffer):
@@ -45,7 +48,7 @@ class messageParser:
 
         while offset < len(data_buffer):
 
-            main_package_length = struct.unpack('!I', data_buffer[offset:offset+4])[0]
+            main_package_length = struct.unpack('!I', data_buffer[offset:offset + 4])[0]
             main_message_type = struct.unpack('!B', data_buffer[offset + 4:offset + 5])[0]
 
             if main_package_length == 0 or main_package_length > 4096:
@@ -63,8 +66,6 @@ class messageParser:
 
 class primary_client_message_decoder(ABC):
 
-    last_message_decoded = []
-
     def __init__(self, msg_sz=0, msg_tp=20, tsp=0, dt_txt='', sr=0, r_msg_tp=-1, r_msg_tp_txt=''):
         self.message_size = msg_sz
         self.message_type = msg_tp
@@ -73,17 +74,13 @@ class primary_client_message_decoder(ABC):
         self.source = sr
         self.robot_message_type = r_msg_tp
         self.robot_message_type_txt = r_msg_tp_txt
+        self.last_message_decoded = []
 
     @abstractmethod
     def decode_message(self, data_buffer):
         pass
 
-    @abstractmethod
     def fill_last_message_decoded(self):
-        pass
-
-    def fill_last_message_decoded(self):
-
         self.date_time_text = str(datetime.datetime.now())
 
         # get list of object attributes names
@@ -95,8 +92,6 @@ class primary_client_message_decoder(ABC):
 
 
 class version_message_decoder(primary_client_message_decoder):
-
-    last_message_decoded = []
 
     def __init__(self, pr_ns=0, pr_n='', ma_ver='', mi_ver='', bg_ver=0, bl_no=0, bl_dt=''):
         super().__init__(0, 20, 0, '', 0, 3, 'Version Message')
@@ -138,8 +133,6 @@ class version_message_decoder(primary_client_message_decoder):
 
 class key_message_decoder(primary_client_message_decoder):
 
-    last_message_decoded = []
-
     def __init__(self, msc_c=-1, msg_arg=-1, msg_ttl_s=-1, msg_ttl='', txt_msg=''):
         super().__init__(0, 20, 0, '', 0, 7, 'Key Message')
 
@@ -178,11 +171,9 @@ class key_message_decoder(primary_client_message_decoder):
 
 class safety_mode_message_decoder(primary_client_message_decoder):
 
-    last_message_decoded = []
     safety_mode_types_dict = {1: 'NORMAL', 2: 'REDUCED', 3: 'PROTECTIVE_STOP', 4: 'RECOVERY',
                               5: 'SAFEGUARD_STOP', 6: 'SYSTEM_EMERGENCY_STOP', 7: 'ROBOT_EMERGENCY_STOP',
                               8: 'VIOLATION', 9: 'FAULT', 10: 'VALIDATE_JOINT_ID', 11: 'UNDEFINED'}
-
 
     def __init__(self, msg_c=-1, msg_arg=-1, sf_md_tp=-1, sf_md_tp_txt='', r_data_tp=0, r_data=0):
         super().__init__(0, 20, 0, '', 0, 5, 'Safety Mode Message')
@@ -223,7 +214,6 @@ class safety_mode_message_decoder(primary_client_message_decoder):
 
 class robot_comm_message_decoder(primary_client_message_decoder):
 
-    last_message_decoded = []
     report_levels_dict = {0: 'DEBUG', 1: 'INFO', 2: 'WARNING', 3: 'VIOLATION', 4: 'FAULT',
                           128: 'DEVL_DEBUG', 129: 'DEVL_INFO', 130: 'DEVL_WARNING',
                           131: 'DEVL_VIOLATION', 132: 'DEVL_FAULT'}
@@ -238,7 +228,6 @@ class robot_comm_message_decoder(primary_client_message_decoder):
         self.robot_message_data_type = msg_data_tp
         self.robot_message_data = msg_data
         self.robot_comm_text_message = c_txt_msg
-
 
     def decode_message(self, data_buffer):
         offset = 0
@@ -271,8 +260,6 @@ class robot_comm_message_decoder(primary_client_message_decoder):
 
 class runtime_exception_message_decoder(primary_client_message_decoder):
 
-    last_message_decoded = []
-
     def __init__(self, sc_ln_no=-1, sc_col_no=-1, rt_ec_txt_msg=''):
         super().__init__(0, 20, 0, '', 0, 10, 'Runtime Exception Message')
 
@@ -303,28 +290,6 @@ class runtime_exception_message_decoder(primary_client_message_decoder):
         self.fill_last_message_decoded()
 
         return self.last_message_decoded
-
-
-"""
-class popup_message (primary_client_message_decoder):
-
-    last_message_decoded = []
-
-    robot_message_type = 2
-    robot_message_type_txt = 'Popup Message'
-
-    def __init__(self):
-        super().__init__()
-
-        self.requestId = 0
-        self.request_type = 0
-        self.warning = False
-        self.error = False
-        self.blocking = False
-        self.message_title_size = 0
-        self.message_title = ''
-        self.popup_text_message = ''
-"""
 
 
 class message_decoding_manager:
