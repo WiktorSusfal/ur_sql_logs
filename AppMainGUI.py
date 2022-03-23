@@ -1,5 +1,4 @@
 import PyQt5.QtWidgets as qtw
-import PyQt5.QtGui as qtg
 import threading
 import time
 import queue
@@ -8,7 +7,6 @@ import sys
 import UR_Connections
 import UR_Messages
 import UR_SQL_Logging
-
 
 # raw_robot_messages_storage = list of [robot name, raw message (with all sub-messages)]
 raw_robot_messages_storage = queue.Queue()
@@ -19,8 +17,8 @@ decoded_robot_messages_storage = queue.Queue()
 
 thread_lock = threading.Lock()
 
-class ur_app_gui(qtw.QWidget):
 
+class ur_app_gui(qtw.QWidget):
     # Main layout for GUI window
     main_layout = qtw.QVBoxLayout()
     # Connection properties forms = [connection_properties_set (list), connection_buttons (list)]
@@ -37,27 +35,47 @@ class ur_app_gui(qtw.QWidget):
     msg_parser = UR_Messages.messageParser(20)
     # Single decoding manager
     msg_decoding_manager = UR_Messages.message_decoding_manager()
-    #Connection with single SQL server
-    sql_conn = UR_SQL_Logging.UR_SQL_connection('192.168.1.1', 'sample_password')
-    sql_cursor = sql_conn.sql_connect()
+    # Connection with single SQL server
+    sql_conn_params = UR_SQL_Logging.SqlConnectionParams('defaultConn', 'serveruiaddress', 'samplepassword')
+
     # Single logger object for logging to the sql database
-    sql_logger = UR_SQL_Logging.UR_messages_logger('UR_LOG_DATA')
+    sql_logger = UR_SQL_Logging.UR_messages_logger('UR_LOG_DATA', sql_conn_params)
 
     def __init__(self):
         super().__init__()
         # Set AppGUI title
         self.setWindowTitle("UR log messages logger")
+
+        # Add initialization form
+        self.add_initialization_form = self.return_initialization_form()
+        self.add_initialization_form[0].clicked.connect(self.initialize_resources)
+
         # Add single robot connection form
         self.add_robot_connection_form = self.return_add_robot_connection_form()
         self.add_robot_connection_form[2].clicked.connect(self.add_new_robot_connection)
 
         # Set initial main layout
         self.main_layout = qtw.QVBoxLayout()
+        new_horizontal_layout = self.build_horizontal_layout(self.add_initialization_form)
+        self.main_layout.addLayout(new_horizontal_layout)
         new_horizontal_layout = self.build_horizontal_layout(self.add_robot_connection_form)
         self.main_layout.addLayout(new_horizontal_layout)
         self.setLayout(self.main_layout)
 
         self.show()
+
+
+
+    def initialize_resources(self):
+
+        #Create necessary databases on the sql server once, at start
+        self.sql_logger.create_logging_database()
+        self.sql_logger.create_data_tables()
+
+        # Thread for logging data to a SQL database
+        logger_Thread = threading.Thread(target=self.log_messages_to_sql, args=(self.sql_logger,))
+        logger_Thread.daemon = True
+        logger_Thread.start()
 
         # Thread for parsing raw messages from ur robots
         parserThread = threading.Thread(target=self.parse_messages)
@@ -69,15 +87,12 @@ class ur_app_gui(qtw.QWidget):
         decoderThread.daemon = True
         decoderThread.start()
 
-        # Create necessary databases on the sql server once, at start
-        self.sql_logger.create_logging_database(self.sql_cursor)
-        self.sql_logger.create_data_tables(self.sql_cursor)
-        #Thread for logging data to a SQL database
-        logger_Thread = threading.Thread(target=self.log_messages_to_sql, args=(self.sql_cursor, self.sql_logger,))
-        logger_Thread.daemon = True
-        logger_Thread.start()
+    def return_initialization_form(self):
+        elements = []
+        elements.append(qtw.QPushButton('Initialize', self))
+        elements[0].setToolTip('Click to initialize tables and tools')
 
-
+        return elements
 
     def return_add_robot_connection_form(self):
 
@@ -179,7 +194,6 @@ class ur_app_gui(qtw.QWidget):
         self.ur_connection_properties_forms[curr_idx][1][1].clicked.connect(
             lambda: self.disconnect_with_choosen_robot(self.ur_connection_properties_forms[curr_idx][0]))
 
-
     def start_thread_for_retrieving_data(self, connection_properties):
 
         communication_thread = threading.Thread(target=self.connect_to_ur_and_retrieve_data,
@@ -227,7 +241,6 @@ class ur_app_gui(qtw.QWidget):
 
         self.ur_connections[current_index].disconnect_from_UR()
 
-
     def disconnect_with_choosen_robot(self, connection_properties):
 
         robot_name = connection_properties[0].text()
@@ -271,18 +284,17 @@ class ur_app_gui(qtw.QWidget):
                 decoded_robot_messages_storage.put([robot_name, decoded_messages_list])
                 thread_lock.release()
 
-                #print('\nPUTTING in DECODED storage:')
+                # print('\nPUTTING in DECODED storage:')
                 for msg in decoded_messages_list:
                     print(f'Robot Name: {robot_name}, {msg}')
 
             time.sleep(0.05)
 
-    def log_messages_to_sql(self, cursor, logger):
+    def log_messages_to_sql(self, logger):
 
         while True:
 
             if decoded_robot_messages_storage.empty() == False:
-
                 thread_lock.acquire()
                 robot_name, decoded_messages = decoded_robot_messages_storage.get()
                 thread_lock.release()
@@ -294,18 +306,13 @@ class ur_app_gui(qtw.QWidget):
                 """
 
                 # decoded_messages is a list of all messages from this robot
-                logger.create_robot_description_record(cursor, robot_name)
-                logger.log_messages_data(cursor, decoded_messages, robot_name)
+                logger.create_robot_description_record(robot_name)
+                logger.log_messages_data(decoded_messages, robot_name)
 
             time.sleep(0.05)
 
 
-  
-app = qtw.QApplication(sys.argv)
-win = QMainindow()
-win.setGeometry(300, 300, 300, 300)
-win.setWindowTitle("Demo App")
-win.show()
-
+app = qtw.QApplication([])
 app_main_gui = ur_app_gui()
+
 app.exec_()

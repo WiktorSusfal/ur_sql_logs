@@ -1,22 +1,20 @@
 import socket
 
-
 class UR_connection:
-    UR_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    UR_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-    ip = ''
-    port = 0
-    refresh_interval = 0.0
-    data_buffer = []
-    robot_name = ''
-    terminate = False
+    URConnections = []
 
-    def __init__(self, ip, port, ref_freq=-1, robot_name='emptyName', terminate=False):
+    def __init__(self, ip, port, ref_freq=-1, robot_name='emptyName', refresh_interval = 0.0, terminate=False):
 
         self.ip = ip
         self.port = port
         self.robot_name = robot_name
+        self.refresh_interval = refresh_interval
+
+        self.data_buffer = []
+        self.UR_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.UR_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
         # Used for terminate threads in application GUI. Based on this property, the data retrieval is broken and the
         # connection is terminated
 
@@ -42,6 +40,8 @@ class UR_connection:
             self.refresh_interval = 1.0 / 500.0
         elif ref_freq == -1:
             self.refresh_interval = 1.0
+
+        UR_connection.URConnections.append(self)
 
 
     def connect_to_UR(self):
