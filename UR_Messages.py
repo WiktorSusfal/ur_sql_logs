@@ -1,5 +1,7 @@
 import struct
 import datetime
+import xml.etree.ElementTree as ET
+from collections import namedtuple
 from abc import ABC, abstractmethod
 
 
@@ -40,12 +42,16 @@ class messageParser:
         self.primary_client_messages_code = pr_cl_msg_cd
         self.last_primary_client_messages = []
 
-    # Returns list of tuples: (robot message type, parsed raw message)
+    '''
+    function splits sequence of binary data to single messages and filter messages from 'Primary Client Interface'
+    of robot - with 'message_type' field = 20 by default
+    :param data_buffer : sequence of binary data read from robot via TCP/IP which consists of raw messages 
+    :return : list of tuples: [(robot message type, parsed single raw message)...]
+    '''
     def return_primary_client_messages(self, data_buffer):
 
         offset = 0
         self.last_primary_client_messages = []
-
         while offset < len(data_buffer):
 
             main_package_length = struct.unpack('!I', data_buffer[offset:offset + 4])[0]
@@ -66,107 +72,132 @@ class messageParser:
 
 class primary_client_message_decoder(ABC):
 
-    def __init__(self, msg_sz=0, msg_tp=20, tsp=0, dt_txt='', sr=0, r_msg_tp=-1, r_msg_tp_txt=''):
-        self.message_size = msg_sz
-        self.message_type = msg_tp
-        self.timestamp = tsp  # This is not world time. It is time elapsed from robot controller power-up.
-        self.date_time_text = dt_txt
-        self.source = sr
-        self.robot_message_type = r_msg_tp
-        self.robot_message_type_txt = r_msg_tp_txt
-        self.last_message_decoded = []
+    def __init__(self, msg_struct_xml_node_name):
 
-    @abstractmethod
+        # name of xml node in 'Resources/ur_data_structure.xml' file which contains info about structure of
+        # relevant robot message type
+        self.msg_struct_xml_node_name = msg_struct_xml_node_name
+
+        self.message_struct_dict = self.return_whole_message_struct()
+        self.last_message_dict = self.return_decoded_message_dict()
+
+    '''
+    :param self (self.msg_struct_xml_node_name): Name of XML node with message data structure 
+    :return: Empty dictionary corresponding to message structure read from XML. Keys are 'sql_column_names', 
+    values are named tuples (read_from_robot, read_bytes, read_datatype, data_ordinal) 
+    '''
+    def return_whole_message_struct(self):
+
+        common_data_dict = self.return_message_struct('common_logged_data')
+        special_data_dict = self.return_message_struct(self.msg_struct_xml_node_name)
+        result_data_dict = common_data_dict | special_data_dict
+
+        i = 0
+        for k, v in result_data_dict.items():
+            result_data_dict[k] = v._replace(dataOrdinal=i)
+            i += 1
+
+        return result_data_dict
+
+    @classmethod
+    def return_message_struct(cls, node_name):
+        tree = ET.parse('Resources/ur_data_structure.xml')
+        result_dict = {}
+
+        node = tree.find(node_name)
+        for dataInfo in node:
+            data_name = dataInfo.find('sql_column_name').text
+            read_from_robot = int(dataInfo.find('read_from_robot').text)
+            data_ordinal = int(dataInfo.find('data_ordinal').text)
+            read_bytes = ''
+            read_datatype = ''
+            if read_from_robot == 1:
+                read_bytes = dataInfo.find('read_bytes').text
+                read_datatype = dataInfo.find('read_datatype').text
+
+            DataStruct = namedtuple('DataStruct', 'readFromRobot readBytes readDatatype dataOrdinal')
+            ds = DataStruct(read_from_robot, read_bytes, read_datatype, data_ordinal)
+            result_dict[data_name] = ds
+            result_dict = {k: v for k, v in sorted(result_dict.items(), key=lambda item: item[1].dataOrdinal)}
+
+        return result_dict
+
+    '''
+    :return: Empty dictionary with data field names as keys and empty values.
+    '''
+    def return_decoded_message_dict(self):
+        return {k: None for k in self.message_struct_dict.keys()}
+
+    '''
+    decode main part of the data in message - common fields and another which are read from robot
+    :param data_buffer : binary data read from robot via TCP/IP connection
+    :return : message dictionary with decoded common fields and those which are read from robot
+    '''
     def decode_message(self, data_buffer):
-        pass
+        offset = 0
+        tmp_msg_dict = {k: None for k in self.last_message_dict.keys()}
 
-    def fill_last_message_decoded(self):
-        self.date_time_text = str(datetime.datetime.now())
+        # update common values which are not decoded from the robot
+        tmp_msg_dict['date_time'] = str(datetime.datetime.now())
 
-        # get list of object attributes names
-        attr_list = list(self.__dict__.keys())
+        # decode all values which are read from the robot
+        for k, v in self.message_struct_dict.items():
+            if v.readFromRobot == 1:
+                # if the length of data is a variable
+                if v.readBytes.startswith('var:'):
+                    # field describing variable which store the length of data
+                    var_length_name = v.readBytes[4:]
+                    # if variable is a keyword ...
+                    if var_length_name.startswith("#"):
+                        match var_length_name:
+                            case '#to_the_end':
+                                data_length = int(tmp_msg_dict['message_size']) - offset
+                            case _:
+                                data_length = 0
+                    # if variable is not a keyword it must be another (previous) value in the message
+                    else:
+                        data_length = int(tmp_msg_dict[var_length_name])
 
-        # fill the 'last_message_decoded' variable list
-        for i in attr_list:
-            self.last_message_decoded.append(self.__getattribute__(i))
+                    # decode next part of message
+                    [tmp_msg_dict[k], offset] = get_char_array_as_string(data_buffer, offset, data_length)
+
+                # if the length of data is constant
+                else:
+                    match v.readBytes:
+                        case '1':
+                            [tmp_msg_dict[k], offset] = get_1_byte_int_or_uint(v.readDatatype, data_buffer, offset)
+                        case '4':
+                            [tmp_msg_dict[k], offset] = get_4_bytes_int_or_uint(v.readDatatype, data_buffer, offset)
+                        case '8':
+                            [tmp_msg_dict[k], offset] = get_8_bytes_int_or_uint(v.readDatatype, data_buffer, offset)
+
+        return tmp_msg_dict
 
 
 class version_message_decoder(primary_client_message_decoder):
 
-    def __init__(self, pr_ns=0, pr_n='', ma_ver='', mi_ver='', bg_ver=0, bl_no=0, bl_dt=''):
-        super().__init__(0, 20, 0, '', 0, 3, 'Version Message')
-        self.project_name_size = pr_ns
-        self.project_name = pr_n
-        self.major_version = ma_ver
-        self.minor_version = mi_ver
-        self.bugfix_version = bg_ver
-        self.build_number = bl_no
-        self.build_date = bl_dt
+    def __init__(self):
+        super().__init__('version_message')
 
     def decode_message(self, data_buffer):
-        offset = 0
-        self.last_message_decoded.clear()
+        # get common message values and those which are read from robot
+        tmp_msg_dict = super().decode_message(data_buffer)
+        self.last_message_dict = tmp_msg_dict
 
-        [self.message_size, offset] = get_4_bytes_int_or_uint('!i', data_buffer, offset)
-
-        # The next value is 'message type' which is static for this message.
-        offset += 1
-
-        [self.timestamp, offset] = get_8_bytes_int_or_uint('!Q', data_buffer, offset)
-        [self.source, offset] = get_1_byte_int_or_uint('!b', data_buffer, offset)
-
-        # The next value is 'robot message type' which is static for this message.
-        offset += 1
-
-        [self.project_name_size, offset] = get_1_byte_int_or_uint('!b', data_buffer, offset)
-        [self.project_name, offset] = get_char_array_as_string(data_buffer, offset, self.project_name_size)
-        [self.major_version, offset] = get_1_byte_int_or_uint('!B', data_buffer, offset)
-        [self.minor_version, offset] = get_1_byte_int_or_uint('!B', data_buffer, offset)
-        [self.bugfix_version, offset] = get_4_bytes_int_or_uint('!i', data_buffer, offset)
-        [self.build_number, offset] = get_4_bytes_int_or_uint('!i', data_buffer, offset)
-        [self.build_date, offset] = get_char_array_as_string(data_buffer, offset, (self.message_size - offset))
-
-        self.fill_last_message_decoded()
-
-        return self.last_message_decoded
+        return self.last_message_dict
 
 
 class key_message_decoder(primary_client_message_decoder):
 
-    def __init__(self, msc_c=-1, msg_arg=-1, msg_ttl_s=-1, msg_ttl='', txt_msg=''):
-        super().__init__(0, 20, 0, '', 0, 7, 'Key Message')
-
-        self.robot_message_code = msc_c
-        self.robot_message_argument = msg_arg
-        self.robot_message_title_size = msg_ttl_s
-        self.robot_message_title = msg_ttl
-        self.key_text_message = txt_msg
+    def __init__(self):
+        super().__init__('key_message')
 
     def decode_message(self, data_buffer):
-        offset = 0
-        self.last_message_decoded.clear()
+        # get common message values and those which are read from robot
+        tmp_msg_dict = super().decode_message(data_buffer)
+        self.last_message_dict = tmp_msg_dict
 
-        [self.message_size, offset] = get_4_bytes_int_or_uint('!i', data_buffer, offset)
-
-        # The next value is 'message type' which is static for this message.
-        offset += 1
-
-        [self.timestamp, offset] = get_8_bytes_int_or_uint('!Q', data_buffer, offset)
-        [self.source, offset] = get_1_byte_int_or_uint('b', data_buffer, offset)
-
-        # The next value is 'robot message type' which is static for this message.
-        offset += 1
-
-        [self.robot_message_code, offset] = get_4_bytes_int_or_uint('!i', data_buffer, offset)
-        [self.robot_message_argument, offset] = get_4_bytes_int_or_uint('!i', data_buffer, offset)
-        [self.robot_message_title_size, offset] = get_1_byte_int_or_uint('!B', data_buffer, offset)
-        [self.robot_message_title, offset] = get_char_array_as_string(data_buffer, offset,
-                                                                      self.robot_message_title_size)
-        [self.key_text_message, offset] = get_char_array_as_string(data_buffer, offset, (self.message_size - offset))
-
-        self.fill_last_message_decoded()
-
-        return self.last_message_decoded
+        return self.last_message_dict
 
 
 class safety_mode_message_decoder(primary_client_message_decoder):
@@ -175,131 +206,60 @@ class safety_mode_message_decoder(primary_client_message_decoder):
                               5: 'SAFEGUARD_STOP', 6: 'SYSTEM_EMERGENCY_STOP', 7: 'ROBOT_EMERGENCY_STOP',
                               8: 'VIOLATION', 9: 'FAULT', 10: 'VALIDATE_JOINT_ID', 11: 'UNDEFINED'}
 
-    def __init__(self, msg_c=-1, msg_arg=-1, sf_md_tp=-1, sf_md_tp_txt='', r_data_tp=0, r_data=0):
-        super().__init__(0, 20, 0, '', 0, 5, 'Safety Mode Message')
-
-        self.robot_message_code = msg_c
-        self.robot_message_argument = msg_arg
-        self.safety_mode_type = sf_md_tp
-        self.safety_mode_type_txt = sf_md_tp_txt
-        self.report_data_type = r_data_tp
-        self.report_data = r_data
+    def __init__(self):
+        super().__init__('safety_message')
 
     def decode_message(self, data_buffer):
-        offset = 0
-        self.last_message_decoded.clear()
+        # get common message values and those which are read from robot
+        tmp_msg_dict = super().decode_message(data_buffer)
 
-        [self.message_size, offset] = get_4_bytes_int_or_uint('!i', data_buffer, offset)
+        # fill rest of specific values
+        tmp_msg_dict['safety_mode_type_txt'] = self.safety_mode_types_dict[int(tmp_msg_dict['safety_mode_type'])]
 
-        # Next Value - message type - static for this message
-        offset += 1
-
-        [self.timestamp, offset] = get_8_bytes_int_or_uint('!Q', data_buffer, offset)
-        [self.source, offset] = get_1_byte_int_or_uint('!b', data_buffer, offset)
-
-        # Next Value - robot message type - static for this message
-        offset += 1
-
-        [self.robot_message_code, offset] = get_4_bytes_int_or_uint('!i', data_buffer, offset)
-        [self.robot_message_argument, offset] = get_4_bytes_int_or_uint('!i', data_buffer, offset)
-        [self.safety_mode_type, offset] = get_1_byte_int_or_uint('!B', data_buffer, offset)
-        [self.report_data_type, offset] = get_4_bytes_int_or_uint('!I', data_buffer, offset)
-        [self.report_data, offset] = get_4_bytes_int_or_uint('!I', data_buffer, offset)
-
-        self.safety_mode_type_txt = self.safety_mode_types_dict[self.safety_mode_type]
-        self.fill_last_message_decoded()
-
-        return self.last_message_decoded
+        self.last_message_dict = tmp_msg_dict
+        return self.last_message_dict
 
 
 class robot_comm_message_decoder(primary_client_message_decoder):
-
     report_levels_dict = {0: 'DEBUG', 1: 'INFO', 2: 'WARNING', 3: 'VIOLATION', 4: 'FAULT',
                           128: 'DEVL_DEBUG', 129: 'DEVL_INFO', 130: 'DEVL_WARNING',
                           131: 'DEVL_VIOLATION', 132: 'DEVL_FAULT'}
 
-    def __init__(self, msg_c=-1, msg_arg=-1, rep_lvl=-1, rep_lvl_txt='', msg_data_tp=0, msg_data=0, c_txt_msg=''):
-        super().__init__(0, 20, 0, '', 0, 6, 'Robot Comm Message')
-
-        self.robot_message_code = msg_c
-        self.robot_message_argument = msg_arg
-        self.report_level = rep_lvl
-        self.report_level_txt = rep_lvl_txt
-        self.robot_message_data_type = msg_data_tp
-        self.robot_message_data = msg_data
-        self.robot_comm_text_message = c_txt_msg
+    def __init__(self):
+        super().__init__('communication_message')
 
     def decode_message(self, data_buffer):
-        offset = 0
-        self.last_message_decoded.clear()
+        # get common message values and those which are read from robot
+        tmp_msg_dict = super().decode_message(data_buffer)
 
-        [self.message_size, offset] = get_4_bytes_int_or_uint('!i', data_buffer, offset)
+        # fill specific data values
+        tmp_msg_dict['report_level_txt'] = self.report_levels_dict[int(tmp_msg_dict['report_level'])]
 
-        # Next value - message type - is static for this message
-        offset += 1
-
-        [self.timestamp, offset] = get_8_bytes_int_or_uint('!Q', data_buffer, offset)
-        [self.source, offset] = get_1_byte_int_or_uint('!b', data_buffer, offset)
-
-        # Next Value - robot message type - is static for this message
-        offset += 1
-
-        [self.robot_message_code, offset] = get_4_bytes_int_or_uint('!i', data_buffer, offset)
-        [self.robot_message_argument, offset] = get_4_bytes_int_or_uint('!i', data_buffer, offset)
-        [self.report_level, offset] = get_4_bytes_int_or_uint('!i', data_buffer, offset)
-        [self.robot_message_data_type, offset] = get_4_bytes_int_or_uint('!I', data_buffer, offset)
-        [self.robot_message_data, offset] = get_4_bytes_int_or_uint('!I', data_buffer, offset)
-        [self.robot_comm_text_message, offset] = get_char_array_as_string(data_buffer, offset,
-                                                                          (self.message_size - offset))
-
-        self.report_level_txt = self.report_levels_dict[self.report_level]
-        self.fill_last_message_decoded()
-
-        return self.last_message_decoded
+        self.last_message_dict = tmp_msg_dict
+        return self.last_message_dict
 
 
 class runtime_exception_message_decoder(primary_client_message_decoder):
 
-    def __init__(self, sc_ln_no=-1, sc_col_no=-1, rt_ec_txt_msg=''):
-        super().__init__(0, 20, 0, '', 0, 10, 'Runtime Exception Message')
-
-        self.script_line_no = sc_ln_no
-        self.script_column_no = sc_col_no
-        self.runtime_exception_text_message = rt_ec_txt_msg
+    def __init__(self):
+        super().__init__('runtime_exception_message')
 
     def decode_message(self, data_buffer):
-        offset = 0
-        self.last_message_decoded.clear()
+        # get common message values and those which are read from robot
+        tmp_msg_dict = super().decode_message(data_buffer)
+        self.last_message_dict = tmp_msg_dict
 
-        [self.message_size, offset] = get_4_bytes_int_or_uint('!i', data_buffer, offset)
-
-        # Next value - message type - is static for that message
-        offset += 1
-
-        [self.timestamp, offset] = get_8_bytes_int_or_uint('!Q', data_buffer, offset)
-        [self.source, offset] = get_1_byte_int_or_uint('!b', data_buffer, offset)
-
-        # Next value - robot message type is static for this message
-        offset += 1
-
-        [self.script_line_no, offset] = get_4_bytes_int_or_uint('!i', data_buffer, offset)
-        [self.script_column_no, offset] = get_4_bytes_int_or_uint('!i', data_buffer, offset)
-        [self.runtime_exception_text_message, offset] = get_char_array_as_string(data_buffer, offset,
-                                                                                 (self.message_size - offset))
-
-        self.fill_last_message_decoded()
-
-        return self.last_message_decoded
+        return self.last_message_dict
 
 
 class message_decoding_manager:
     last_decoded_messages_set = []
 
-    ver_msg_decoder = version_message_decoder(0, '', '', '', 0, 0, '')
-    key_msg_decoder = key_message_decoder(-1, -1, -1, '', '')
-    saf_msg_decoder = safety_mode_message_decoder(-1, -1, -1, '', 0, 0)
-    comm_msg_decoder = robot_comm_message_decoder(-1, -1, -1, '', 0, 0, '')
-    run_msg_except_decoder = runtime_exception_message_decoder(-1, -1, '')
+    ver_msg_decoder = version_message_decoder()
+    key_msg_decoder = key_message_decoder()
+    saf_msg_decoder = safety_mode_message_decoder()
+    comm_msg_decoder = robot_comm_message_decoder()
+    run_msg_except_decoder = runtime_exception_message_decoder()
 
     # Returns list of decoded messages
     def get_decoded_data(self, messages_list):

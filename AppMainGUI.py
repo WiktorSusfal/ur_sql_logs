@@ -12,8 +12,10 @@ import UR_SQL_Logging
 raw_robot_messages_storage = queue.Queue()
 # raw_parsed_messages_storage = list of [robot name, (robot message types, parsed raw messages (all targeted messages))]
 raw_parsed_messages_storage = queue.Queue()
-# decoded_robot_messages_storage = list of [robot name, decoded messages (all of targeted messages)]
+# decoded_robot_messages_storage = list of [robot name (str), [decoded messages (dict)] ]
+# keys in dict 'decoded messages' are the 'sql_column_names' node values from XML file 'Resources/ur_data_structure.xml'
 decoded_robot_messages_storage = queue.Queue()
+
 
 thread_lock = threading.Lock()
 
@@ -36,7 +38,7 @@ class ur_app_gui(qtw.QWidget):
     # Single decoding manager
     msg_decoding_manager = UR_Messages.message_decoding_manager()
     # Connection with single SQL server
-    sql_conn_params = UR_SQL_Logging.SqlConnectionParams('defaultConn', 'serveruiaddress', 'samplepassword')
+    sql_conn_params = UR_SQL_Logging.SqlConnectionParams('defaultConn', 'MSI', 'Arczibald12345')
 
     # Single logger object for logging to the sql database
     sql_logger = UR_SQL_Logging.UR_messages_logger('UR_LOG_DATA', sql_conn_params)
@@ -292,7 +294,7 @@ class ur_app_gui(qtw.QWidget):
 
         while True:
 
-            if decoded_robot_messages_storage.empty() == False:
+            if not decoded_robot_messages_storage.empty():
                 thread_lock.acquire()
                 robot_name, decoded_messages = decoded_robot_messages_storage.get()
                 thread_lock.release()
