@@ -1,5 +1,5 @@
-# ur_sql_message_logger
-Application for capturing log messages from UR cobot ang logging them into sql database
+# ur_sql_logs
+App for capturing log messages from UR robot (via TCP/IP sockets), decoding and logging them into ms sql database
 
 Code written in Python 3.8. 
 Messags from UR captured using TCP/IP socket connection. Byte stream decoded as described in UR documentation:
