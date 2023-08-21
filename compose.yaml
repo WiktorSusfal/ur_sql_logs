@@ -1,0 +1,24 @@
+services:
+
+  ur_sim:
+    image: universalrobots/ursim_e-series
+    ports:
+      - 127.0.0.1:5900:5900
+      - 127.0.0.1:30001:30001
+      - 127.0.0.1:6080:6080
+    environment:
+      ROBOT_MODEL: UR10
+ 
+  db:
+    image: postgres:15.4-alpine3.18
+    environment:
+      POSTGRES_PASSWORD: ur_logger_password
+      POSTGRES_USER: ur_logger
+      POSTGRES_DB: UR_LOG_DATA
+    volumes:
+      - ur_logger_data:/var/lib/postgresql/data
+    ports:
+      - 127.0.0.1:5432:5432
+ 
+volumes:
+  ur_logger_data:

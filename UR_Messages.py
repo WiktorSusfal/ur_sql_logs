@@ -86,7 +86,7 @@ class primary_client_message_decoder(ABC):
     :return: Empty dictionary corresponding to message structure read from XML. Keys are 'sql_column_names', 
     values are named tuples (read_from_robot, read_bytes, read_datatype, data_ordinal) 
     '''
-    
+
     def return_whole_message_struct(self):
 
         common_data_dict = self.return_message_struct('common_logged_data')
