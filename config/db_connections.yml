@@ -1,0 +1,19 @@
+---
+
+db_connections:
+
+  - 
+    friendly_name: postgres_dev
+    type: postgres
+    host: 127.0.0.1
+    port: 5432
+    user: ur_logger
+    database: UR_LOG_DATA
+
+  - 
+    friendly_name: postgres_test
+    type: postgres
+    host: 0.0.0.0
+    port: 000
+    user: test_user
+    database: test_db
