@@ -4,7 +4,7 @@ from lib.helpers.connection_config_data import ConnectionConfigData
 
 class DBConnectionConfig(QObject):
 
-    db_names_changed = pyqtSignal(list[str])
+    db_names_changed = pyqtSignal()
 
     def __init__(self):
         super(DBConnectionConfig, self).__init__()

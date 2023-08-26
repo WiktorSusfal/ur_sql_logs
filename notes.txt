@@ -1,0 +1,48 @@
+from lib.views.base_view import URLoggerBaseView
+from lib.helpers.gui_tem_names import *
+
+class MainToolbarView(URLoggerBaseView):
+
+    def __init__(self):
+        super(MainToolbarView, self).__init__()
+
+        self._scroll_area = qtw.QScrollArea() 
+        self._scroll_area.setVerticalScrollBarPolicy(qtc.Qt.ScrollBarAlwaysOff)
+        self._scroll_area.setWidgetResizable(False)
+       
+        self._home_btn = self._produce_icon_button(r'home/home128.png', TOOLBAR_BUTTON_NAME, 64)
+        self._settings_btn = self._produce_icon_button(r'gears2/settings_64.png', TOOLBAR_BUTTON_NAME, 64)
+        self._help_btn = self._produce_icon_button(r'help/question64.png', TOOLBAR_BUTTON_NAME, 64)
+
+        main_layout = qtw.QHBoxLayout()
+        main_layout.addWidget(self._home_btn, stretch = 0)
+        main_layout.addWidget(self._settings_btn, stretch = 0)
+        main_layout.addWidget(self._help_btn, stretch = 0, alignment = qtc.Qt.AlignRight)
+        main_layout.addStretch()
+
+        scrollable_widget = qtw.QWidget()
+        scrollable_widget.setLayout(main_layout)
+        self._scroll_area.setWidget(scrollable_widget)
+
+        #slayout = qtw.QHBoxLayout()
+        #slayout.addWidget(self._scroll_area)
+        self.setLayout(main_layout)
+
+        self._setup()
+        self.show()
+
+
+    def _bind_buttons_to_commands(self):
+        pass
+
+    def _init_actions(self):
+        pass
+
+    def _set_value_subscriptions(self):
+        pass
+
+
+if __name__ == '__main__':
+    from lib.helpers.visual_view_test_template import visual_test_preview
+    #conn_config_model = MainToolbarView()
+    visual_test_preview(MainToolbarView())
