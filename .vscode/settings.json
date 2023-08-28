@@ -3,6 +3,9 @@
         "PYTHONPATH": "${workspaceFolder}"
     },
     "cSpell.words": [
-        "pyqt"
+        "onoff",
+        "pixmap",
+        "pyqt",
+        "sbar"
     ]
 }

@@ -1,0 +1,27 @@
+QScrollArea {
+    min-width: 200px;
+    padding: 0px;
+    background: transparent;
+}
+
+QScrollArea#TOOLBAR_SCROLL_AREA{
+    min-height: 100px;
+}
+
+QScrollArea#CONTENT_SCROLL_AREA{
+    min-height: 200px;
+}
+
+QScrollBar{
+    background: transparent;
+    height: 7px;
+}
+
+QScrollBar::handle{
+    background: #303030;
+    border-radius: 3px;
+}
+
+QScrollBar::handle::pressed{
+    background: black;
+}

@@ -1,0 +1,4 @@
+QHBoxLayout#LIST_ITEM_LAYOUT {
+    height: 70px;
+    max-height: 70px;
+}

@@ -45,3 +45,13 @@ class URLoggerBaseView(ABC, qtw.QWidget,  metaclass=URLoggerBaseViewMeta):
             button.setIconSize(qtc.QSize(icon_size, icon_size))
 
         return button
+    
+    def _produce_icon_label(self, icon_rel_path: str, size_x: int, size_y: int, label_name: str = None) -> qtw.QLabel:
+        icon = qtg.QIcon(ResourcesManager.get_icon_abs_path(icon_rel_path))
+        icon_label = qtw.QLabel()
+        icon_label.setPixmap(icon.pixmap(size_x, size_y))
+
+        if label_name:
+            icon_label.setObjectName(label_name)
+
+        return icon_label

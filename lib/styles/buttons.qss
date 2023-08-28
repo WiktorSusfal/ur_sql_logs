@@ -1,5 +1,11 @@
 QPushButton {
     background: black;
+    color: white;
+}
+
+QPushButton:hover {
+    border: 1px solid;
+    border-color: white;
 }
 
 QPushButton#TOOLBAR_BUTTON {

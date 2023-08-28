@@ -2,7 +2,7 @@ import PyQt5.QtWidgets as qtw
 import PyQt5.QtGui as qtg
 import PyQt5.QtCore as qtc
 
-from lib.views.base_view import URLoggerBaseView
+from lib.views.components.base_view import URLoggerBaseView
 from lib.helpers.gui_tem_names import *
 
 class MainToolbarView(URLoggerBaseView):
@@ -23,7 +23,6 @@ class MainToolbarView(URLoggerBaseView):
 
         self._setup()
         self.show()
-
 
     def _bind_buttons_to_commands(self):
         pass

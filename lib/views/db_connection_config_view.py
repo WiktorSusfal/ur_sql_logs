@@ -1,7 +1,7 @@
 import PyQt5.QtWidgets as qtw
 
 from lib.helpers.gui_tem_names import *
-from lib.views.base_view import URLoggerBaseView
+from lib.views.components.base_view import URLoggerBaseView
 from lib.view_models.db_connection_config import DBConnectionConfig
 
 class DBConnectionConfigView(URLoggerBaseView):
