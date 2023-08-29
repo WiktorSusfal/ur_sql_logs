@@ -2,6 +2,7 @@ from PyQt5.QtCore import QObject, pyqtSignal
 
 from lib.helpers.connection_config_data import ConnectionConfigData
 
+
 class DBConnectionConfig(QObject):
 
     db_names_changed = pyqtSignal()

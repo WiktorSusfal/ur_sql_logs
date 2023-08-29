@@ -1,16 +1,16 @@
 import PyQt5.QtWidgets as qtw
+import PyQt5.QtCore as qtc
+
+from lib.view_models.db_connection_config import DBConnectionConfig
 
 from lib.helpers.gui_tem_names import *
 from lib.views.components.base_view import URLoggerBaseView
-from lib.view_models.db_connection_config import DBConnectionConfig
+
 
 class DBConnectionConfigView(URLoggerBaseView):
 
     def __init__(self, model: DBConnectionConfig):
         super(DBConnectionConfigView, self).__init__()
-
-        self.setWindowTitle("Choose database connection")
-
         self._model = model
 
         self.list_label = qtw.QLabel("Choose database connection: ")
@@ -25,16 +25,18 @@ class DBConnectionConfigView(URLoggerBaseView):
         self.db_connect_btn = qtw.QPushButton(text='Connect')
 
         conn_list_layout = qtw.QHBoxLayout()
-        conn_list_layout.addWidget(self.list_label)
-        conn_list_layout.addWidget(self.db_conn_list)
+        conn_list_layout.addWidget(self.list_label, stretch = 0, alignment= qtc.Qt.AlignLeft)
+        conn_list_layout.addWidget(self.db_conn_list, stretch = 1, alignment = qtc.Qt.AlignLeft)
+
         password_layout = qtw.QHBoxLayout()
-        password_layout.addWidget(self.password_label)
+        password_layout.addWidget(self.password_label, stretch = 0, alignment= qtc.Qt.AlignLeft)
         password_layout.addWidget(self.db_password_input)
 
         main_layout = qtw.QVBoxLayout()
         main_layout.addLayout(conn_list_layout)
         main_layout.addLayout(password_layout)
         main_layout.addWidget(self.db_connect_btn)
+        main_layout.addStretch()
 
         self.setLayout(main_layout)
 

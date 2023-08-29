@@ -1,13 +1,11 @@
 QLabel {
-    background-color: #222222;
-    color: #ffffff
+  
 }
 
 QLabel#FORM_LABEL {
-    min-width: 250px;
+   
 }
 
 QLabel#LIST_ITEM_DETAIL_LABEL {
-    width: 80px;
-    max-width: 80px;
+   
 }

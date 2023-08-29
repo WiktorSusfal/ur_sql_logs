@@ -33,7 +33,6 @@ class URSelectionList(URLoggerBaseView):
 
         list_item = qtw.QListWidgetItem(self._selection_list)
         list_item.setSizeHint(item_widget.sizeHint())
-        
         self._selection_list.addItem(list_item)
         self._selection_list.setItemWidget(list_item, item_widget)
 

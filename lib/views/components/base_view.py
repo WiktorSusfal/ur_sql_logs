@@ -55,3 +55,8 @@ class URLoggerBaseView(ABC, qtw.QWidget,  metaclass=URLoggerBaseViewMeta):
             icon_label.setObjectName(label_name)
 
         return icon_label
+    
+    def _produce_named_label(self, content: str, name: str) -> qtw.QLabel:
+        label = qtw.QLabel(content)
+        label.setObjectName(name)
+        return label

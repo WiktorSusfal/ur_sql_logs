@@ -2,6 +2,9 @@ import PyQt5.QtWidgets as qtw
 import PyQt5.QtCore as qtc
 
 from lib.views.main_toolbar_view import MainToolbarView
+from lib.views.main_content_view import MainContentView
+
+from lib.view_models.main_view_model import URMainViewModel
 
 from lib.views.components.base_view import URLoggerBaseView
 from lib.views.components.scroll_bar import CustomScrollBar
@@ -13,6 +16,7 @@ class URLoggerMainView(URLoggerBaseView):
 
     def __init__(self):
         super(URLoggerMainView, self).__init__()
+        self._model = URMainViewModel()
 
         self._main_layout = qtw.QGridLayout()
         self._main_layout.setObjectName(MAIN_GRID_LAYOUT_NAME)
@@ -20,10 +24,10 @@ class URLoggerMainView(URLoggerBaseView):
 
         self._toolbar_scroll_area = self._produce_scroll_area(name = TOOLBAR_SCROLL_AREA_NAME
                                                               ,v_sbar_policy=qtc.Qt.ScrollBarAlwaysOff)
-        self._toolbar_scroll_area.setWidget(MainToolbarView())
+        self._toolbar_scroll_area.setWidget(MainToolbarView(self._model))
 
         self._content_scroll_area = self._produce_scroll_area(name = CONTENT_SCROLL_AREA_NAME)
-        self._content_scroll_area.setWidget(qtw.QLabel("Placeholder"))
+        self._content_scroll_area.setWidget(MainContentView(self._model))
 
         self._main_layout.addWidget(self._toolbar_scroll_area, 0, 0)
         self._main_layout.addWidget(self._content_scroll_area, 1, 0)
@@ -63,5 +67,4 @@ class URLoggerMainView(URLoggerBaseView):
 
 if __name__ == '__main__':
     from lib.helpers.visual_view_test_template import visual_test_preview
-    #conn_config_model = MainToolbarView()
     visual_test_preview(URLoggerMainView())
