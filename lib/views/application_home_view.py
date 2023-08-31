@@ -10,6 +10,7 @@ class URHomeView(URLoggerBaseView):
 
     def __init__(self):
         super(URHomeView, self).__init__()
+        self.setObjectName(APPLICATION_HOME_VIEW_NAME)
 
         self._main_layout = qtw.QGridLayout()
         self.setLayout(self._main_layout)

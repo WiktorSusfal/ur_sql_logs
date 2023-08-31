@@ -4,6 +4,7 @@ import PyQt5.QtCore as qtc
 from abc import ABC, abstractmethod, ABCMeta
 
 from lib.helpers.styles_code_manager import ResourcesManager
+from lib.helpers.gui_tem_names import *
 
 
 class URLoggerBaseViewMeta(ABCMeta, type(qtw.QWidget)):
@@ -13,8 +14,10 @@ class URLoggerBaseViewMeta(ABCMeta, type(qtw.QWidget)):
 class URLoggerBaseView(ABC, qtw.QWidget,  metaclass=URLoggerBaseViewMeta):
 
     def __init__(self):
-        super().__init__()
-        super(ABC, self).__init__()
+        qtw.QWidget.__init__(self)
+        ABC.__init__(self)
+        self.setObjectName(CUSTOM_VIEW_WIDGET_NAME)
+        self.setAttribute(qtc.Qt.WA_StyledBackground)
 
     @abstractmethod
     def _set_value_subscriptions(self):
@@ -36,6 +39,7 @@ class URLoggerBaseView(ABC, qtw.QWidget,  metaclass=URLoggerBaseViewMeta):
     def _produce_icon_button(self, icon_rel_path: str, button_name: str = None, icon_size: int = None) -> qtw.QPushButton:
         icon = qtg.QIcon(ResourcesManager.get_icon_abs_path(icon_rel_path))
         button = qtw.QPushButton()
+        button.setCursor(qtc.Qt.PointingHandCursor)
         button.setIcon(icon)
 
         if button_name:

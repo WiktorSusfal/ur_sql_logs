@@ -1,11 +1,23 @@
 QPushButton {
-    
+    background: #2c698d;
+    border-radius: 5px;
+    opacity: 0.5;
 }
 
 QPushButton:hover {
-   
+    background: #2c698d;
+    border: 3px solid;
+    border-color: #e3f6f5;
+}
+
+QPushButton:pressed {
+    border-style: inset;
+    background: #bae8e8;
 }
 
 QPushButton#TOOLBAR_BUTTON {
-    
+    width: 80px;
+    height: 80px;
+    min-width: 80px;
+    max-width: 80px;
 }

@@ -16,6 +16,7 @@ class URLoggerMainView(URLoggerBaseView):
 
     def __init__(self):
         super(URLoggerMainView, self).__init__()
+        self.setObjectName(CUSTOM_VIEW_WIDGET_NAME)
         self._model = URMainViewModel()
 
         self._main_layout = qtw.QGridLayout()

@@ -7,6 +7,7 @@ class URItemDetails(URLoggerBaseView):
 
     def __init__(self):
         super(URItemDetails, self).__init__()
+        self.setObjectName(UR_ITEM_DETAILS_VIEW_NAME)
         
         self._robot_name_input = qtw.QLineEdit()
         self._robot_name_input.setObjectName(FORM_INPUT_NAME)

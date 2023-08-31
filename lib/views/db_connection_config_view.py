@@ -11,6 +11,7 @@ class DBConnectionConfigView(URLoggerBaseView):
 
     def __init__(self, model: DBConnectionConfig):
         super(DBConnectionConfigView, self).__init__()
+        self.setObjectName(DB_CONNECTION_VIEW_NAME)
         self._model = model
 
         self.list_label = qtw.QLabel("Choose database connection: ")

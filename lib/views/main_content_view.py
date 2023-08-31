@@ -13,6 +13,7 @@ class MainContentView(URLoggerBaseView):
 
     def __init__(self, model: URMainViewModel):
         super(MainContentView, self).__init__()
+        self.setObjectName(CUSTOM_VIEW_WIDGET_NAME)
         self._model = model
 
         self._home_widget = URHomeView()

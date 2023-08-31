@@ -9,7 +9,7 @@ class URSelectionList(URLoggerBaseView):
 
     def __init__(self):
         super(URLoggerBaseView, self).__init__()
-
+        self.setObjectName(UR_SELECTION_LIST_VIEW_NAME)
         self._selection_list = qtw.QListWidget()
 
         main_layout = qtw.QVBoxLayout()

@@ -11,6 +11,7 @@ class URListItem(URLoggerBaseView):
 
     def __init__(self, id: str, title: str):
         super(URListItem, self).__init__()
+        self.setObjectName(UR_LIST_ITEM_VIEW_NAME)
         self.id = id
 
         self._robot_icon_label = self._produce_icon_label(r'robot/industrial-robot.png', 64, 64)

@@ -1,15 +1,19 @@
 QScrollArea {
+    
+    border: 0px;
+    margin: 0px;
     min-width: 200px;
     padding: 0px;
-    background: transparent;
 }
 
 QScrollArea#TOOLBAR_SCROLL_AREA{
     min-height: 100px;
+    background: transparent;
 }
 
 QScrollArea#CONTENT_SCROLL_AREA{
     min-height: 200px;
+    background: transparent;
 }
 
 QScrollBar{
