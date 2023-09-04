@@ -1,5 +1,7 @@
 import PyQt5.QtWidgets as qtw
+import PyQt5.QtCore as qtc
 
+from lib.views.components.ur_list_widget import URListWidget
 from lib.views.ur_list_item import URListItem
 from lib.views.components.base_view import URLoggerBaseView
 from lib.helpers.gui_tem_names import *
@@ -8,12 +10,21 @@ from lib.helpers.gui_tem_names import *
 class URSelectionList(URLoggerBaseView):
 
     def __init__(self):
-        super(URLoggerBaseView, self).__init__()
+        super(URSelectionList, self).__init__()
         self.setObjectName(UR_SELECTION_LIST_VIEW_NAME)
-        self._selection_list = qtw.QListWidget()
 
+        self._selection_list = URListWidget()
+        self._add_button = self._produce_button(button_label="+", button_name=LIST_ACTION_BUTTON_NAME)
+        self._remove_button = self._produce_button(button_label="-", button_name=LIST_ACTION_BUTTON_NAME)
+
+        button_layout = qtw.QHBoxLayout()
+        button_layout.addWidget(self._add_button, alignment=qtc.Qt.AlignLeft)
+        button_layout.addWidget(self._remove_button, alignment=qtc.Qt.AlignLeft)
+        
         main_layout = qtw.QVBoxLayout()
-        main_layout.addWidget(self._selection_list)
+        main_layout.addWidget(self._selection_list, stretch=0)
+        main_layout.addLayout(button_layout)
+        main_layout.addStretch()
         self.setLayout(main_layout)
 
         self._setup()

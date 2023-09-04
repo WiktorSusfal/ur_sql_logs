@@ -1,10 +1,16 @@
 import PyQt5.QtWidgets as qtw
 import PyQt5.QtCore as qtc
+import PyQt5.QtGui as qtg
 
 from lib.view_models.db_connection_config import DBConnectionConfig
 
 from lib.helpers.gui_tem_names import *
 from lib.views.components.base_view import URLoggerBaseView
+
+
+class CustomItemDelegate(qtw.QStyledItemDelegate):
+    def sizeHint(self, option, index):
+        return qtc.QSize(option.rect.height(), 30)
 
 
 class DBConnectionConfigView(URLoggerBaseView):
@@ -14,16 +20,18 @@ class DBConnectionConfigView(URLoggerBaseView):
         self.setObjectName(DB_CONNECTION_VIEW_NAME)
         self._model = model
 
-        self.list_label = qtw.QLabel("Choose database connection: ")
+        self.list_label = qtw.QLabel("Database connection: ")
         self.list_label.setObjectName(FORM_LABEL_NAME)
         self.db_conn_list = qtw.QComboBox()
+        self.db_conn_list.setItemDelegate(CustomItemDelegate())
+        self.db_conn_list.setFont(qtg.QFont("Roboto", 10))
 
-        self.password_label = qtw.QLabel("Enter database password: ")
+        self.password_label = qtw.QLabel("Database password: ")
         self.password_label.setObjectName(FORM_LABEL_NAME)
         self.db_password_input = qtw.QLineEdit()
         self.db_password_input.setEchoMode(qtw.QLineEdit.Password)
 
-        self.db_connect_btn = qtw.QPushButton(text='Connect')
+        self.db_connect_btn = self._produce_button(button_label='Connect', button_name=ACTION_BUTTON_NAME)
 
         conn_list_layout = qtw.QHBoxLayout()
         conn_list_layout.addWidget(self.list_label, stretch = 0, alignment= qtc.Qt.AlignLeft)
@@ -36,7 +44,7 @@ class DBConnectionConfigView(URLoggerBaseView):
         main_layout = qtw.QVBoxLayout()
         main_layout.addLayout(conn_list_layout)
         main_layout.addLayout(password_layout)
-        main_layout.addWidget(self.db_connect_btn)
+        main_layout.addWidget(self.db_connect_btn, stretch = 0, alignment = qtc.Qt.AlignLeft)
         main_layout.addStretch()
 
         self.setLayout(main_layout)

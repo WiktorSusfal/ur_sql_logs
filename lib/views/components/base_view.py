@@ -36,17 +36,21 @@ class URLoggerBaseView(ABC, qtw.QWidget,  metaclass=URLoggerBaseViewMeta):
         self._bind_buttons_to_commands()
         self._init_actions()
 
-    def _produce_icon_button(self, icon_rel_path: str, button_name: str = None, icon_size: int = None) -> qtw.QPushButton:
-        icon = qtg.QIcon(ResourcesManager.get_icon_abs_path(icon_rel_path))
+    def _produce_button(self, icon_rel_path: str = None, icon_size: int = None, button_name: str = None, button_label: str = None) -> qtw.QPushButton:
         button = qtw.QPushButton()
         button.setCursor(qtc.Qt.PointingHandCursor)
-        button.setIcon(icon)
+
+        if icon_rel_path:
+            icon = qtg.QIcon(ResourcesManager.get_icon_abs_path(icon_rel_path))
+            button.setIcon(icon)
+            if icon_size:
+                button.setIconSize(qtc.QSize(icon_size, icon_size))
 
         if button_name:
             button.setObjectName(button_name)
-        
-        if icon_size:
-            button.setIconSize(qtc.QSize(icon_size, icon_size))
+
+        if button_label:
+            button.setText(button_label)
 
         return button
     

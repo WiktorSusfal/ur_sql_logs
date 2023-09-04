@@ -1,4 +1,5 @@
 import PyQt5.QtWidgets as qtw
+import PyQt5.QtCore as qtc
 
 from lib.helpers.gui_tem_names import *
 from lib.views.components.base_view import URLoggerBaseView
@@ -32,15 +33,26 @@ class URItemDetails(URLoggerBaseView):
             self._produce_named_label("Read Frequency: ", FORM_LABEL_NAME)
             ,self._refresh_freq_input)
         
-        self._robot_icon_label = self._produce_icon_label(r'robot/industrial-robot256.png', 256, 256)
+        self._robot_icon_label = self._produce_icon_label(r'robot/industrial-robot256.png', 200, 200)
         self._recent_messages_table = qtw.QTableView()
+
+        self._connect_button = self._produce_button(button_label='Connect'
+                                                    , button_name=ACTION_BUTTON_NAME)
+        self._disconnect_button = self._produce_button(button_label='Disconnect'
+                                                    , button_name=ACTION_BUTTON_NAME)
 
         details_layout = qtw.QHBoxLayout()
         details_layout.addLayout(main_form)
         details_layout.addWidget(self._robot_icon_label, stretch = 0)
 
+        buttons_layout = qtw.QHBoxLayout()
+        buttons_layout.addWidget(self._connect_button, stretch = 0, alignment = qtc.Qt.AlignLeft)
+        buttons_layout.addWidget(self._disconnect_button, stretch = 0, alignment = qtc.Qt.AlignLeft)
+        buttons_layout.addStretch()
+
         main_layout = qtw.QVBoxLayout()
         main_layout.addLayout(details_layout)
+        main_layout.addLayout(buttons_layout)
         main_layout.addWidget(self._recent_messages_table)
 
         self.setLayout(main_layout)

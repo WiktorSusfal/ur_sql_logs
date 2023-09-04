@@ -15,12 +15,11 @@ class MainToolbarView(URLoggerBaseView):
 
         self._model = model
        
-        self._home_btn = self._produce_icon_button(r'home/home128.png', TOOLBAR_BUTTON_NAME, 50)
-        self._settings_btn = self._produce_icon_button(r'gears2/settings_64.png', TOOLBAR_BUTTON_NAME, 50)
-        self._help_btn = self._produce_icon_button(r'help/question64.png', TOOLBAR_BUTTON_NAME, 50)
+        self._home_btn = self._produce_button(r'home/home128.png', 30, TOOLBAR_BUTTON_NAME)
+        self._settings_btn = self._produce_button(r'gears2/settings_64.png', 30, TOOLBAR_BUTTON_NAME)
+        self._help_btn = self._produce_button(r'help/question64.png', 30, TOOLBAR_BUTTON_NAME)
 
         self._main_layout = qtw.QHBoxLayout()
-        self._main_layout.setObjectName('my')
         self._main_layout.addWidget(self._home_btn, stretch = 0)
         self._main_layout.addWidget(self._settings_btn, stretch = 0)
         self._main_layout.addWidget(self._help_btn, stretch = 0, alignment = qtc.Qt.AlignRight)

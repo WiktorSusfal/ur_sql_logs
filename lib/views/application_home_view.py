@@ -35,6 +35,8 @@ class URHomeView(URLoggerBaseView):
         self._main_layout.setColumnStretch(0, 0)
         self._main_layout.setColumnStretch(1, 1)
         self._main_layout.setColumnMinimumWidth(0, 270)
+        self._main_layout.setColumnStretch(0, 0)
+
 
 if __name__ == '__main__':
     from lib.helpers.visual_view_test_template import visual_test_preview

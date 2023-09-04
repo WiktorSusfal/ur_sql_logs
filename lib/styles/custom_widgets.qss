@@ -1,0 +1,45 @@
+QStackedWidget {
+    background-color: transparent;
+}
+
+QListWidget {
+    background: #2f3b52;
+    border: None;
+    height: 400px;
+    min-height: 400px;
+}
+
+ QListWidget::item {
+    color: white; 
+    font-size: 14px; 
+    font-weight: bold; 
+    text-align: center; 
+}
+
+QWidget#CUSTOM_VIEW_WIDGET {   
+    background-color: transparent;
+}
+
+QWidget#MAIN_TOOLBAR_VIEW_WIDGET {   
+    background-color: transparent;
+}
+
+QWidget#DB_CONNECTION_VIEW {   
+    background-color: #2f3b52;
+}
+
+QWidget#APPLICATION_HOME_VIEW {   
+    background-color: transparent;
+}
+
+QWidget#UR_SELECTION_LIST_VIEW {   
+    background-color: #2f3b52;
+}
+
+QWidget#UR_ITEM_DETAILS {   
+    background-color: #2f3b52;
+}
+
+QWidget#UR_LIST_ITEM {   
+    background-color: transparent;
+}

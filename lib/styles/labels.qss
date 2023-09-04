@@ -1,11 +1,20 @@
 QLabel {
-  
+    color: white;
+    font-family: Roboto; 
+    font-size: 15px;
+    font-weight: regular;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 QLabel#FORM_LABEL {
-   
+   min-width: 150px;
 }
 
 QLabel#LIST_ITEM_DETAIL_LABEL {
    
+}
+
+QLabel#HINT_LABEL {
+    font-style: italic;
 }
