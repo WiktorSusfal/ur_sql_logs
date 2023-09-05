@@ -7,23 +7,11 @@ QScrollArea {
 }
 
 QScrollArea#TOOLBAR_SCROLL_AREA{
-    min-height: 60px;
+    height: 65px;
+    max-height: 65px;
+    min-height: 65px;
 }
 
 QScrollArea#CONTENT_SCROLL_AREA{
     min-height: 200px;
-}
-
-QScrollBar{
-    background: transparent;
-    height: 7px;
-}
-
-QScrollBar::handle{
-    background: #303030;
-    border-radius: 3px;
-}
-
-QScrollBar::handle::pressed{
-    background: black;
 }

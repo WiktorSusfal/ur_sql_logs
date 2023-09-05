@@ -1,4 +1,5 @@
 import PyQt5.QtWidgets as qtw
+import PyQt5.QtCore as qtc
 
 from lib.views.db_connection_config_view import DBConnectionConfigView, DBConnectionConfig
 from lib.views.application_home_view import URHomeView
@@ -11,20 +12,20 @@ from lib.helpers.gui_tem_names import *
 
 class MainContentView(URLoggerBaseView):
 
-    def __init__(self, model: URMainViewModel):
-        super(MainContentView, self).__init__()
+    def __init__(self, model: URMainViewModel, parent=None):
+        super(MainContentView, self).__init__(parent=parent)
         self.setObjectName(CUSTOM_VIEW_WIDGET_NAME)
         self._model = model
 
-        self._home_widget = URHomeView()
-        self._connection_config = DBConnectionConfigView(DBConnectionConfig())
+        self._home_widget = URHomeView(parent=self)
+        self._connection_config = DBConnectionConfigView(DBConnectionConfig(), parent=self)
 
         self._widget_manager = qtw.QStackedWidget()
         self._widget_manager.addWidget(self._home_widget)
         self._widget_manager.addWidget(self._connection_config)
         
         main_layout = qtw.QVBoxLayout()
-        main_layout.addWidget(self._widget_manager)
+        main_layout.addWidget(self._widget_manager, stretch=1)
         self.setLayout(main_layout)
 
         self._setup()

@@ -6,18 +6,14 @@ from lib.views.components.base_view import URLoggerBaseView
 
 class URItemDetails(URLoggerBaseView):
 
-    def __init__(self):
-        super(URItemDetails, self).__init__()
+    def __init__(self, parent=None):
+        super(URItemDetails, self).__init__(parent=parent)
         self.setObjectName(UR_ITEM_DETAILS_VIEW_NAME)
         
-        self._robot_name_input = qtw.QLineEdit()
-        self._robot_name_input.setObjectName(FORM_INPUT_NAME)
-        self._ip_address_input = qtw.QLineEdit()
-        self._ip_address_input.setObjectName(FORM_INPUT_NAME)
-        self._port_number_input = qtw.QLineEdit()
-        self._port_number_input.setObjectName(FORM_INPUT_NAME)
-        self._refresh_freq_input = qtw.QLineEdit()
-        self._refresh_freq_input.setObjectName(FORM_INPUT_NAME)
+        self._robot_name_input = self._produce_line_edit(FORM_INPUT_NAME)
+        self._ip_address_input = self._produce_line_edit(FORM_INPUT_NAME)
+        self._port_number_input = self._produce_line_edit(FORM_INPUT_NAME)
+        self._refresh_freq_input = self._produce_line_edit(FORM_INPUT_NAME)
         
         main_form = qtw.QFormLayout()
         main_form.addRow(
@@ -36,19 +32,25 @@ class URItemDetails(URLoggerBaseView):
         self._robot_icon_label = self._produce_icon_label(r'robot/industrial-robot256.png', 200, 200)
         self._recent_messages_table = qtw.QTableView()
 
+        self._save_button = self._produce_button(icon_rel_path=r'save/save24.png', icon_size=20
+                                                 , button_name=ACTION_BUTTON_NAME)
+        self._refresh_button = self._produce_button(icon_rel_path=r'refresh/refresh24.png', icon_size=20
+                                                    , button_name=ACTION_BUTTON_NAME)
         self._connect_button = self._produce_button(button_label='Connect'
                                                     , button_name=ACTION_BUTTON_NAME)
         self._disconnect_button = self._produce_button(button_label='Disconnect'
-                                                    , button_name=ACTION_BUTTON_NAME)
+                                                       , button_name=ACTION_BUTTON_NAME)
 
         details_layout = qtw.QHBoxLayout()
         details_layout.addLayout(main_form)
         details_layout.addWidget(self._robot_icon_label, stretch = 0)
 
         buttons_layout = qtw.QHBoxLayout()
-        buttons_layout.addWidget(self._connect_button, stretch = 0, alignment = qtc.Qt.AlignLeft)
-        buttons_layout.addWidget(self._disconnect_button, stretch = 0, alignment = qtc.Qt.AlignLeft)
+        buttons_layout.addWidget(self._save_button, stretch = 0)
+        buttons_layout.addWidget(self._refresh_button, stretch = 0)
         buttons_layout.addStretch()
+        buttons_layout.addWidget(self._connect_button, stretch = 0, alignment = qtc.Qt.AlignRight)
+        buttons_layout.addWidget(self._disconnect_button, stretch = 0, alignment = qtc.Qt.AlignRight)
 
         main_layout = qtw.QVBoxLayout()
         main_layout.addLayout(details_layout)

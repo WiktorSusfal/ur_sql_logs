@@ -9,10 +9,10 @@ from lib.helpers.gui_tem_names import *
 
 class URSelectionList(URLoggerBaseView):
 
-    def __init__(self):
-        super(URSelectionList, self).__init__()
+    def __init__(self, parent=None):
+        super(URSelectionList, self).__init__(parent=parent)
         self.setObjectName(UR_SELECTION_LIST_VIEW_NAME)
-
+        
         self._selection_list = URListWidget()
         self._add_button = self._produce_button(button_label="+", button_name=LIST_ACTION_BUTTON_NAME)
         self._remove_button = self._produce_button(button_label="-", button_name=LIST_ACTION_BUTTON_NAME)
@@ -24,7 +24,6 @@ class URSelectionList(URLoggerBaseView):
         main_layout = qtw.QVBoxLayout()
         main_layout.addWidget(self._selection_list, stretch=0)
         main_layout.addLayout(button_layout)
-        main_layout.addStretch()
         self.setLayout(main_layout)
 
         self._setup()

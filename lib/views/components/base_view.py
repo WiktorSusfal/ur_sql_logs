@@ -13,8 +13,8 @@ class URLoggerBaseViewMeta(ABCMeta, type(qtw.QWidget)):
 
 class URLoggerBaseView(ABC, qtw.QWidget,  metaclass=URLoggerBaseViewMeta):
 
-    def __init__(self):
-        qtw.QWidget.__init__(self)
+    def __init__(self, parent=None):
+        qtw.QWidget.__init__(self, parent=parent)
         ABC.__init__(self)
         self.setObjectName(CUSTOM_VIEW_WIDGET_NAME)
         self.setAttribute(qtc.Qt.WA_StyledBackground)
@@ -68,3 +68,8 @@ class URLoggerBaseView(ABC, qtw.QWidget,  metaclass=URLoggerBaseViewMeta):
         label = qtw.QLabel(content)
         label.setObjectName(name)
         return label
+    
+    def _produce_line_edit(self, name: str) -> qtw.QLineEdit:
+        line_edit = qtw.QLineEdit()
+        line_edit.setObjectName(name)
+        return line_edit

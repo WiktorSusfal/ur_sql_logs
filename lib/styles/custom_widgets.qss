@@ -5,15 +5,7 @@ QStackedWidget {
 QListWidget {
     background: #2f3b52;
     border: None;
-    height: 400px;
     min-height: 400px;
-}
-
- QListWidget::item {
-    color: white; 
-    font-size: 14px; 
-    font-weight: bold; 
-    text-align: center; 
 }
 
 QWidget#CUSTOM_VIEW_WIDGET {   

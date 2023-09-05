@@ -17,6 +17,6 @@ class URLoggerMainWindow(qtw.QMainWindow):
         self.setWindowTitle('UR SQL Logger')
         self.setGeometry(INIT_POS_X, INIT_POS_Y, INIT_SIZE_X, INIT_SIZE_Y)
 
-        self.setCentralWidget(URLoggerMainView())
+        self.setCentralWidget(URLoggerMainView(parent=self))
 
         self.show()

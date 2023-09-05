@@ -6,6 +6,7 @@
         "onoff",
         "pixmap",
         "pyqt",
+        "Roboto",
         "sbar"
     ]
 }

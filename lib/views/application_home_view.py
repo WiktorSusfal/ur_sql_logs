@@ -8,15 +8,15 @@ from lib.helpers.gui_tem_names import *
 
 class URHomeView(URLoggerBaseView):
 
-    def __init__(self):
-        super(URHomeView, self).__init__()
+    def __init__(self, parent=None):
+        super(URHomeView, self).__init__(parent=parent)
         self.setObjectName(APPLICATION_HOME_VIEW_NAME)
 
         self._main_layout = qtw.QGridLayout()
         self.setLayout(self._main_layout)
 
-        self._main_layout.addWidget(URSelectionList(), 0, 0)
-        self._main_layout.addWidget(URItemDetails(), 0, 1)
+        self._main_layout.addWidget(URSelectionList(parent=self), 0, 0)
+        self._main_layout.addWidget(URItemDetails(parent=self), 0, 1)
         self._style_grid_layout()
 
         self._setup()
@@ -35,8 +35,6 @@ class URHomeView(URLoggerBaseView):
         self._main_layout.setColumnStretch(0, 0)
         self._main_layout.setColumnStretch(1, 1)
         self._main_layout.setColumnMinimumWidth(0, 270)
-        self._main_layout.setColumnStretch(0, 0)
-
 
 if __name__ == '__main__':
     from lib.helpers.visual_view_test_template import visual_test_preview

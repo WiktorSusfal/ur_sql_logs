@@ -8,25 +8,23 @@ QPushButton {
 }
 
 QPushButton#TOOLBAR_BUTTON {
-    width: 50px;
-    height: 50px;
-    min-width: 50px;
-    max-width: 50px;
+    width: 55px;
+    height: 55px;
+    min-width: 55px;
+    max-width: 55px;
 }
 
-QPushButton#ACTION_BUTTON {
+QPushButton#ACTION_BUTTON,
+QPushButton#LIST_ACTION_BUTTON  {
     background: #2c698d;
     width: 135px;
-    height: 40px;
-    margin: 5px;
+    height: 30px;
+    min-width: 135px;
+    max-width: 135px;
 }
 
 QPushButton#LIST_ACTION_BUTTON {
-    background: #2c698d;
-    width: 120px;
-    height: 30px;
     font-size: 25px;
-    font-weight: bold;
 }
 
 QPushButton:hover {

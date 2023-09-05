@@ -9,15 +9,15 @@ from lib.helpers.gui_tem_names import *
 
 class MainToolbarView(URLoggerBaseView):
 
-    def __init__(self, model: URMainViewModel):
-        super(MainToolbarView, self).__init__()
+    def __init__(self, model: URMainViewModel, parent=None):
+        super(MainToolbarView, self).__init__(parent)
         self.setObjectName(MAIN_TOOLBAR_VIEW_WIDGET_NAME)
 
         self._model = model
        
-        self._home_btn = self._produce_button(r'home/home128.png', 30, TOOLBAR_BUTTON_NAME)
-        self._settings_btn = self._produce_button(r'gears2/settings_64.png', 30, TOOLBAR_BUTTON_NAME)
-        self._help_btn = self._produce_button(r'help/question64.png', 30, TOOLBAR_BUTTON_NAME)
+        self._home_btn = self._produce_button(r'home/home128.png', 35, TOOLBAR_BUTTON_NAME)
+        self._settings_btn = self._produce_button(r'gears2/settings_64.png', 35, TOOLBAR_BUTTON_NAME)
+        self._help_btn = self._produce_button(r'help/question64.png', 35, TOOLBAR_BUTTON_NAME)
 
         self._main_layout = qtw.QHBoxLayout()
         self._main_layout.addWidget(self._home_btn, stretch = 0)

@@ -15,38 +15,44 @@ class CustomItemDelegate(qtw.QStyledItemDelegate):
 
 class DBConnectionConfigView(URLoggerBaseView):
 
-    def __init__(self, model: DBConnectionConfig):
-        super(DBConnectionConfigView, self).__init__()
+    def __init__(self, model: DBConnectionConfig, parent=None):
+        super(DBConnectionConfigView, self).__init__(parent=parent)
         self.setObjectName(DB_CONNECTION_VIEW_NAME)
         self._model = model
 
-        self.list_label = qtw.QLabel("Database connection: ")
-        self.list_label.setObjectName(FORM_LABEL_NAME)
-        self.db_conn_list = qtw.QComboBox()
-        self.db_conn_list.setItemDelegate(CustomItemDelegate())
-        self.db_conn_list.setFont(qtg.QFont("Roboto", 10))
+        self._list_label = qtw.QLabel("Database connection: ")
+        self._list_label.setObjectName(FORM_LABEL_NAME)
+        self._db_conn_list = qtw.QComboBox()
+        self._db_conn_list.setItemDelegate(CustomItemDelegate())
+        self._db_conn_list.setFont(qtg.QFont("Roboto", 10))
 
-        self.password_label = qtw.QLabel("Database password: ")
-        self.password_label.setObjectName(FORM_LABEL_NAME)
-        self.db_password_input = qtw.QLineEdit()
-        self.db_password_input.setEchoMode(qtw.QLineEdit.Password)
+        self._password_label = qtw.QLabel("Database password: ")
+        self._password_label.setObjectName(FORM_LABEL_NAME)
+        self._db_password_input = qtw.QLineEdit()
+        self._db_password_input.setEchoMode(qtw.QLineEdit.Password)
 
-        self.db_connect_btn = self._produce_button(button_label='Connect', button_name=ACTION_BUTTON_NAME)
+        self._db_connect_btn = self._produce_button(button_label='Connect', button_name=ACTION_BUTTON_NAME)
+        self._db_disconnect_btn = self._produce_button(button_label='Disconnect', button_name=ACTION_BUTTON_NAME)
 
         conn_list_layout = qtw.QHBoxLayout()
-        conn_list_layout.addWidget(self.list_label, stretch = 0, alignment= qtc.Qt.AlignLeft)
-        conn_list_layout.addWidget(self.db_conn_list, stretch = 1, alignment = qtc.Qt.AlignLeft)
+        conn_list_layout.addWidget(self._list_label, stretch = 0, alignment= qtc.Qt.AlignLeft)
+        conn_list_layout.addWidget(self._db_conn_list, stretch = 1, alignment = qtc.Qt.AlignLeft)
 
         password_layout = qtw.QHBoxLayout()
-        password_layout.addWidget(self.password_label, stretch = 0, alignment= qtc.Qt.AlignLeft)
-        password_layout.addWidget(self.db_password_input)
+        password_layout.addWidget(self._password_label, stretch = 0, alignment= qtc.Qt.AlignLeft)
+        password_layout.addWidget(self._db_password_input, stretch = 1, alignment= qtc.Qt.AlignLeft)
+
+        button_layout = qtw.QHBoxLayout()
+        button_layout.addWidget(self._db_connect_btn, stretch=0, alignment=qtc.Qt.AlignLeft)
+        button_layout.addWidget(self._db_disconnect_btn, stretch=0, alignment=qtc.Qt.AlignLeft)
+        button_layout.addStretch()
 
         main_layout = qtw.QVBoxLayout()
-        main_layout.addLayout(conn_list_layout)
-        main_layout.addLayout(password_layout)
-        main_layout.addWidget(self.db_connect_btn, stretch = 0, alignment = qtc.Qt.AlignLeft)
+        main_layout.addLayout(conn_list_layout, stretch=0)
+        main_layout.addLayout(password_layout, stretch=0)
+        main_layout.addLayout(button_layout, stretch=0)
         main_layout.addStretch()
-
+        
         self.setLayout(main_layout)
 
         self._setup()
@@ -63,7 +69,7 @@ class DBConnectionConfigView(URLoggerBaseView):
 
     def _db_connection_names_changed(self):
         names = self._model.db_connection_names
-        self.db_conn_list.addItems(names)
+        self._db_conn_list.addItems(names)
 
 
 if __name__ == '__main__':
