@@ -62,4 +62,4 @@ class URListItem(URLoggerBaseView):
 
 if __name__ == '__main__':
     from lib.helpers.visual_view_test_template import visual_test_preview
-    visual_test_preview(URListItem("Test item"))
+    visual_test_preview(URListItem('1', "Test item"))

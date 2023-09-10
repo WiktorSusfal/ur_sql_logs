@@ -6,17 +6,19 @@ from lib.views.ur_item_details import URItemDetails
 from lib.views.components.base_view import URLoggerBaseView
 from lib.helpers.gui_tem_names import *
 
+from lib.view_models.application_home import ApplicationHome
+
 class URHomeView(URLoggerBaseView):
 
-    def __init__(self, parent=None):
+    def __init__(self, model: ApplicationHome,  parent=None):
         super(URHomeView, self).__init__(parent=parent)
         self.setObjectName(APPLICATION_HOME_VIEW_NAME)
 
         self._main_layout = qtw.QGridLayout()
         self.setLayout(self._main_layout)
 
-        self._main_layout.addWidget(URSelectionList(parent=self), 0, 0)
-        self._main_layout.addWidget(URItemDetails(parent=self), 0, 1)
+        self._main_layout.addWidget(URSelectionList(model, parent=self), 0, 0)
+        self._main_layout.addWidget(URItemDetails(model, parent=self), 0, 1)
         self._style_grid_layout()
 
         self._setup()

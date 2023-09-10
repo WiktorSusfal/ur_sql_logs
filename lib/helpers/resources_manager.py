@@ -2,7 +2,7 @@ import os
 
 CURRENT_SCRIPT_PATH = os.path.realpath(os.path.dirname(__file__))
 
-STYLES_REL_PATH = r'../styles'
+STYLES_REL_PATH = r'../../resources/styles'
 STYLES_CONFIG_PATH = os.path.normpath(os.path.join(CURRENT_SCRIPT_PATH, STYLES_REL_PATH))
 STYLE_FILE_EXTENSION = '.qss'
 

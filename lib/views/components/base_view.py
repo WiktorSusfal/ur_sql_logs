@@ -3,7 +3,7 @@ import PyQt5.QtGui as qtg
 import PyQt5.QtCore as qtc
 from abc import ABC, abstractmethod, ABCMeta
 
-from lib.helpers.styles_code_manager import ResourcesManager
+from lib.helpers.resources_manager import ResourcesManager
 from lib.helpers.gui_tem_names import *
 
 

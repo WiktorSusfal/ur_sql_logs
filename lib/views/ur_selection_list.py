@@ -6,12 +6,15 @@ from lib.views.ur_list_item import URListItem
 from lib.views.components.base_view import URLoggerBaseView
 from lib.helpers.gui_tem_names import *
 
+from lib.view_models.application_home import ApplicationHome
+
 
 class URSelectionList(URLoggerBaseView):
 
-    def __init__(self, parent=None):
+    def __init__(self, model: ApplicationHome, parent=None):
         super(URSelectionList, self).__init__(parent=parent)
         self.setObjectName(UR_SELECTION_LIST_VIEW_NAME)
+        self._model = model
         
         self._selection_list = URListWidget()
         self._add_button = self._produce_button(button_label="+", button_name=LIST_ACTION_BUTTON_NAME)

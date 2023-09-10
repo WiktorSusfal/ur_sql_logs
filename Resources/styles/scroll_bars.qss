@@ -1,7 +1,14 @@
-QScrollBar{
+QScrollBar:horizontal{
     background-color: #2c698d;
     height: 9px;
     margin-top: 2px;
+    padding: 0px;
+}
+
+QScrollBar:vertical{
+    background-color: #2c698d;
+    width: 9px;
+    margin-left: 2px;
     padding: 0px;
 }
 

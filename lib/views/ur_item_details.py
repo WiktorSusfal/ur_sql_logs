@@ -4,11 +4,14 @@ import PyQt5.QtCore as qtc
 from lib.helpers.gui_tem_names import *
 from lib.views.components.base_view import URLoggerBaseView
 
+from lib.view_models.application_home import ApplicationHome
+
 class URItemDetails(URLoggerBaseView):
 
-    def __init__(self, parent=None):
+    def __init__(self, model: ApplicationHome, parent=None):
         super(URItemDetails, self).__init__(parent=parent)
         self.setObjectName(UR_ITEM_DETAILS_VIEW_NAME)
+        self._model = model
         
         self._robot_name_input = self._produce_line_edit(FORM_INPUT_NAME)
         self._ip_address_input = self._produce_line_edit(FORM_INPUT_NAME)
