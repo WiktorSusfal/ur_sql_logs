@@ -1,18 +1,19 @@
 import PyQt5.QtWidgets as qtw
 import PyQt5.QtCore as qtc
 
-from lib.view_models.vm_1_main import VMMain
-
 from lib.views.components.base_view import BaseView
-from lib.helpers.gui_tem_names import *
 
-class VMainToolbar(BaseView):
+from lib.helpers.hp_view_models_manager import HpViewModelsManager
+from lib.helpers.hp_gui_tem_names import *
 
-    def __init__(self, model: VMMain, parent=None):
-        super(VMainToolbar, self).__init__(parent)
+
+class VwMainToolbar(BaseView):
+
+    def __init__(self, parent=None):
+        super(VwMainToolbar, self).__init__(parent)
         self.setObjectName(MAIN_TOOLBAR_VIEW_WIDGET_NAME)
 
-        self._model = model
+        self._model = HpViewModelsManager.main_view_model
        
         self._home_btn = self._produce_button(r'home/home128.png', 35, TOOLBAR_BUTTON_NAME)
         self._settings_btn = self._produce_button(r'gears2/settings_64.png', 35, TOOLBAR_BUTTON_NAME)
@@ -41,6 +42,5 @@ class VMainToolbar(BaseView):
     
 
 if __name__ == '__main__':
-    from lib.helpers.visual_view_test_template import visual_test_preview
-    model = VMMain()
-    visual_test_preview(VMainToolbar(model))
+    from lib.helpers.hp_visual_view_test_template import visual_test_preview
+    visual_test_preview(VwMainToolbar())

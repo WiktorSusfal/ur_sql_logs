@@ -3,15 +3,15 @@ import PyQt5.QtGui as qtg
 import PyQt5.QtCore as qtc
 from abc import ABC, abstractmethod, ABCMeta
 
-from lib.helpers.resources_manager import ResourcesManager
-from lib.helpers.gui_tem_names import *
+from lib.helpers.hp_resources_manager import HpResourcesManager
+from lib.helpers.hp_gui_tem_names import *
 
 
-class BaseViewMeta(ABCMeta, type(qtw.QWidget)):
+class _BaseViewMeta(ABCMeta, type(qtw.QWidget)):
     pass
 
 
-class BaseView(ABC, qtw.QWidget,  metaclass=BaseViewMeta):
+class BaseView(ABC, qtw.QWidget,  metaclass=_BaseViewMeta):
 
     def __init__(self, parent=None):
         qtw.QWidget.__init__(self, parent=parent)
@@ -41,7 +41,7 @@ class BaseView(ABC, qtw.QWidget,  metaclass=BaseViewMeta):
         button.setCursor(qtc.Qt.PointingHandCursor)
 
         if icon_rel_path:
-            icon = qtg.QIcon(ResourcesManager.get_icon_abs_path(icon_rel_path))
+            icon = qtg.QIcon(HpResourcesManager.get_icon_abs_path(icon_rel_path))
             button.setIcon(icon)
             if icon_size:
                 button.setIconSize(qtc.QSize(icon_size, icon_size))
@@ -55,7 +55,7 @@ class BaseView(ABC, qtw.QWidget,  metaclass=BaseViewMeta):
         return button
     
     def _produce_icon_label(self, icon_rel_path: str, size_x: int, size_y: int, label_name: str = None) -> qtw.QLabel:
-        icon = qtg.QIcon(ResourcesManager.get_icon_abs_path(icon_rel_path))
+        icon = qtg.QIcon(HpResourcesManager.get_icon_abs_path(icon_rel_path))
         icon_label = qtw.QLabel()
         icon_label.setPixmap(icon.pixmap(size_x, size_y))
 

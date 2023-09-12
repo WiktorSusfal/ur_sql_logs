@@ -1,25 +1,24 @@
 import PyQt5.QtWidgets as qtw
 import sys as sys
-import pathlib as pth
 
-from lib.helpers.resources_manager import ResourcesManager
+from lib.helpers.hp_resources_manager import HpResourcesManager
 
 _test_view_app = qtw.QApplication(sys.argv)
-_test_view_app.setStyleSheet(ResourcesManager.get_styles_code())
+_test_view_app.setStyleSheet(HpResourcesManager.get_styles_code())
 
 def visual_test_preview(target_widget: qtw.QWidget):
     
-    class VisualTestWidget(qtw.QMainWindow):
+    class HpVisualTestWidget(qtw.QMainWindow):
 
         def __init__(self, target_widget: qtw.QWidget):
-            super(VisualTestWidget, self).__init__()
+            super(HpVisualTestWidget, self).__init__()
             
             self.setWindowTitle("Visual Test View")
             self.setCentralWidget(target_widget)
 
             self.show()
 
-    app_main_gui = VisualTestWidget(target_widget)
+    app_main_gui = HpVisualTestWidget(target_widget)
     sys.exit(_test_view_app.exec_())
 
 

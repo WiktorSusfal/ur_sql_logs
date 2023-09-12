@@ -1,21 +1,20 @@
 import PyQt5.QtWidgets as qtw
 import PyQt5.QtCore as qtc
 
-from lib.views.components.list_widget import URListWidget
-from lib.views.v_6_list_item import VListItem
 from lib.views.components.base_view import BaseView
-from lib.helpers.gui_tem_names import *
+from lib.views.components.list_widget import URListWidget
+from lib.views.vw_6_list_item import VwListItem
 
-from lib.view_models.vm_2b_app_home import VMAppHome
-from lib.view_models.vm_3_ur_connection import VMURConnection
+from lib.helpers.hp_view_models_manager import HpViewModelsManager, VmRobotConnection
+from lib.helpers.hp_gui_tem_names import *
 
 
-class VSelectionList(BaseView):
+class VwSelectionList(BaseView):
 
-    def __init__(self, model: VMAppHome, parent=None):
-        super(VSelectionList, self).__init__(parent=parent)
+    def __init__(self, parent=None):
+        super(VwSelectionList, self).__init__(parent=parent)
         self.setObjectName(UR_SELECTION_LIST_VIEW_NAME)
-        self._model = model
+        self._model = HpViewModelsManager.app_home_view_model
         
         self._selection_list = URListWidget()
         self._add_button = self._produce_button(button_label="+", button_name=LIST_ACTION_BUTTON_NAME)
@@ -42,8 +41,8 @@ class VSelectionList(BaseView):
     def _init_actions(self):
         pass
 
-    def add_item(self, connection_item: VMURConnection):
-        item_widget = VListItem(connection_item)
+    def add_item(self, connection_item: VmRobotConnection):
+        item_widget = VwListItem(connection_item)
 
         list_item = qtw.QListWidgetItem(self._selection_list)
         list_item.setSizeHint(item_widget.sizeHint())
@@ -52,5 +51,5 @@ class VSelectionList(BaseView):
 
 
 if __name__ == '__main__':
-    from lib.helpers.visual_view_test_template import visual_test_preview
-    visual_test_preview(VSelectionList())
+    from lib.helpers.hp_visual_view_test_template import visual_test_preview
+    visual_test_preview(VwSelectionList())

@@ -1,18 +1,19 @@
 import PyQt5.QtWidgets as qtw
 import PyQt5.QtCore as qtc
 
-from lib.helpers.gui_tem_names import *
-from lib.views.components.qline_edit import URQLineEdit
 from lib.views.components.base_view import BaseView
+from lib.views.components.qline_edit import URQLineEdit
 
-from lib.view_models.vm_3_ur_connection import VMURConnection
+from lib.helpers.hp_view_models_manager import HpViewModelsManager
+from lib.helpers.hp_gui_tem_names import *
 
-class VItemDetails(BaseView):
 
-    def __init__(self, model: VMURConnection, parent=None):
-        super(VItemDetails, self).__init__(parent=parent)
+class VwItemDetails(BaseView):
+
+    def __init__(self, parent=None):
+        super(VwItemDetails, self).__init__(parent=parent)
         self.setObjectName(UR_ITEM_DETAILS_VIEW_NAME)
-        self._model = model
+        self._model = HpViewModelsManager.robot_details_view_model
         
         self._robot_name_input = self._produce_line_edit(FORM_INPUT_NAME)
         self._ip_address_input = URQLineEdit(FORM_INPUT_NAME, "000  .  000  .  000  .  000; ", '.')
@@ -82,5 +83,5 @@ class VItemDetails(BaseView):
             
 
 if __name__ == '__main__':
-    from lib.helpers.visual_view_test_template import visual_test_preview
-    visual_test_preview(VItemDetails())
+    from lib.helpers.hp_visual_view_test_template import visual_test_preview
+    visual_test_preview(VwItemDetails())

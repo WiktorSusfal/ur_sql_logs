@@ -1,14 +1,14 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from lib.helpers.connection_config_data import ConnectionConfigData
+from lib.helpers.hp_connection_config_data import HpConnectionConfigData
 
 
-class VMDBConnectionConfig(QObject):
+class VmDBConnectionConfig(QObject):
 
     db_names_changed = pyqtSignal()
 
     def __init__(self):
-        super(VMDBConnectionConfig, self).__init__()
+        super(VmDBConnectionConfig, self).__init__()
         self._db_connection_names: list[str] = list()
         self._db_password = str()
 
@@ -22,7 +22,7 @@ class VMDBConnectionConfig(QObject):
         self.db_names_changed.emit()
 
     def get_connection_names(self):
-        self.db_connection_names = ConnectionConfigData.get_db_connection_names()
+        self.db_connection_names = HpConnectionConfigData.get_db_connection_names()
 
     def connect_to_database(self):
         pass

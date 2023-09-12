@@ -2,28 +2,28 @@ import PyQt5.QtWidgets as qtw
 import PyQt5.QtCore as qtc
 import PyQt5.QtGui as qtg
 
-from lib.view_models.vm_2a_db_connection_config import VMDBConnectionConfig
-
-from lib.helpers.gui_tem_names import *
 from lib.views.components.base_view import BaseView
 
+from lib.helpers.hp_view_models_manager import HpViewModelsManager
+from lib.helpers.hp_gui_tem_names import *
 
-class CustomItemDelegate(qtw.QStyledItemDelegate):
+
+class _CustomItemDelegate(qtw.QStyledItemDelegate):
     def sizeHint(self, option, index):
         return qtc.QSize(option.rect.height(), 30)
 
 
-class VDBConnectionConfig(BaseView):
+class VwDBConnectionConfig(BaseView):
 
-    def __init__(self, model: VMDBConnectionConfig, parent=None):
-        super(VDBConnectionConfig, self).__init__(parent=parent)
+    def __init__(self, parent=None):
+        super(VwDBConnectionConfig, self).__init__(parent=parent)
         self.setObjectName(DB_CONNECTION_VIEW_NAME)
-        self._model = model
+        self._model = HpViewModelsManager.db_config_view_model
 
         self._list_label = qtw.QLabel("Database connection: ")
         self._list_label.setObjectName(FORM_LABEL_NAME)
         self._db_conn_list = qtw.QComboBox()
-        self._db_conn_list.setItemDelegate(CustomItemDelegate())
+        self._db_conn_list.setItemDelegate(_CustomItemDelegate())
         self._db_conn_list.setFont(qtg.QFont("Roboto", 10))
 
         self._password_label = qtw.QLabel("Database password: ")
@@ -73,6 +73,5 @@ class VDBConnectionConfig(BaseView):
 
 
 if __name__ == '__main__':
-    from lib.helpers.visual_view_test_template import visual_test_preview
-    conn_config_model = VMDBConnectionConfig()
-    visual_test_preview(VDBConnectionConfig(conn_config_model))
+    from lib.helpers.hp_visual_view_test_template import visual_test_preview
+    visual_test_preview(VwDBConnectionConfig())

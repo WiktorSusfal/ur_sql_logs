@@ -7,7 +7,8 @@ SCRIPT_PATH = os.path.realpath(os.path.dirname(__file__))
 CONFIG_REL_PATH = r'../../config'
 CONFIG_PATH = os.path.normpath(os.path.join(SCRIPT_PATH, CONFIG_REL_PATH, CONN_CONFIG_FILENAME))
 
-class ConnectionConfigData:
+
+class HpConnectionConfigData:
 
     _configs_cached: list[dict] = list()
 
@@ -56,8 +57,7 @@ class ConnectionConfigData:
             
         raise Exception(f'Connection {connection_name} not present in connections config file')
         
-    
 
 if __name__ == '__main__':
-    print(ConnectionConfigData.get_db_connection_names())
-    print(ConnectionConfigData.get_db_connection_string('postgres_dev', 'abc'))
+    print(HpConnectionConfigData.get_db_connection_names())
+    print(HpConnectionConfigData.get_db_connection_string('postgres_dev', 'abc'))

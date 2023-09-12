@@ -1,18 +1,18 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from lib.models.m_ur_connection import MURConnection
-from lib.models.data_structures.ur_connection_data import URConnectionData
+from lib.models.md_robot_connection import MdRobotConnection
+from lib.models.data_structures.ds_robot_connection_data import DsRobotConnectionData
 
 
-class VMURConnection(QObject):
+class VmRobotConnection(QObject):
 
-    ur_connection_changed = pyqtSignal(URConnectionData)
+    ur_connection_changed = pyqtSignal(DsRobotConnectionData)
     connection_status_changed = pyqtSignal(bool)
     message_counter_changed = pyqtSignal(int)
 
     def __init__(self):
-        super(VMURConnection, self).__init__()
-        self._ur_connection = MURConnection()
+        super(VmRobotConnection, self).__init__()
+        self._ur_connection = MdRobotConnection()
         self._connection_status: bool = False
         self._message_counter: int = 0 
 
@@ -21,11 +21,11 @@ class VMURConnection(QObject):
         return self._ur_connection.produce_data_struct()
         
     @property
-    def ur_connection(self) -> MURConnection:
+    def ur_connection(self) -> MdRobotConnection:
         return self._ur_connection
     
     @ur_connection.setter
-    def ur_connection(self, ur_connection: MURConnection):
+    def ur_connection(self, ur_connection: MdRobotConnection):
         self._ur_connection = ur_connection
         self.ur_connection_changed.emit(self.connection_data)
 
@@ -47,5 +47,5 @@ class VMURConnection(QObject):
         self._message_counter = counter
         self.message_counter_changed.emit(self._message_counter)
 
-    def update_data(self, data: URConnectionData):
+    def update_data(self, data: DsRobotConnectionData):
         self._ur_connection._update_data(data)

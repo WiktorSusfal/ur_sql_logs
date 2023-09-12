@@ -9,7 +9,7 @@ STYLE_FILE_EXTENSION = '.qss'
 ICONS_REL_PATH = r'../../resources/icons'
 ICONS_CONFIG_PATH = os.path.normpath(os.path.join(CURRENT_SCRIPT_PATH, ICONS_REL_PATH))
 
-class ResourcesManager:
+class HpResourcesManager:
 
     @classmethod
     def get_styles_code(cls) -> str:

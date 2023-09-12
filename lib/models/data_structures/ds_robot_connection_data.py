@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 @dataclass
-class URConnectionData:
+class DsRobotConnectionData:
     name: str = None
     ip_address: str = None
     port: int = None

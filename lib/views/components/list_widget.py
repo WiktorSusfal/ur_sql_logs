@@ -1,7 +1,7 @@
 import PyQt5.QtWidgets as qtw
 import PyQt5.QtCore as qtc
 
-from lib.helpers.gui_tem_names import *
+from lib.helpers.hp_gui_tem_names import *
 
 
 class URListWidget(qtw.QListWidget):

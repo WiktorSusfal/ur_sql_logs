@@ -1,21 +1,18 @@
 import PyQt5.QtWidgets as qtw
 import PyQt5.QtCore as qtc
 
-from lib.views.v_3b_main_toolbar import VMainToolbar
-from lib.views.v_3a_main_content import VMainContent
 from lib.views.components.base_view import BaseView
+from lib.views.vw_3b_main_toolbar import VwMainToolbar
+from lib.views.vw_3a_main_content import VwMainContent
 
-from lib.view_models.vm_1_main import VMMain
-
-from lib.helpers.gui_tem_names import *
+from lib.helpers.hp_gui_tem_names import *
 
 
-class VMain(BaseView):
+class VwMain(BaseView):
 
     def __init__(self, parent=None):
-        super(VMain, self).__init__(parent=parent)
+        super(VwMain, self).__init__(parent=parent)
         self.setObjectName(CUSTOM_VIEW_WIDGET_NAME)
-        self._model = VMMain()
 
         self._main_layout = qtw.QGridLayout()
         self._main_layout.setObjectName(MAIN_GRID_LAYOUT_NAME)
@@ -23,10 +20,10 @@ class VMain(BaseView):
 
         self._toolbar_scroll_area = self._produce_scroll_area(name = TOOLBAR_SCROLL_AREA_NAME
                                                               ,v_sbar_policy=qtc.Qt.ScrollBarAlwaysOff)
-        self._toolbar_scroll_area.setWidget(VMainToolbar(self._model, parent=self))
+        self._toolbar_scroll_area.setWidget(VwMainToolbar(parent=self))
 
         self._content_scroll_area = self._produce_scroll_area(name = CONTENT_SCROLL_AREA_NAME)
-        self._content_scroll_area.setWidget(VMainContent(self._model, parent=self))
+        self._content_scroll_area.setWidget(VwMainContent(parent=self))
 
         self._main_layout.addWidget(self._toolbar_scroll_area, 0, 0)
         self._main_layout.addWidget(self._content_scroll_area, 1, 0)
@@ -64,5 +61,5 @@ class VMain(BaseView):
 
 
 if __name__ == '__main__':
-    from lib.helpers.visual_view_test_template import visual_test_preview
-    visual_test_preview(VMain())
+    from lib.helpers.hp_visual_view_test_template import visual_test_preview
+    visual_test_preview(VwMain())

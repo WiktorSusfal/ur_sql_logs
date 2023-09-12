@@ -2,18 +2,17 @@ import PyQt5.QtWidgets as qtw
 import PyQt5.QtCore as qtc
 
 from lib.views.components.base_view import BaseView
-from lib.helpers.gui_tem_names import *
+from lib.view_models.vm_4_robot_connection import VmRobotConnection
+from lib.helpers.hp_gui_tem_names import *
 
 DISCONNECTED_MESSAGE = "Disconnected"
 CONNECTED_MESSAGE = "Connected"
 
-from lib.view_models.vm_3_ur_connection import VMURConnection
 
+class VwListItem(BaseView):
 
-class VListItem(BaseView):
-
-    def __init__(self, model: VMURConnection):
-        super(VListItem, self).__init__()
+    def __init__(self, model: VmRobotConnection):
+        super(VwListItem, self).__init__()
         self._model = model
         self.setObjectName(UR_LIST_ITEM_VIEW_NAME)
         self.id = model.ur_connection.id
@@ -65,5 +64,5 @@ class VListItem(BaseView):
 
 
 if __name__ == '__main__':
-    from lib.helpers.visual_view_test_template import visual_test_preview
-    visual_test_preview(VListItem('1', "Test item"))
+    from lib.helpers.hp_visual_view_test_template import visual_test_preview
+    visual_test_preview(VwListItem('1', "Test item"))
