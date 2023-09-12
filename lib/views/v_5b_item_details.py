@@ -2,22 +2,23 @@ import PyQt5.QtWidgets as qtw
 import PyQt5.QtCore as qtc
 
 from lib.helpers.gui_tem_names import *
-from lib.views.components.base_view import URLoggerBaseView
+from lib.views.components.qline_edit import URQLineEdit
+from lib.views.components.base_view import BaseView
 
-from lib.view_models.application_home import ApplicationHome
+from lib.view_models.vm_3_ur_connection import VMURConnection
 
-class URItemDetails(URLoggerBaseView):
+class VItemDetails(BaseView):
 
-    def __init__(self, model: ApplicationHome, parent=None):
-        super(URItemDetails, self).__init__(parent=parent)
+    def __init__(self, model: VMURConnection, parent=None):
+        super(VItemDetails, self).__init__(parent=parent)
         self.setObjectName(UR_ITEM_DETAILS_VIEW_NAME)
         self._model = model
         
         self._robot_name_input = self._produce_line_edit(FORM_INPUT_NAME)
-        self._ip_address_input = self._produce_line_edit(FORM_INPUT_NAME)
-        self._port_number_input = self._produce_line_edit(FORM_INPUT_NAME)
-        self._refresh_freq_input = self._produce_line_edit(FORM_INPUT_NAME)
-        
+        self._ip_address_input = URQLineEdit(FORM_INPUT_NAME, "000  .  000  .  000  .  000; ", '.')
+        self._port_number_input = URQLineEdit(FORM_INPUT_NAME, "0000; ", '')
+        self._refresh_freq_input = URQLineEdit(FORM_INPUT_NAME, "000 . 0; ", '')
+
         main_form = qtw.QFormLayout()
         main_form.addRow(
             self._produce_named_label("Unique Name: ", FORM_LABEL_NAME)
@@ -73,8 +74,13 @@ class URItemDetails(URLoggerBaseView):
     
     def _set_value_subscriptions(self):
         pass
+
+    def mousePressEvent2(self, event):
+        # Set the cursor position to the first position (0) when clicked
+        self.setCursorPosition(0)
+        super().mousePressEvent(event)
             
 
 if __name__ == '__main__':
     from lib.helpers.visual_view_test_template import visual_test_preview
-    visual_test_preview(URItemDetails())
+    visual_test_preview(VItemDetails())

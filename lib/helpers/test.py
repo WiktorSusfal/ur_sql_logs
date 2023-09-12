@@ -1,18 +1,33 @@
-class Master:
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit
+
+class IPInputWidget(QWidget):
     def __init__(self):
-        print("Master constructor")
-        self.setup()
+        super().__init__()
 
-    def setup(self):
-        print("Master setup")
+        self.initUI()
 
-class Child(Master):
-    def __init__(self):
-        super().__init__()  # Call the parent class constructor
-        print("Child constructor")
+    def initUI(self):
+        layout = QVBoxLayout()
 
-    def setup(self):
-        super().setup()  # Call the parent class setup method
-        print("Child setup")
+        label = QLabel("Enter IP Address:")
+        self.ip_input = QLineEdit(self)
+        
+        # Set the input mask to format the IP address with dots
+        self.ip_input.setInputMask("000.000.000.000;_")
+        #self.ip_input.setPlaceholderText("000.000.000.000")
 
-child = Child()
+        layout.addWidget(label)
+        layout.addWidget(self.ip_input)
+
+        self.setLayout(layout)
+        self.setWindowTitle("IP Address Input")
+
+def main():
+    app = QApplication(sys.argv)
+    window = IPInputWidget()
+    window.show()
+    sys.exit(app.exec_())
+
+if __name__ == '__main__':
+    main()

@@ -2,10 +2,10 @@ import PyQt5.QtWidgets as qtw
 import PyQt5.QtCore as qtc
 import PyQt5.QtGui as qtg
 
-from lib.view_models.db_connection_config import DBConnectionConfig
+from lib.view_models.vm_2a_db_connection_config import VMDBConnectionConfig
 
 from lib.helpers.gui_tem_names import *
-from lib.views.components.base_view import URLoggerBaseView
+from lib.views.components.base_view import BaseView
 
 
 class CustomItemDelegate(qtw.QStyledItemDelegate):
@@ -13,10 +13,10 @@ class CustomItemDelegate(qtw.QStyledItemDelegate):
         return qtc.QSize(option.rect.height(), 30)
 
 
-class DBConnectionConfigView(URLoggerBaseView):
+class VDBConnectionConfig(BaseView):
 
-    def __init__(self, model: DBConnectionConfig, parent=None):
-        super(DBConnectionConfigView, self).__init__(parent=parent)
+    def __init__(self, model: VMDBConnectionConfig, parent=None):
+        super(VDBConnectionConfig, self).__init__(parent=parent)
         self.setObjectName(DB_CONNECTION_VIEW_NAME)
         self._model = model
 
@@ -74,5 +74,5 @@ class DBConnectionConfigView(URLoggerBaseView):
 
 if __name__ == '__main__':
     from lib.helpers.visual_view_test_template import visual_test_preview
-    conn_config_model = DBConnectionConfig()
-    visual_test_preview(DBConnectionConfigView(conn_config_model))
+    conn_config_model = VMDBConnectionConfig()
+    visual_test_preview(VDBConnectionConfig(conn_config_model))

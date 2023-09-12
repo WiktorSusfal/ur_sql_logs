@@ -3,12 +3,12 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from lib.helpers.connection_config_data import ConnectionConfigData
 
 
-class DBConnectionConfig(QObject):
+class VMDBConnectionConfig(QObject):
 
     db_names_changed = pyqtSignal()
 
     def __init__(self):
-        super(DBConnectionConfig, self).__init__()
+        super(VMDBConnectionConfig, self).__init__()
         self._db_connection_names: list[str] = list()
         self._db_password = str()
 

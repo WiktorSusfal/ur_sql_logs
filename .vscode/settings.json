@@ -6,7 +6,10 @@
         "onoff",
         "pixmap",
         "pyqt",
+        "qline",
         "Roboto",
-        "sbar"
+        "sbar",
+        "VMDB",
+        "VMUR"
     ]
 }

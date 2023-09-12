@@ -7,11 +7,11 @@ from lib.helpers.resources_manager import ResourcesManager
 from lib.helpers.gui_tem_names import *
 
 
-class URLoggerBaseViewMeta(ABCMeta, type(qtw.QWidget)):
+class BaseViewMeta(ABCMeta, type(qtw.QWidget)):
     pass
 
 
-class URLoggerBaseView(ABC, qtw.QWidget,  metaclass=URLoggerBaseViewMeta):
+class BaseView(ABC, qtw.QWidget,  metaclass=BaseViewMeta):
 
     def __init__(self, parent=None):
         qtw.QWidget.__init__(self, parent=parent)

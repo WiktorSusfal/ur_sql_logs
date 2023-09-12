@@ -1,25 +1,29 @@
 import PyQt5.QtWidgets as qtw
 import PyQt5.QtCore as qtc
 
-from lib.views.components.base_view import URLoggerBaseView
+from lib.views.components.base_view import BaseView
 from lib.helpers.gui_tem_names import *
 
 DISCONNECTED_MESSAGE = "Disconnected"
 CONNECTED_MESSAGE = "Connected"
 
-class URListItem(URLoggerBaseView):
+from lib.view_models.vm_3_ur_connection import VMURConnection
 
-    def __init__(self, id: str, title: str):
-        super(URListItem, self).__init__()
+
+class VListItem(BaseView):
+
+    def __init__(self, model: VMURConnection):
+        super(VListItem, self).__init__()
+        self._model = model
         self.setObjectName(UR_LIST_ITEM_VIEW_NAME)
-        self.id = id
+        self.id = model.ur_connection.id
 
         self._robot_icon_label = self._produce_icon_label(r'robot/industrial-robot.png', 64, 64)
         self._on_icon_label = self._produce_icon_label(r'onoff/on.png', 32, 32)
         self._off_icon_label = self._produce_icon_label(r'onoff/off.png', 32, 32)
         self._mail_icon_label = self._produce_icon_label(r'mail/mail.png', 32, 32)
         
-        self._title_label = qtw.QLabel(title)
+        self._title_label = qtw.QLabel(self._model.connection_data.name)
         self._title_label.setObjectName(LIST_ITEM_TITLE_LABEL_NAME)
 
         self._connection_status_label = qtw.QLabel(DISCONNECTED_MESSAGE)
@@ -62,4 +66,4 @@ class URListItem(URLoggerBaseView):
 
 if __name__ == '__main__':
     from lib.helpers.visual_view_test_template import visual_test_preview
-    visual_test_preview(URListItem('1', "Test item"))
+    visual_test_preview(VListItem('1', "Test item"))

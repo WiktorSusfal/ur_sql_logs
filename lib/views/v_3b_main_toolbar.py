@@ -1,16 +1,15 @@
 import PyQt5.QtWidgets as qtw
-import PyQt5.QtGui as qtg
 import PyQt5.QtCore as qtc
 
-from lib.view_models.main_view_model import URMainViewModel
+from lib.view_models.vm_1_main import VMMain
 
-from lib.views.components.base_view import URLoggerBaseView
+from lib.views.components.base_view import BaseView
 from lib.helpers.gui_tem_names import *
 
-class MainToolbarView(URLoggerBaseView):
+class VMainToolbar(BaseView):
 
-    def __init__(self, model: URMainViewModel, parent=None):
-        super(MainToolbarView, self).__init__(parent)
+    def __init__(self, model: VMMain, parent=None):
+        super(VMainToolbar, self).__init__(parent)
         self.setObjectName(MAIN_TOOLBAR_VIEW_WIDGET_NAME)
 
         self._model = model
@@ -43,5 +42,5 @@ class MainToolbarView(URLoggerBaseView):
 
 if __name__ == '__main__':
     from lib.helpers.visual_view_test_template import visual_test_preview
-    model = URMainViewModel()
-    visual_test_preview(MainToolbarView(model))
+    model = VMMain()
+    visual_test_preview(VMainToolbar(model))
