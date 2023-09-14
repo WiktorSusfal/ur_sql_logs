@@ -6,7 +6,7 @@ from lib.helpers.hp_gui_tem_names import *
 INIT_POS_X = 100
 INIT_POS_Y = 100
 INIT_SIZE_X = 1000
-INIT_SIZE_Y = 600
+INIT_SIZE_Y = 650
 
 
 class VwMainWindow(qtw.QMainWindow):

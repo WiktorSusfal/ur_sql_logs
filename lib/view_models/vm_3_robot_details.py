@@ -9,72 +9,57 @@ class VmRobotDetails(QObject):
 
     name_changed = pyqtSignal(str)
     ip_changed = pyqtSignal(str)
-    port_changed = pyqtSignal(int)
-    read_freq_changed = pyqtSignal(int)
+    port_changed = pyqtSignal(str)
+    read_freq_changed = pyqtSignal(str)
 
     def __init__(self):
         super(VmRobotDetails, self).__init__()
 
         self._name: str = str()
         self._ip_address: str = str()
-        self._port: int = str()
-        self._read_frequency: float = float()
+        self._port: str = str()
+        self._read_frequency: str = str()
 
-        self._vm_robot_connection = VmRobotConnection()
-
-    @property
-    def name(self) -> str:
-        return self._name
+        self._vm_robot_connection: VmRobotConnection = VmRobotConnection()
     
-    @name.setter
-    @HpVmUtils.observable_property('name', 'name_changed')
-    def name(self, name: str):
+    @HpVmUtils.observable_property('_name', 'name_changed')
+    def set_name(self, name: str):
         self._name = name
-
-    @property
-    def ip_address(self) -> str:
-        return self._ip_address
     
-    @ip_address.setter
-    @HpVmUtils.observable_property('ip_address', 'ip_changed')
-    def ip_address(self, ip: str):
+    @HpVmUtils.observable_property('_ip_address', 'ip_changed')
+    def set_ip_address(self, ip: str):
         self._ip_address = ip
 
-    @property
-    def port(self) -> int:
-        return self._port
-    
-    @port.setter
-    @HpVmUtils.observable_property('port', 'port_changed')
-    def port(self, port: int):
+    @HpVmUtils.observable_property('_port', 'port_changed')
+    def set_port(self, port: str):
         self._port = port
-
-    @property
-    def read_frequency(self) -> float:
-        return self._read_frequency
     
-    @ip_address.setter
-    @HpVmUtils.observable_property('read_frequency', 'read_freq_changed')
-    def read_frequency(self, frequency: float):
+    @HpVmUtils.observable_property('_read_frequency', 'read_freq_changed')
+    def set_read_frequency(self, frequency: str):
         self._read_frequency = frequency
 
     def set_robot_connection_vmodel(self, vm_conn: VmRobotConnection):
         self._vm_robot_connection = vm_conn
-        conn_data = vm_conn.ur_connection.produce_data_struct()
+        self.update_interface_data()
         
-        self.name = conn_data.name
-        self.ip_address = conn_data.ip_address
-        self.port = conn_data.port
-        self.read_frequency = conn_data.read_freq
+    def update_interface_data(self):
+        if self._vm_robot_connection:
+            conn_data = self._vm_robot_connection.ur_connection.produce_data_struct()
+        else:
+            conn_data = DsRobotConnectionData()
+        
+        self.set_name(conn_data.name)
+        self.set_ip_address(conn_data.ip_address)
+        self.set_port(str(conn_data.port))
+        self.set_read_frequency(str(conn_data.read_freq))
 
-if __name__ == '__main__':
+    def save_interface_data(self):
+        if self._vm_robot_connection:
+            data = DsRobotConnectionData(self._name, self._ip_address, int(self._port), float(self._read_frequency))
+            self._vm_robot_connection.update_data(data)
 
-    vmd = VmRobotDetails()
-    def print_name(n):
-        print('Emited: ', n)
-    
-    vmd.name_changed.connect(print_name)
-    vmd.name = 'abc'
-    vmd.name = 'abc'
-    vmd.name = 'def'
-    vmd.name = 'ijk'
+    def robot_connect(self):
+        pass
+
+    def robot_disconnect(self):
+        pass

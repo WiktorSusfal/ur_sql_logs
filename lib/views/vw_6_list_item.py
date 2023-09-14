@@ -11,18 +11,17 @@ CONNECTED_MESSAGE = "Connected"
 
 class VwListItem(BaseView):
 
-    def __init__(self, model: VmRobotConnection):
-        super(VwListItem, self).__init__()
-        self._model = model
+    def __init__(self, model: VmRobotConnection, parent = None):
+        super(VwListItem, self).__init__(parent)
         self.setObjectName(UR_LIST_ITEM_VIEW_NAME)
-        self.id = model.ur_connection.id
+        self.model = model
 
-        self._robot_icon_label = self._produce_icon_label(r'robot/industrial-robot.png', 64, 64)
-        self._on_icon_label = self._produce_icon_label(r'onoff/on.png', 32, 32)
-        self._off_icon_label = self._produce_icon_label(r'onoff/off.png', 32, 32)
-        self._mail_icon_label = self._produce_icon_label(r'mail/mail.png', 32, 32)
+        self._robot_icon_label = self._produce_icon_label(r'robot/industrial-robot.png', 50, 50, label_name=LIST_ITEM_ICON_LABEL_NAME)
+        self._on_icon_label = self._produce_icon_label(r'onoff/on.png', 24, 24, label_name=LIST_ITEM_ICON_LABEL_NAME)
+        self._off_icon_label = self._produce_icon_label(r'onoff/off.png', 24, 24, label_name=LIST_ITEM_ICON_LABEL_NAME)
+        self._mail_icon_label = self._produce_icon_label(r'mail/mail.png', 24, 24, label_name=LIST_ITEM_ICON_LABEL_NAME)
         
-        self._title_label = qtw.QLabel(self._model.connection_data.name)
+        self._title_label = qtw.QLabel(self.model.connection_data.name)
         self._title_label.setObjectName(LIST_ITEM_TITLE_LABEL_NAME)
 
         self._connection_status_label = qtw.QLabel(DISCONNECTED_MESSAGE)
@@ -35,17 +34,17 @@ class VwListItem(BaseView):
         self._connection_indicator.addWidget(self._on_icon_label)
 
         details_layout = qtw.QHBoxLayout()
-        details_layout.addWidget(self._connection_indicator, stretch = 0, alignment = qtc.Qt.AlignLeft)
-        details_layout.addWidget(self._connection_status_label, stretch = 0, alignment = qtc.Qt.AlignLeft)
-        details_layout.addWidget(self._mail_icon_label, stretch = 0, alignment = qtc.Qt.AlignLeft)
-        details_layout.addWidget(self._message_counter_label, stretch = 0, alignment = qtc.Qt.AlignLeft)
+        details_layout.addWidget(self._connection_indicator, stretch = 0, alignment = qtc.Qt.AlignLeft | qtc.Qt.AlignVCenter)
+        details_layout.addWidget(self._connection_status_label, stretch = 0, alignment = qtc.Qt.AlignLeft | qtc.Qt.AlignVCenter)
+        details_layout.addWidget(self._mail_icon_label, stretch = 0, alignment = qtc.Qt.AlignLeft | qtc.Qt.AlignVCenter)
+        details_layout.addWidget(self._message_counter_label, stretch = 0, alignment = qtc.Qt.AlignLeft | qtc.Qt.AlignVCenter)
 
         info_layout = qtw.QVBoxLayout()
         info_layout.addWidget(self._title_label, stretch = 0, alignment = qtc.Qt.AlignTop)
         info_layout.addLayout(details_layout, stretch = 0)
 
         main_layout = qtw.QHBoxLayout()
-        main_layout.addWidget(self._robot_icon_label, stretch = 0, alignment = qtc.Qt.AlignLeft)
+        main_layout.addWidget(self._robot_icon_label, stretch = 0, alignment = qtc.Qt.AlignLeft | qtc.Qt.AlignVCenter)
         main_layout.addLayout(info_layout, stretch = 0)
         main_layout.addStretch()
         self.setLayout(main_layout)
@@ -65,4 +64,5 @@ class VwListItem(BaseView):
 
 if __name__ == '__main__':
     from lib.helpers.hp_visual_view_test_template import visual_test_preview
-    visual_test_preview(VwListItem('1', "Test item"))
+    model = VmRobotConnection()
+    visual_test_preview(VwListItem(model))

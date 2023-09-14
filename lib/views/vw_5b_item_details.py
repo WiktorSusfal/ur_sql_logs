@@ -1,5 +1,6 @@
 import PyQt5.QtWidgets as qtw
 import PyQt5.QtCore as qtc
+import PyQt5.QtGui as qtg
 
 from lib.views.components.base_view import BaseView
 from lib.views.components.qline_edit import URQLineEdit
@@ -16,9 +17,15 @@ class VwItemDetails(BaseView):
         self._model = HpViewModelsManager.robot_details_view_model
         
         self._robot_name_input = self._produce_line_edit(FORM_INPUT_NAME)
-        self._ip_address_input = URQLineEdit(FORM_INPUT_NAME, "000  .  000  .  000  .  000; ", '.')
-        self._port_number_input = URQLineEdit(FORM_INPUT_NAME, "0000; ", '')
-        self._refresh_freq_input = URQLineEdit(FORM_INPUT_NAME, "000 . 0; ", '')
+        self._ip_address_input = URQLineEdit(FORM_INPUT_NAME, "000.000.000.000; ", '.')
+        
+        self._port_number_input = self._produce_line_edit(FORM_INPUT_NAME)
+        self._port_number_input.setValidator(qtg.QIntValidator(1, 65535, self))
+        
+        self._read_freq_input = self._produce_line_edit(FORM_INPUT_NAME)
+        validator = qtg.QDoubleValidator(0.0, 360.0, 1, self)
+        validator.setLocale(self.usl_locale)
+        self._read_freq_input.setValidator(validator)
 
         main_form = qtw.QFormLayout()
         main_form.addRow(
@@ -32,7 +39,7 @@ class VwItemDetails(BaseView):
             ,self._port_number_input)
         main_form.addRow(
             self._produce_named_label("Read Frequency: ", FORM_LABEL_NAME)
-            ,self._refresh_freq_input)
+            ,self._read_freq_input)
         
         self._robot_icon_label = self._produce_icon_label(r'robot/industrial-robot256.png', 200, 200)
         self._recent_messages_table = qtw.QTableView()
@@ -68,19 +75,29 @@ class VwItemDetails(BaseView):
         self.show()
 
     def _bind_buttons_to_commands(self):
-        pass
+        self._refresh_button.clicked.connect(self._model.update_interface_data)
+        self._save_button.clicked.connect(self._model.save_interface_data)
+        self._connect_button.clicked.connect(self._model.robot_connect)
+        self._disconnect_button.clicked.connect(self._model.robot_disconnect)
     
     def _init_actions(self):
         pass
     
     def _set_value_subscriptions(self):
-        pass
+        self._model.name_changed.connect(self._robot_name_input.setText)
+        self._model.ip_changed.connect(self._ip_address_input.setText)
+        self._model.port_changed.connect(self._port_number_input.setText)
+        self._model.read_freq_changed.connect(self._read_freq_input.setText)
 
-    def mousePressEvent2(self, event):
-        # Set the cursor position to the first position (0) when clicked
-        self.setCursorPosition(0)
-        super().mousePressEvent(event)
-            
+        self._robot_name_input.editingFinished.connect(
+            lambda : self._model.set_name(self._robot_name_input.text()))
+        self._ip_address_input.editingFinished.connect(
+            lambda : self._model.set_ip_address(self._ip_address_input.text()))
+        self._port_number_input.editingFinished.connect(
+            lambda : self._model.set_port(self._port_number_input.text()))
+        self._read_freq_input.editingFinished.connect(
+            lambda: self._model.set_read_frequency(self._read_freq_input.text()))
+
 
 if __name__ == '__main__':
     from lib.helpers.hp_visual_view_test_template import visual_test_preview

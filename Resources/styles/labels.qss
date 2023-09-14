@@ -18,3 +18,21 @@ QLabel#LIST_ITEM_DETAIL_LABEL {
 QLabel#HINT_LABEL {
     font-style: italic;
 }
+
+QLabel#LIST_ITEM_TITLE_LABEL {
+    margin-left: 10px;
+    margin-top: 0px;
+    padding: 0px;
+    font-size: 18px
+}
+
+QLabel#LIST_ITEM_DETAIL_LABEL {
+    margin: 0px;
+    padding-left: 3px;
+    padding-right: 3px;
+    font-size: 13px
+}
+
+QLabel#LIST_ITEM_ICON_LABEL {
+    padding: 0px;
+}

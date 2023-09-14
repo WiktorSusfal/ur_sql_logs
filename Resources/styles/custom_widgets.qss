@@ -33,5 +33,5 @@ QWidget#UR_ITEM_DETAILS {
 }
 
 QWidget#UR_LIST_ITEM {   
-    background-color: transparent;
+    background-color: #242e42;
 }

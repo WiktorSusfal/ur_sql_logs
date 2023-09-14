@@ -13,6 +13,9 @@ class _BaseViewMeta(ABCMeta, type(qtw.QWidget)):
 
 class BaseView(ABC, qtw.QWidget,  metaclass=_BaseViewMeta):
 
+    usl_locale = qtc.QLocale(qtc.QLocale.English, qtc.QLocale.UnitedStates)
+    usl_locale.setNumberOptions(qtc.QLocale.RejectGroupSeparator)
+
     def __init__(self, parent=None):
         qtw.QWidget.__init__(self, parent=parent)
         ABC.__init__(self)
