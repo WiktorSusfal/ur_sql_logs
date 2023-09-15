@@ -11,10 +11,6 @@ QLabel#FORM_LABEL {
    min-width: 150px;
 }
 
-QLabel#LIST_ITEM_DETAIL_LABEL {
-   
-}
-
 QLabel#HINT_LABEL {
     font-style: italic;
 }
@@ -28,11 +24,16 @@ QLabel#LIST_ITEM_TITLE_LABEL {
 
 QLabel#LIST_ITEM_DETAIL_LABEL {
     margin: 0px;
-    padding-left: 3px;
     padding-right: 3px;
-    font-size: 13px
+    font-size: 15px
 }
 
 QLabel#LIST_ITEM_ICON_LABEL {
     padding: 0px;
+    margin: 0px;
+    margin-left: 10px;
+}
+
+QLabel#FORM_ICON_LABEL { 
+    margin-left: 10px;
 }

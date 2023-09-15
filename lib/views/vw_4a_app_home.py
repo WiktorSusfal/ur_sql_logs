@@ -1,13 +1,13 @@
 import PyQt5.QtWidgets as qtw
 
-from lib.views.components.base_view import BaseView
+from lib.views.components.base_view import USLBaseView
 from lib.views.vw_5a_selection_list import VwSelectionList
 from lib.views.vw_5b_item_details import VwItemDetails
 
 from lib.helpers.hp_gui_tem_names import *
 
 
-class VwAppHome(BaseView):
+class VwAppHome(USLBaseView):
 
     def __init__(self, parent=None):
         super(VwAppHome, self).__init__(parent=parent)

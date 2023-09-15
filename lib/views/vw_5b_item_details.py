@@ -2,14 +2,14 @@ import PyQt5.QtWidgets as qtw
 import PyQt5.QtCore as qtc
 import PyQt5.QtGui as qtg
 
-from lib.views.components.base_view import BaseView
-from lib.views.components.qline_edit import URQLineEdit
+from lib.views.components.base_view import USLBaseView
+from lib.views.components.qline_edit import USLQLineEdit
 
 from lib.helpers.hp_view_models_manager import HpViewModelsManager
 from lib.helpers.hp_gui_tem_names import *
 
 
-class VwItemDetails(BaseView):
+class VwItemDetails(USLBaseView):
 
     def __init__(self, parent=None):
         super(VwItemDetails, self).__init__(parent=parent)
@@ -17,7 +17,7 @@ class VwItemDetails(BaseView):
         self._model = HpViewModelsManager.robot_details_view_model
         
         self._robot_name_input = self._produce_line_edit(FORM_INPUT_NAME)
-        self._ip_address_input = URQLineEdit(FORM_INPUT_NAME, "000.000.000.000; ", '.')
+        self._ip_address_input = USLQLineEdit(FORM_INPUT_NAME, "000.000.000.000; ", '.')
         
         self._port_number_input = self._produce_line_edit(FORM_INPUT_NAME)
         self._port_number_input.setValidator(qtg.QIntValidator(1, 65535, self))

@@ -4,9 +4,9 @@ import PyQt5.QtCore as qtc
 from lib.helpers.hp_gui_tem_names import *
 
 
-class URListWidget(qtw.QListWidget):
+class USLQListWidget(qtw.QListWidget):
     def __init__(self):
-        super(URListWidget, self).__init__()
+        super(USLQListWidget, self).__init__()
 
         self.caption_label = qtw.QLabel("No connections added", self)
         self.caption_label.setAlignment(qtc.Qt.AlignTop | qtc.Qt.AlignHCenter)

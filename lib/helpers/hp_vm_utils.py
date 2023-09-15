@@ -1,7 +1,10 @@
 from PyQt5.QtCore import pyqtSignal
+from threading import Thread
 
 
 class HpVmUtils:
+
+    @staticmethod
     def observable_property(property_name: str, signal_name: str):
             def decorator(func):
                 def wrapper(*args, **kwargs):
@@ -15,3 +18,11 @@ class HpVmUtils:
                 
                 return wrapper
             return decorator
+    
+    @staticmethod
+    def run_in_thread(func):
+        def wrapper(*args, **kwargs):
+            t = Thread(target=func, args=args, kwargs=kwargs, daemon=True)
+            print('Starting thread')
+            t.start()
+        return wrapper

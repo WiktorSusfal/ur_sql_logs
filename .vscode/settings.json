@@ -3,12 +3,18 @@
         "PYTHONPATH": "${workspaceFolder}"
     },
     "cSpell.words": [
+        "dbcon",
+        "dbdisconn",
+        "disconn",
+        "hdcm",
         "onoff",
         "pixmap",
         "pyqt",
         "qline",
         "Roboto",
         "sbar",
+        "sessionmaker",
+        "sqlalchemy",
         "USLQ",
         "VMDB",
         "VMUR"

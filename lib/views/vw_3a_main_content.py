@@ -1,6 +1,6 @@
 import PyQt5.QtWidgets as qtw
 
-from lib.views.components.base_view import BaseView
+from lib.views.components.base_view import USLBaseView
 from lib.views.vw_4b_db_connection_config import VwDBConnectionConfig
 from lib.views.vw_4a_app_home import VwAppHome
 
@@ -8,7 +8,7 @@ from lib.helpers.hp_view_models_manager import HpViewModelsManager
 from lib.helpers.hp_gui_tem_names import *
 
 
-class VwMainContent(BaseView):
+class VwMainContent(USLBaseView):
 
     def __init__(self, parent=None):
         super(VwMainContent, self).__init__(parent=parent)

@@ -1,9 +1,9 @@
 import PyQt5.QtWidgets as qtw
 
-class URQLineEdit(qtw.QLineEdit):
+class USLQLineEdit(qtw.QLineEdit):
 
     def __init__(self, object_name: str, input_mask: str, separator: str):
-        super(URQLineEdit, self).__init__()
+        super(USLQLineEdit, self).__init__()
 
         self._filler = input_mask.split(';')[-1]
         self._separator = separator

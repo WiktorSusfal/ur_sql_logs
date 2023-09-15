@@ -1,15 +1,12 @@
 import PyQt5.QtWidgets as qtw
 import PyQt5.QtCore as qtc
 
-from lib.views.components.base_view import BaseView
+from lib.views.components.base_view import USLBaseView
 from lib.view_models.vm_4_robot_connection import VmRobotConnection
 from lib.helpers.hp_gui_tem_names import *
 
-DISCONNECTED_MESSAGE = "Disconnected"
-CONNECTED_MESSAGE = "Connected"
 
-
-class VwListItem(BaseView):
+class VwListItem(USLBaseView):
 
     def __init__(self, model: VmRobotConnection, parent = None):
         super(VwListItem, self).__init__(parent)
@@ -17,15 +14,13 @@ class VwListItem(BaseView):
         self.model = model
 
         self._robot_icon_label = self._produce_icon_label(r'robot/industrial-robot.png', 50, 50, label_name=LIST_ITEM_ICON_LABEL_NAME)
-        self._on_icon_label = self._produce_icon_label(r'onoff/on.png', 24, 24, label_name=LIST_ITEM_ICON_LABEL_NAME)
-        self._off_icon_label = self._produce_icon_label(r'onoff/off.png', 24, 24, label_name=LIST_ITEM_ICON_LABEL_NAME)
+        self._on_icon_label = self._produce_icon_label(r'connected/con48.png', 60, 20, label_name=LIST_ITEM_ICON_LABEL_NAME)
+        self._off_icon_label = self._produce_icon_label(r'disconnected/disconn48.png', 60, 20, label_name=LIST_ITEM_ICON_LABEL_NAME)
         self._mail_icon_label = self._produce_icon_label(r'mail/mail.png', 24, 24, label_name=LIST_ITEM_ICON_LABEL_NAME)
         
         self._title_label = qtw.QLabel(self.model.connection_data.name)
         self._title_label.setObjectName(LIST_ITEM_TITLE_LABEL_NAME)
 
-        self._connection_status_label = qtw.QLabel(DISCONNECTED_MESSAGE)
-        self._connection_status_label.setObjectName(LIST_ITEM_DETAIL_LABEL_NAME)
         self._message_counter_label = qtw.QLabel("0")
         self._message_counter_label.setObjectName(LIST_ITEM_DETAIL_LABEL_NAME)
 
@@ -35,7 +30,6 @@ class VwListItem(BaseView):
 
         details_layout = qtw.QHBoxLayout()
         details_layout.addWidget(self._connection_indicator, stretch = 0, alignment = qtc.Qt.AlignLeft | qtc.Qt.AlignVCenter)
-        details_layout.addWidget(self._connection_status_label, stretch = 0, alignment = qtc.Qt.AlignLeft | qtc.Qt.AlignVCenter)
         details_layout.addWidget(self._mail_icon_label, stretch = 0, alignment = qtc.Qt.AlignLeft | qtc.Qt.AlignVCenter)
         details_layout.addWidget(self._message_counter_label, stretch = 0, alignment = qtc.Qt.AlignLeft | qtc.Qt.AlignVCenter)
 

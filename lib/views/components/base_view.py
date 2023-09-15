@@ -7,11 +7,11 @@ from lib.helpers.hp_resources_manager import HpResourcesManager
 from lib.helpers.hp_gui_tem_names import *
 
 
-class _BaseViewMeta(ABCMeta, type(qtw.QWidget)):
+class _USLBaseViewMeta(ABCMeta, type(qtw.QWidget)):
     pass
 
 
-class BaseView(ABC, qtw.QWidget,  metaclass=_BaseViewMeta):
+class USLBaseView(ABC, qtw.QWidget,  metaclass=_USLBaseViewMeta):
 
     usl_locale = qtc.QLocale(qtc.QLocale.English, qtc.QLocale.UnitedStates)
     usl_locale.setNumberOptions(qtc.QLocale.RejectGroupSeparator)

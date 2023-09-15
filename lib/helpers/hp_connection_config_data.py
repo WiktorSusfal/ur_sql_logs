@@ -44,7 +44,7 @@ class HpConnectionConfigData:
         
         host, port, user, database = cls._get_db_connection_data(connection_name, configs)
         
-        return f"postgres://{user}:{password}@{host}:{port}/{database}"
+        return f"postgresql://{user}:{password}@{host}:{port}/{database}"
     
     @classmethod
     def _get_db_connection_data(cls, connection_name:str, connections_data: list[dict]) -> tuple[str]:

@@ -1,22 +1,22 @@
 import PyQt5.QtWidgets as qtw
 import PyQt5.QtCore as qtc
 
-from lib.views.components.base_view import BaseView
-from lib.views.components.list_widget import URListWidget
+from lib.views.components.base_view import USLBaseView
+from lib.views.components.list_widget import USLQListWidget
 from lib.views.vw_6_list_item import VwListItem
 
 from lib.helpers.hp_view_models_manager import HpViewModelsManager, VmRobotConnection
 from lib.helpers.hp_gui_tem_names import *
 
 
-class VwSelectionList(BaseView):
+class VwSelectionList(USLBaseView):
 
     def __init__(self, parent=None):
         super(VwSelectionList, self).__init__(parent=parent)
         self.setObjectName(UR_SELECTION_LIST_VIEW_NAME)
         self._model = HpViewModelsManager.app_home_view_model
         
-        self._selection_list = URListWidget()
+        self._selection_list = USLQListWidget()
         self._add_button = self._produce_button(button_label="+", button_name=LIST_ACTION_BUTTON_NAME)
         self._delete_button = self._produce_button(button_label="-", button_name=LIST_ACTION_BUTTON_NAME)
 
