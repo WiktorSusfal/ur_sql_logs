@@ -15,6 +15,7 @@
         "sbar",
         "sessionmaker",
         "sqlalchemy",
+        "USLIP",
         "USLQ",
         "VMDB",
         "VMUR"
