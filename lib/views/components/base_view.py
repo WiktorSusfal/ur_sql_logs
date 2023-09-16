@@ -72,7 +72,12 @@ class USLBaseView(ABC, qtw.QWidget,  metaclass=_USLBaseViewMeta):
         label.setObjectName(name)
         return label
     
-    def _produce_line_edit(self, name: str) -> qtw.QLineEdit:
+    def _produce_line_edit(self, name: str, validator: qtg.QValidator = None) -> qtw.QLineEdit:
         line_edit = qtw.QLineEdit()
         line_edit.setObjectName(name)
+
+        if validator:
+            validator.setLocale(self.usl_locale)
+            line_edit.setValidator(validator)
+
         return line_edit

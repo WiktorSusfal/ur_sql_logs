@@ -4,6 +4,7 @@ import PyQt5.QtGui as qtg
 
 from lib.views.components.base_view import USLBaseView
 from lib.views.components.qline_edit import USLQLineEdit
+from lib.views.components.validators import USLIntValidator, USLDoubleValidator
 
 from lib.helpers.hp_view_models_manager import HpViewModelsManager
 from lib.helpers.hp_gui_tem_names import *
@@ -18,14 +19,8 @@ class VwItemDetails(USLBaseView):
         
         self._robot_name_input = self._produce_line_edit(FORM_INPUT_NAME)
         self._ip_address_input = USLQLineEdit(FORM_INPUT_NAME, "000.000.000.000; ", '.')
-        
-        self._port_number_input = self._produce_line_edit(FORM_INPUT_NAME)
-        self._port_number_input.setValidator(qtg.QIntValidator(1, 65535, self))
-        
-        self._read_freq_input = self._produce_line_edit(FORM_INPUT_NAME)
-        validator = qtg.QDoubleValidator(0.0, 360.0, 1, self)
-        validator.setLocale(self.usl_locale)
-        self._read_freq_input.setValidator(validator)
+        self._port_number_input = self._produce_line_edit(FORM_INPUT_NAME, USLIntValidator(1, 65535, self))
+        self._read_freq_input = self._produce_line_edit(FORM_INPUT_NAME, USLDoubleValidator(0.0, 360.0, 1, self))
 
         main_form = qtw.QFormLayout()
         main_form.addRow(
