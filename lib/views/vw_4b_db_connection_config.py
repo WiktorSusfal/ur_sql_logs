@@ -5,7 +5,7 @@ import PyQt5.QtGui as qtg
 from lib.views.components.base_view import USLBaseView
 
 from lib.helpers.hp_view_models_manager import HpViewModelsManager
-from lib.helpers.hp_gui_tem_names import *
+from lib.helpers.constants.hp_gui_tem_names import *
 
 
 class _CustomItemDelegate(qtw.QStyledItemDelegate):

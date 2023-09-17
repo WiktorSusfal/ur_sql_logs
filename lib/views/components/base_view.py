@@ -4,7 +4,7 @@ import PyQt5.QtCore as qtc
 from abc import ABC, abstractmethod, ABCMeta
 
 from lib.helpers.hp_resources_manager import HpResourcesManager
-from lib.helpers.hp_gui_tem_names import *
+from lib.helpers.constants.hp_gui_tem_names import *
 
 
 class _USLBaseViewMeta(ABCMeta, type(qtw.QWidget)):

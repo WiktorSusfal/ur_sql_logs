@@ -5,7 +5,7 @@ from lib.views.components.base_view import USLBaseView
 from lib.views.vw_3b_main_toolbar import VwMainToolbar
 from lib.views.vw_3a_main_content import VwMainContent
 
-from lib.helpers.hp_gui_tem_names import *
+from lib.helpers.constants.hp_gui_tem_names import *
 
 
 class VwMain(USLBaseView):

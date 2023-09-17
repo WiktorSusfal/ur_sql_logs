@@ -1,7 +1,7 @@
 import PyQt5.QtWidgets as qtw
 
 from lib.views.vw_2_main import VwMain
-from lib.helpers.hp_gui_tem_names import *
+from lib.helpers.constants.hp_gui_tem_names import *
 
 INIT_POS_X = 100
 INIT_POS_Y = 100

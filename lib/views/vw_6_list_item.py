@@ -3,7 +3,7 @@ import PyQt5.QtCore as qtc
 
 from lib.views.components.base_view import USLBaseView
 from lib.view_models.vm_4_robot_connection import VmRobotConnection
-from lib.helpers.hp_gui_tem_names import *
+from lib.helpers.constants.hp_gui_tem_names import *
 
 
 class VwListItem(USLBaseView):

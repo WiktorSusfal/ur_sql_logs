@@ -6,7 +6,7 @@ from lib.views.components.list_widget import USLQListWidget
 from lib.views.vw_6_list_item import VwListItem
 
 from lib.helpers.hp_view_models_manager import HpViewModelsManager, VmRobotConnection
-from lib.helpers.hp_gui_tem_names import *
+from lib.helpers.constants.hp_gui_tem_names import *
 
 
 class VwSelectionList(USLBaseView):

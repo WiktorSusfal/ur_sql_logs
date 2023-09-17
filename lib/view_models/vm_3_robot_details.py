@@ -1,7 +1,9 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from lib.view_models.vm_4_robot_connection import VmRobotConnection
+
 from lib.models.data_structures.ds_robot_connection_data import DsRobotConnectionData
+
 from lib.helpers.hp_vm_utils import HpVmUtils
 
 

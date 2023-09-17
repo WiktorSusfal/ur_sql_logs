@@ -4,7 +4,7 @@ from lib.views.components.base_view import USLBaseView
 from lib.views.vw_5a_selection_list import VwSelectionList
 from lib.views.vw_5b_item_details import VwItemDetails
 
-from lib.helpers.hp_gui_tem_names import *
+from lib.helpers.constants.hp_gui_tem_names import *
 
 
 class VwAppHome(USLBaseView):

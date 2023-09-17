@@ -1,5 +1,6 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 
+from lib.helpers.hp_db_connection_manager import HpDBConnectionManager
 from lib.helpers.hp_connection_config_data import HpConnectionConfigData
 from lib.helpers.hp_vm_utils import HpVmUtils
 
@@ -7,6 +8,8 @@ class VmDBConnectionConfig(QObject):
 
     db_names_changed = pyqtSignal(list)
     db_connection_status_changed = pyqtSignal(bool)
+
+    db_connect_status_changed = pyqtSignal(int)
 
     def __init__(self):
         super(VmDBConnectionConfig, self).__init__()
@@ -29,7 +32,10 @@ class VmDBConnectionConfig(QObject):
         self.set_connection_names(names)
 
     def connect_to_database(self):
-        pass
+        c_string = HpConnectionConfigData.get_db_connection_string(self._current_connection
+                                                                    , self._db_password)
+        HpDBConnectionManager.set_connection_string(c_string)
+        HpDBConnectionManager.connect()
 
     def disconnect_from_database(self):
-        pass
+        HpDBConnectionManager.disconnect()
