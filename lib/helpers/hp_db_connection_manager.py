@@ -1,11 +1,11 @@
-from sqlalchemy import create_engine, Engine
+from sqlalchemy import create_engine, Engine, text
 from sqlalchemy.orm import sessionmaker, Session
 
 from threading import Thread, Lock
 from time import time, sleep
 
 from lib.helpers.hp_vm_utils import HpVmUtils
-
+from lib.helpers.constants.hp_indicators import *
 
 DATA_SAVE_INTERVAL = 6.0
 HEALTH_CHECK_INTERVAL = 2.0
@@ -19,7 +19,7 @@ class HpDBConnectionManager:
     _engine: Engine = None
     _session_maker: sessionmaker = None
     _session_ok: bool = False
-
+    
     _disconnect_flag = False
 
     _data_lock = Lock()
@@ -27,6 +27,33 @@ class HpDBConnectionManager:
     _save_data_thread = Thread()
     _health_check_finished: bool = True
     _data_save_finished: bool = True 
+
+    _session_health_callbacks = list()
+    _worker_threads_status_callbacks = list()
+
+    @classmethod
+    @HpVmUtils.run_in_thread
+    def subscribe_to_health_status(cls, func):
+        with cls._data_lock:
+            if func not in cls._session_health_callbacks:
+                cls._session_health_callbacks.append(func)
+
+    @classmethod
+    @HpVmUtils.run_in_thread
+    def subscribe_to_threads_status(cls, func):
+        with cls._data_lock:
+            if func not in cls._worker_threads_status_callbacks:
+                cls._worker_threads_status_callbacks.append(func)
+
+    @classmethod
+    def _trigger_health_callbacks(cls, status: int):
+        for func in cls._session_health_callbacks:
+            func(status)
+
+    @classmethod
+    def _trigger_threads_status_callbacks(cls, status: int):
+        for func in cls._worker_threads_status_callbacks:
+            func(status)
 
     @classmethod
     def set_connection_string(cls, connection_string: str):
@@ -81,6 +108,8 @@ class HpDBConnectionManager:
         cls._save_data_thread = Thread(target=cls._handle_data_save, args=(session_maker, ))
         cls._save_data_thread.start()
 
+        cls._trigger_threads_status_callbacks(DB_THREADS_RUNNING)
+
     @classmethod
     def _handle_health_check(cls, session_maker: sessionmaker):
         with cls._data_lock:
@@ -105,13 +134,17 @@ class HpDBConnectionManager:
     def _check_connection_health(cls, session_maker: sessionmaker, err_cnt: int) -> int: 
         try:
             with session_maker() as session:
-                session.execute("SELECT 1")     
+                session.execute(text("SELECT 1"))     
             with cls._data_lock:
                 cls._session_ok = True
+
+            cls._trigger_health_callbacks(DB_CONNECTED)
         except Exception as e:
             with cls._data_lock:
                 cls._session_ok = False
-                return err_cnt + 1
+
+            cls._trigger_health_callbacks(DB_HAS_ERRORS)
+            err_cnt += 1
         finally:
             return err_cnt
 
@@ -138,10 +171,14 @@ class HpDBConnectionManager:
         print('SAVING DO DATABASE')
 
     @classmethod
+    @HpVmUtils.run_in_thread
     def _clear_disconnect_flag(cls):
         with cls._data_lock:
             if cls._data_save_finished and cls._health_check_finished:
                 cls._disconnect_flag = False
+        
+        cls._trigger_health_callbacks(DB_DISCONNECTED)
+        cls._trigger_threads_status_callbacks(DB_THREADS_FINISHED)
 
             
 if __name__ == '__main__':

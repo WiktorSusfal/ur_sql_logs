@@ -2,12 +2,6 @@ QStackedWidget {
     background-color: transparent;
 }
 
-QListWidget {
-    background: #2f3b52;
-    border: None;
-    min-height: 400px;
-}
-
 QWidget#CUSTOM_VIEW_WIDGET {   
     background-color: transparent;
 }
@@ -33,5 +27,5 @@ QWidget#UR_ITEM_DETAILS {
 }
 
 QWidget#UR_LIST_ITEM {   
-    background-color: #242e42;
+    background-color: transparent;
 }

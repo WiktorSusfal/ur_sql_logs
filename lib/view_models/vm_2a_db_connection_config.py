@@ -7,15 +7,18 @@ from lib.helpers.hp_vm_utils import HpVmUtils
 class VmDBConnectionConfig(QObject):
 
     db_names_changed = pyqtSignal(list)
-    db_connection_status_changed = pyqtSignal(bool)
 
     db_connect_status_changed = pyqtSignal(int)
+    db_threads_status_changed = pyqtSignal(int)
 
     def __init__(self):
         super(VmDBConnectionConfig, self).__init__()
         self._db_connection_names: list[str] = list()
         self._current_connection = str()
         self._db_password = str()
+
+        HpDBConnectionManager.subscribe_to_health_status(self.db_connect_status_changed.emit)
+        HpDBConnectionManager.subscribe_to_threads_status(self.db_threads_status_changed.emit)
     
     @HpVmUtils.observable_property('_db_connection_names', 'db_names_changed')
     def set_connection_names(self, connection_names: list[str]):

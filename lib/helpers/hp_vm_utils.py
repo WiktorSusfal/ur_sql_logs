@@ -23,6 +23,5 @@ class HpVmUtils:
     def run_in_thread(func):
         def wrapper(*args, **kwargs):
             t = Thread(target=func, args=args, kwargs=kwargs, daemon=True)
-            print('Starting thread')
             t.start()
         return wrapper

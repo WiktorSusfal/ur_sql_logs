@@ -39,3 +39,9 @@ QPushButton#LIST_ACTION_BUTTON:pressed {
     border-style: inset;
     background: #bae8e8;
 }
+
+QPushButton#ACTION_BUTTON:disabled ,
+QPushButton#LIST_ACTION_BUTTON:disabled {
+    background: #e3f6f5;
+    color: #bae8e8;
+}
