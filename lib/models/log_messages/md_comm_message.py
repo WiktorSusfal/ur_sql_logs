@@ -1,8 +1,8 @@
 from sqlalchemy import Column, String, Integer
 
-from lib.models.md_base_message import MDBaseMessage
+from lib.models.log_messages.md_base_message import MDBaseMessage
 
-from lib.helpers.constants.hp_indicators import *
+from lib.helpers.constants.hp_backend_names import *
 
 
 class MDCommMessage(MDBaseMessage):

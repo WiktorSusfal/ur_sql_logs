@@ -3,49 +3,45 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from lib.models.md_robot_connection import MdRobotConnection
 from lib.models.data_structures.ds_robot_connection_data import DsRobotConnectionData
 
+from lib.helpers.hp_message_parser import HpMessageParser
+
 
 class VmRobotConnection(QObject):
 
-    ur_connection_changed = pyqtSignal(DsRobotConnectionData)
+    connection_name_changed = pyqtSignal(str)
     connection_status_changed = pyqtSignal(bool)
     message_counter_changed = pyqtSignal(int)
-
+    
     def __init__(self):
         super(VmRobotConnection, self).__init__()
-        self._ur_connection = MdRobotConnection()
-        self._connection_status: bool = False
-        self._message_counter: int = 0 
+        self._robot_connection = MdRobotConnection()
+        self.subscribe_to_model()
 
     @property
-    def connection_data(self):
-        return self._ur_connection.produce_data_struct()
-        
-    @property
-    def ur_connection(self) -> MdRobotConnection:
-        return self._ur_connection
+    def robot_connection_data(self):
+        return self._robot_connection.produce_data_struct()
     
-    @ur_connection.setter
-    def ur_connection(self, ur_connection: MdRobotConnection):
-        self._ur_connection = ur_connection
-        self.ur_connection_changed.emit(self.connection_data)
-
     @property
-    def connection_status(self) -> bool:
-        return self._connection_status
+    def robot_connection_name(self) -> str:
+        return self.robot_connection_data.name
     
-    @connection_status.setter
-    def connection_status(self, status: bool):
-        self._connection_status = status
-        self.connection_status_changed.emit(self._connection_status)
-
-    @property
-    def message_counter(self) -> bool:
-        return self._message_counter
-    
-    @message_counter.setter
-    def message_counter(self, counter: int):
-        self._message_counter = counter
-        self.message_counter_changed.emit(self._message_counter)
+    def set_robot_connection(self, connection: MdRobotConnection): 
+        self.unsubscribe_model()
+        self._robot_connection = connection
+        self.connection_name_changed.emit(self.robot_connection_name)
+        self.subscribe_to_model()
 
     def update_data(self, data: DsRobotConnectionData):
-        self._ur_connection._update_data(data)
+        self._robot_connection.update_data(data)
+
+    def subscribe_to_model(self):
+        self._robot_connection.subscribe_connection_status(
+            self.connection_status_changed.emit)
+        HpMessageParser.subscribe_message_counter(
+            self._robot_connection.id, self.message_counter_changed.emit)
+        
+    def unsubscribe_model(self):
+        self._robot_connection.unsubscribe_connection_status(
+            self.connection_status_changed.emit)
+        HpMessageParser.unsubscribe_message_counter(
+            self._robot_connection.id, self.message_counter_changed.emit)

@@ -18,7 +18,7 @@ class VwListItem(USLBaseView):
         self._off_icon_label = self._produce_icon_label(r'disconnected/disconn48.png', 60, 20, label_name=LIST_ITEM_ICON_LABEL_NAME)
         self._mail_icon_label = self._produce_icon_label(r'mail/mail.png', 24, 24, label_name=LIST_ITEM_ICON_LABEL_NAME)
         
-        self._title_label = qtw.QLabel(self.model.connection_data.name)
+        self._title_label = qtw.QLabel(self.model.robot_connection_name)
         self._title_label.setObjectName(LIST_ITEM_TITLE_LABEL_NAME)
 
         self._message_counter_label = qtw.QLabel("0")
@@ -50,7 +50,9 @@ class VwListItem(USLBaseView):
         pass
 
     def _set_value_subscriptions(self):
-        pass
+        self.model.connection_name_changed.connect(self._title_label.setText)
+        self.model.message_counter_changed.connect(self._message_counter_label.setText)
+        self.model.connection_status_changed.connect(self._connection_indicator.setCurrentIndex)
 
     def _init_actions(self):
         pass

@@ -75,27 +75,26 @@ class HpDBConnectionManager:
                 cls._start_worker_threads()
 
     @classmethod
+    @HpVmUtils.run_in_thread
     def disconnect(cls):
-        if cls._save_data_thread.is_alive():
-            cls._disconnect_flag = True
+        with cls._data_lock:
+            if not cls._data_save_finished and not cls._health_check_finished:
+                cls._disconnect_flag = True
 
     @classmethod
     def _get_session_maker(cls) -> sessionmaker:
         with cls._data_lock: 
-            session_maker = cls._session_maker
-        return session_maker
+            return cls._session_maker
     
     @classmethod
     def _get_session_status(cls) -> bool:
         with cls._data_lock:
-            session_ok = cls._session_ok
-        return session_ok
+            return cls._session_ok
     
     @classmethod
     def _get_disconnect_flag(cls) -> bool:
         with cls._data_lock:
-            flag = cls._disconnect_flag
-        return flag
+            return cls._disconnect_flag
         
     @classmethod
     @HpVmUtils.run_in_thread

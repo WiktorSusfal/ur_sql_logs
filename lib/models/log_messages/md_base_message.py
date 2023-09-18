@@ -1,5 +1,5 @@
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, String, DateTime, Integer
+from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 
@@ -7,6 +7,7 @@ class MDBaseMessage(Base):
 
     __tablename__ = 'base_messages'
 
+    message_id = Column(Integer, primary_key=True)
     robot_id = Column(String)
     type = Column(String)
     timestamp = Column(String)
@@ -16,3 +17,6 @@ class MDBaseMessage(Base):
 
     def __init__(self):
         pass
+
+if __name__ == '__main__':
+    m = MDBaseMessage()

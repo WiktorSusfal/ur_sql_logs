@@ -46,7 +46,7 @@ class VmRobotDetails(QObject):
         
     def update_interface_data(self):
         if self._vm_robot_connection:
-            conn_data = self._vm_robot_connection.ur_connection.produce_data_struct()
+            conn_data = self._vm_robot_connection.robot_connection_data
         else:
             conn_data = DsRobotConnectionData()
         
