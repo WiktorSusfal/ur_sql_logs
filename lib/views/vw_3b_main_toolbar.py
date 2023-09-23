@@ -3,7 +3,7 @@ import PyQt5.QtCore as qtc
 
 from lib.views.components.base_view import USLBaseView
 
-from lib.helpers.hp_view_models_manager import HpViewModelsManager
+from lib.helpers.resources.hp_view_models_manager import HpViewModelsManager
 from lib.helpers.constants.hp_gui_tem_names import *
 
 

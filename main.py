@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication
 
 from lib.views.vw_1_main_window import VwMainWindow
-from lib.helpers.hp_resources_manager import HpResourcesManager
+from lib.helpers.resources.hp_resources_manager import HpResourcesManager
 
 
 if __name__ == '__main__':

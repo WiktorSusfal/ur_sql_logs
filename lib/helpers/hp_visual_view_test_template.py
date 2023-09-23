@@ -1,7 +1,7 @@
 import PyQt5.QtWidgets as qtw
 import sys as sys
 
-from lib.helpers.hp_resources_manager import HpResourcesManager
+from lib.helpers.resources.hp_resources_manager import HpResourcesManager
 
 _test_view_app = qtw.QApplication(sys.argv)
 _test_view_app.setStyleSheet(HpResourcesManager.get_styles_code())

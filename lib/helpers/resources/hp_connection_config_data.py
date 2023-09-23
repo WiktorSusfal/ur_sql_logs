@@ -4,7 +4,7 @@ import os
 CONN_CONFIG_FILENAME = 'db_connections.yml'
 
 SCRIPT_PATH = os.path.realpath(os.path.dirname(__file__))
-CONFIG_REL_PATH = r'../../config'
+CONFIG_REL_PATH = r'../../../config'
 CONFIG_PATH = os.path.normpath(os.path.join(SCRIPT_PATH, CONFIG_REL_PATH, CONN_CONFIG_FILENAME))
 
 

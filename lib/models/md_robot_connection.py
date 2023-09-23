@@ -39,7 +39,7 @@ class MdRobotConnection(MdRobotConnBase):
         self.id = id or str(uuid4())
         self.update_data(connection_data or DsRobotConnectionData())
 
-        self._connection_status = ROBOT_DISCONNECTED
+        self._connection_status = HEALTH_LOST
         self._connection_status_callbacks = list()
 
         self._disconnect_flag: bool = False
@@ -67,9 +67,9 @@ class MdRobotConnection(MdRobotConnBase):
             self._connection_status_callbacks.remove(func)
 
     @HpVmUtils.run_in_thread
-    def _trigger_connection_status(self):
+    def _trigger_connection_status(self, status: int):
         for func in self._connection_status_callbacks:
-            func(self._connection_status)
+            func(status)
 
     @HpVmUtils.run_in_thread
     def connect(self):
@@ -92,6 +92,8 @@ class MdRobotConnection(MdRobotConnBase):
 
     def _handle_robot_connection(self, ip: str, port: int, freq: float):
         robot_connection = self._get_robot_connection(ip, port)
+        print(ip, port, freq)
+        print(type(robot_connection))
         if not robot_connection:
             return
         
@@ -105,8 +107,8 @@ class MdRobotConnection(MdRobotConnBase):
             start_time = time()
             while time() - start_time < freq:
                 if conn_err_cnt > CONNECTION_ERRORS_THRESHOLD or self._get_disconnect_flag():
-                    self._connection_status = ROBOT_DISCONNECTED
-                    self._trigger_connection_status()
+                    self._connection_status = HEALTH_LOST
+                    self._trigger_connection_status(HEALTH_LOST)
                     
                     with self._data_lock:
                         self._disconnect_flag = False
@@ -121,8 +123,8 @@ class MdRobotConnection(MdRobotConnBase):
 
         try: 
             robot_connection.connect((ip, port))
-            self._connection_status = ROBOT_CONNECTED
-            self._trigger_connection_status()
+            self._connection_status = HEALTH_OK
+            self._trigger_connection_status(HEALTH_OK)
 
         except Exception as e:
             return None
@@ -138,4 +140,16 @@ class MdRobotConnection(MdRobotConnBase):
 
     
 if __name__ == '__main__':
-    m = MdRobotConnection()
+    def connection_indicator(status: int):
+        if status == HEALTH_OK:
+            print('\nrobot connected\n')
+        else:
+            print('\nrobot disconnected\n')
+    
+    rcd = DsRobotConnectionData('name', '127.0.0.1', 30001, 1)
+    m = MdRobotConnection('my_robot_id', rcd)
+    m.subscribe_connection_status(connection_indicator)
+    m.connect()
+    sleep(5)
+    m.disconnect()
+    sleep(4)

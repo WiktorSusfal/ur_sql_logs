@@ -4,7 +4,7 @@ import PyQt5.QtGui as qtg
 
 from lib.views.components.base_view import USLBaseView
 
-from lib.helpers.hp_view_models_manager import HpViewModelsManager
+from lib.helpers.resources.hp_view_models_manager import HpViewModelsManager
 from lib.helpers.constants.hp_gui_tem_names import *
 from lib.helpers.constants.hp_indicators import *
 
@@ -75,8 +75,8 @@ class VwDBConnectionConfig(USLBaseView):
 
     def _init_actions(self):
         self._model.get_connection_names()
-        self._connection_indicator.setCurrentIndex(DB_DISCONNECTED)
-        self._manage_action_buttons(DB_THREADS_FINISHED)
+        self._connection_indicator.setCurrentIndex(HEALTH_LOST)
+        self._manage_action_buttons(THREADS_FINISHED)
 
     def _db_connection_names_changed(self, names: list[str]):
         self._db_conn_list.clear()
@@ -84,9 +84,9 @@ class VwDBConnectionConfig(USLBaseView):
 
     def _fill_connection_indicator_widget(self):
         indicator_icons = {
-            DB_CONNECTED: self._conn_icon_label
-            ,DB_DISCONNECTED: self._disconn_icon_label
-            ,DB_HAS_ERRORS: self._conn_err_icon_label }
+            HEALTH_OK: self._conn_icon_label
+            ,HEALTH_LOST: self._disconn_icon_label
+            ,HEALTH_HAS_ERRORS: self._conn_err_icon_label }
         
         sorted_icons = sorted(indicator_icons.items())
         for key, value in sorted_icons:
@@ -95,7 +95,7 @@ class VwDBConnectionConfig(USLBaseView):
             self._connection_indicator.addWidget(value)
 
     def _manage_action_buttons(self, status: int):
-        connectable: bool = True if status == DB_THREADS_FINISHED else False
+        connectable: bool = True if status == THREADS_FINISHED else False
         
         self._db_connect_btn.setDisabled(not connectable)
         self._db_disconnect_btn.setDisabled(connectable)

@@ -4,7 +4,7 @@ from lib.views.components.base_view import USLBaseView
 from lib.views.vw_4b_db_connection_config import VwDBConnectionConfig
 from lib.views.vw_4a_app_home import VwAppHome
 
-from lib.helpers.hp_view_models_manager import HpViewModelsManager
+from lib.helpers.resources.hp_view_models_manager import HpViewModelsManager
 from lib.helpers.constants.hp_gui_tem_names import *
 
 
