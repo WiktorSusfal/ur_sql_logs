@@ -1,30 +1,66 @@
+from threading import Lock
+from queue import Queue
+import struct
+
+from lib.models.data_structures.ds_robot_msg_buffer import DsRobotMsgBuffer
+
+from lib.helpers.hp_message_decoder import HpMessageDecoder
+from lib.helpers.hp_looped_task_manager import HpLoopedTaskManager
+from lib.helpers.constants.hp_message_attributes import *
+
+PARSING_INTERVAL = 0.1
+
 class HpMessageParser:
-     
-    _message_counter: dict[str, int] = dict()
-    _message_counter_callbacks: dict[str, list] = dict()
+
+    _data_lock: Lock = Lock()
+    _input_buffers: Queue[DsRobotMsgBuffer] = Queue(1000)
+
+    _ltm: HpLoopedTaskManager = None
 
     @classmethod
-    def put_in_queue(cls, data: bytes, id: str):
-        pass
+    def put_in_queue(cls, buffer: bytes, id: str):
+        if not cls._ltm:
+            cls._ltm = cls._get_task_manager()
+            cls._ltm.start_process()
+
+        with cls._data_lock:
+            cls._input_buffers.put_nowait(DsRobotMsgBuffer(buffer, id))
 
     @classmethod
-    def subscribe_message_counter(cls, id: str, func):
-        if not id in cls._message_counter_callbacks:
-            cls._message_counter_callbacks[id] = [func,]
-        else:
-            cls._message_counter_callbacks[id].append(func)
+    def _parse_messages(cls) -> bool:
+        msg_buffer = cls._get_next_robot_msg_buffer()
+        if msg_buffer is None:
+            return False
+        
+        raw_message_data = set()
+        for raw_message in msg_buffer.get_primary_client_messages():
+            if raw_message is None:
+                continue
+            
+            start, end = ROBOT_MSG_TYPE_OFFSET, ROBOT_MSG_TYPE_OFFSET + ROBOT_MSG_TYPE_LEN
+            raw_message_type = struct.unpack('!B', raw_message[start: end])[0]
+            
+            raw_message_data.add((raw_message, raw_message_type))
+        
+        for data in raw_message_data:
+            HpMessageDecoder.put_in_queue(*data, msg_buffer.robot_id)
+
+        return True
 
     @classmethod
-    def unsubscribe_message_counter(cls, id: str, func):
-        if id not in cls._message_counter_callbacks:
-            return
-        if func in cls._message_counter_callbacks[id]:
-            cls._message_counter_callbacks[id].remove(func)
-        if len(cls._message_counter_callbacks[id]) == 0:
-            del cls._message_counter_callbacks[id]
+    def _get_next_robot_msg_buffer(cls) -> DsRobotMsgBuffer:
+        try:
+            with cls._data_lock:
+                msg_buffer = cls._input_buffers.get_nowait()
+            return msg_buffer
+        except:
+            return None
 
     @classmethod
-    def _trigger_message_counter(cls, id: str):
-        value = cls._message_counter[id]
-        for func in cls._message_counter_callbacks[id]:
-            func(value)
+    def _get_task_manager(cls) -> HpLoopedTaskManager:
+        return HpLoopedTaskManager(
+                    main_task=cls._parse_messages
+                    ,main_interval=PARSING_INTERVAL
+                )
+
+    

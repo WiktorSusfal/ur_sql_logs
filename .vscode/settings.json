@@ -9,6 +9,7 @@
         "disconn",
         "hdcm",
         "onoff",
+        "PCKG",
         "pixmap",
         "pyqt",
         "qline",

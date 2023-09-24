@@ -77,8 +77,9 @@ class HpDBConnectionManager:
             return False
 
     @classmethod
-    def _save_data(cls, session_maker: sessionmaker):
+    def _save_data(cls, session_maker: sessionmaker) -> bool:
         print('SAVING DO DATABASE')
+        return True
 
             
 if __name__ == '__main__':

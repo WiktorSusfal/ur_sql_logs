@@ -1,13 +1,13 @@
 services:
 
-  #ur_sim:
-  #  image: universalrobots/ursim_e-series
-  #  ports:
-  #    - 127.0.0.1:5900:5900
-  #    - 127.0.0.1:30001:30001
-  #    - 127.0.0.1:6080:6080
-  #  environment:
-  #    ROBOT_MODEL: UR10
+  ur_sim:
+    image: universalrobots/ursim_e-series
+    ports:
+      - 127.0.0.1:5900:5900
+      - 127.0.0.1:30001:30001
+      - 127.0.0.1:6080:6080
+    environment:
+      ROBOT_MODEL: UR10
  
   db:
     image: postgres:15.4-alpine3.18
