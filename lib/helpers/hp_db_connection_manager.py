@@ -2,6 +2,7 @@ from sqlalchemy import create_engine, Engine, text
 from sqlalchemy.orm import sessionmaker, Session
 from collections.abc import Callable
 
+from lib.helpers.hp_message_storage import HpMessageStorage
 from lib.helpers.hp_looped_task_manager import HpLoopedTaskManager
 from lib.helpers.constants.hp_indicators import *
 
@@ -17,7 +18,7 @@ class HpDBConnectionManager:
     _engine: Engine = None
     _session_maker: sessionmaker = None
 
-    _ltm = None
+    _ltm: HpLoopedTaskManager = None
 
     @classmethod
     def subscribe_to_health_status(cls, func: Callable[[int], None]):
@@ -40,7 +41,6 @@ class HpDBConnectionManager:
     def _set_connection(cls):
         cls._engine = create_engine(cls._connection_string)
         cls._session_maker = sessionmaker(bind=cls._engine)
-        cls._set_task_manager_arguments()
 
     @classmethod
     def _set_task_manager(cls):
@@ -51,13 +51,6 @@ class HpDBConnectionManager:
             ,health_interval=HEALTH_CHECK_INTERVAL
             ,max_health_errors=HEALTH_ERROR_THRESHOLD
         )
-        cls._set_task_manager_arguments()
-
-    @classmethod
-    def _set_task_manager_arguments(cls):
-        current_session_maker = cls._session_maker
-        args = (current_session_maker, )
-        cls._ltm.set_arguments(main_args=args, health_args=args)
 
     @classmethod
     def connect(cls):
@@ -68,18 +61,29 @@ class HpDBConnectionManager:
         cls._ltm.abort_process()
 
     @classmethod
-    def _check_connection_health(cls, session_maker: sessionmaker) -> bool: 
+    def _check_connection_health(cls) -> bool: 
         try:
-            with session_maker() as session:
+            with cls._session_maker() as session:
                 session.execute(text("SELECT 1"))     
             return True
         except Exception as e:
             return False
 
     @classmethod
-    def _save_data(cls, session_maker: sessionmaker) -> bool:
-        print('SAVING DO DATABASE')
-        return True
+    def _save_data(cls) -> bool:
+        err_flag = False
+
+        messages = HpMessageStorage.get_save_staged()
+        with cls._session_maker() as session:
+            for msg in messages:
+                try:
+                    session.add(msg)
+                    session.commit()
+                except:
+                    err_flag = True
+                    continue
+        
+        return not err_flag
 
             
 if __name__ == '__main__':

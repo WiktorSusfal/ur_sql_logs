@@ -1,6 +1,7 @@
 import struct
 from dataclasses import dataclass
 from typing import Generator
+from datetime import datetime
 
 from lib.helpers.constants.hp_message_attributes import *
 
@@ -8,6 +9,7 @@ from lib.helpers.constants.hp_message_attributes import *
 class DsRobotMsgBuffer:
     buffer: bytes = None
     robot_id: str = None
+    capture_dt: datetime = None
 
     def _get_buffer_part(self, offset: int, length: int) -> bytes:
         return self.buffer[offset : offset+length]

@@ -1,5 +1,6 @@
 import socket
 from collections.abc import Callable
+from datetime import datetime
 
 from uuid import uuid4
 from sqlalchemy.orm import declarative_base
@@ -91,7 +92,7 @@ class MdRobotConnection(MdRobotConnBase):
         try:
             buffer = self._robot_connection.recv(4096)
             if buffer:
-                HpMessageParser.put_in_queue(buffer, self.id)
+                HpMessageParser.put_in_queue(buffer, self.id, datetime.now())
             return True
         except:
             return False

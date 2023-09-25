@@ -1,9 +1,26 @@
 from queue import Queue
 from threading import Lock
+from datetime import datetime
 
 from lib.models.data_structures.ds_robot_raw_message import DsRobotRawMessage
+from lib.models.log_messages.md_base_message import MDBaseMessage
+from lib.models.log_messages.md_comm_message import MDCommMessage
+from lib.models.log_messages.md_key_message import MDKeyMessage
+from lib.models.log_messages.md_run_exp_message import MDRunExpMessage
+from lib.models.log_messages.md_safety_message import MDSafetyMessage
+from lib.models.log_messages.md_version_message import MDVersionMessage
 
+from lib.helpers.hp_message_storage import HpMessageStorage
 from lib.helpers.hp_looped_task_manager import HpLoopedTaskManager
+
+DECODING_INTERVAL = 0.1
+MSG_MODEL_TYPE_MAP: dict[int, type] = {
+                                        3: MDVersionMessage,
+                                        7: MDKeyMessage,
+                                        5: MDSafetyMessage,
+                                        6: MDCommMessage,
+                                        10: MDRunExpMessage
+                                    }
 
 class HpMessageDecoder:
 
@@ -12,40 +29,51 @@ class HpMessageDecoder:
 
     _ltm: HpLoopedTaskManager = None
 
-    _message_counter: dict[str, int] = dict()
-    _message_counter_callbacks: dict[str, list] = dict()
-
     @classmethod
-    def put_in_queue(cls, raw_message: bytes, message_type: int, robot_id):
+    def put_in_queue(cls, raw_message: bytes, message_type: int, robot_id, capture_dt: datetime):
         if not cls._ltm:
             cls._ltm = cls._get_task_manager()
             cls._ltm.start_process()
 
         with cls._data_lock:
-            cls._input_messages.put_nowait(DsRobotRawMessage(raw_message, message_type, robot_id))
+            cls._input_messages.put_nowait(DsRobotRawMessage(raw_message, message_type, robot_id, capture_dt))
 
     @classmethod
-    def subscribe_message_counter(cls, id: str, func):
-        if not id in cls._message_counter_callbacks:
-            cls._message_counter_callbacks[id] = [func,]
-        else:
-            cls._message_counter_callbacks[id].append(func)
+    def _decode_messages(cls) -> bool:
+        raw_msg = cls._get_next_msg()
+        if raw_msg is None:
+            return False
+        
+        msg_class = cls._get_msg_class(raw_msg.type)
+        if msg_class:
+            return False
+        
+        msg_object = cls._get_msg_object(raw_msg.message, raw_msg.robot_id, raw_msg.capture_dt)
+        msg_object.decode_message()
+        HpMessageStorage.put_in_storage(msg_object, raw_msg.robot_id)
 
+        return True
+    
     @classmethod
-    def unsubscribe_message_counter(cls, id: str, func):
-        if id not in cls._message_counter_callbacks:
-            return
-        if func in cls._message_counter_callbacks[id]:
-            cls._message_counter_callbacks[id].remove(func)
-        if len(cls._message_counter_callbacks[id]) == 0:
-            del cls._message_counter_callbacks[id]
-
+    def _get_msg_class(cls, msg_type: int) -> type:
+        return MSG_MODEL_TYPE_MAP.get(msg_type, None)
+    
     @classmethod
-    def _trigger_message_counter(cls, id: str):
-        value = cls._message_counter[id]
-        for func in cls._message_counter_callbacks[id]:
-            func(value)
+    def _get_msg_object(msg_class: type, msg: bytes, robot_id: str, capture_dt: datetime) -> MDBaseMessage:
+        return msg_class(msg, robot_id, capture_dt)
+    
+    @classmethod
+    def _get_next_msg(cls) -> DsRobotRawMessage:
+        try:
+            with cls._data_lock:
+                raw_msg = cls._input_messages.get_nowait()
+            return raw_msg
+        except:
+            return None
 
     @classmethod
     def _get_task_manager(cls) -> HpLoopedTaskManager:
-        return HpLoopedTaskManager()
+        return HpLoopedTaskManager(
+                main_task=cls._decode_messages
+                ,main_interval=DECODING_INTERVAL
+            )

@@ -4,6 +4,19 @@ from lib.models.log_messages.md_base_message import MDBaseMessage
 
 from lib.helpers.constants.hp_backend_names import *
 
+REPORT_LEVELS_DICT = {
+                        0: 'DEBUG'
+                      , 1: 'INFO'
+                      , 2: 'WARNING'
+                      , 3: 'VIOLATION'
+                      , 4: 'FAULT'
+                      , 128: 'DEVL_DEBUG'
+                      , 129: 'DEVL_INFO'
+                      , 130: 'DEVL_WARNING'
+                      , 131: 'DEVL_VIOLATION'
+                      , 132: 'DEVL_FAULT'
+                    }
+
 
 class MDCommMessage(MDBaseMessage):
 

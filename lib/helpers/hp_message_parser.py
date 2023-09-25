@@ -1,5 +1,6 @@
 from threading import Lock
 from queue import Queue
+from datetime import datetime
 import struct
 
 from lib.models.data_structures.ds_robot_msg_buffer import DsRobotMsgBuffer
@@ -18,13 +19,13 @@ class HpMessageParser:
     _ltm: HpLoopedTaskManager = None
 
     @classmethod
-    def put_in_queue(cls, buffer: bytes, id: str):
+    def put_in_queue(cls, buffer: bytes, id: str, capture_dt: datetime):
         if not cls._ltm:
             cls._ltm = cls._get_task_manager()
             cls._ltm.start_process()
 
         with cls._data_lock:
-            cls._input_buffers.put_nowait(DsRobotMsgBuffer(buffer, id))
+            cls._input_buffers.put_nowait(DsRobotMsgBuffer(buffer, id, capture_dt))
 
     @classmethod
     def _parse_messages(cls) -> bool:
@@ -43,7 +44,7 @@ class HpMessageParser:
             raw_message_data.add((raw_message, raw_message_type))
         
         for data in raw_message_data:
-            HpMessageDecoder.put_in_queue(*data, msg_buffer.robot_id)
+            HpMessageDecoder.put_in_queue(*data, msg_buffer.robot_id, msg_buffer.capture_dt)
 
         return True
 
@@ -62,5 +63,3 @@ class HpMessageParser:
                     main_task=cls._parse_messages
                     ,main_interval=PARSING_INTERVAL
                 )
-
-    
