@@ -23,6 +23,7 @@ class MdRobotConnection(MdRobotConnBase):
     object_quantity: int = 0
 
     __tablename__ = ROBOT_INFO_TABLE_NAME
+    __table_args__ = {'schema': SCHEMA_NAME}
 
     id = Column(String, primary_key=True)
     name = Column(String)

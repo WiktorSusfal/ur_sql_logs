@@ -1,17 +1,26 @@
-from sqlalchemy import Column, String, DateTime, Integer
-from sqlalchemy.orm import declarative_base
 import struct 
+
+from sqlalchemy import Column, String, DateTime, BigInteger, Sequence, ForeignKey
+from sqlalchemy.orm import declarative_base
+from sqlalchemy.ext.declarative import DeclarativeMeta
+
 from typing import Any
 from datetime import datetime
 
-Base = declarative_base()
+from lib.helpers.constants.hp_backend_names import *
+
+Base: DeclarativeMeta = declarative_base()
+FK_COLUMN_NAME = '.'.join([SCHEMA_NAME, ROBOT_INFO_TABLE_NAME, ROBOT_PK_COLUMN_NAME])
 
 class MDBaseMessage(Base):
 
-    __tablename__ = 'base_messages'
+    __abstract__ = True
+    __table_args__ = {'schema': SCHEMA_NAME}
 
-    message_id = Column(Integer, primary_key=True)
-    robot_id = Column(String)
+    msg_seq = Sequence(SEQUENCE_NAME, schema=SCHEMA_NAME)
+
+    message_id = Column(BigInteger, msg_seq, primary_key=True)
+    robot_id = Column(String, ForeignKey(FK_COLUMN_NAME))
     msg_type = Column(String)
     timestamp = Column(String)
     date_time = Column(DateTime)
@@ -54,7 +63,7 @@ class MDBaseMessage(Base):
             char_array += str(struct.unpack('!c', data_buffer[start : end]))[3]
             i += 1
 
-        return [char_array, (offset + length)]
+        return (char_array, (offset + length))
 
 
 if __name__ == '__main__':

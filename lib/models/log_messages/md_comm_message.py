@@ -1,4 +1,5 @@
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, String
+from datetime import datetime
 
 from lib.models.log_messages.md_base_message import MDBaseMessage
 
@@ -30,5 +31,5 @@ class MDCommMessage(MDBaseMessage):
     data = Column(String)
     text_message = Column(String)
 
-    def __init__(self):
-        pass
+    def __init__(self, raw_msg: bytes, robot_id: str, capture_dt: datetime):
+        super(MDCommMessage, self).__init__(raw_msg, robot_id, capture_dt)

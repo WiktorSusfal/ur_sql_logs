@@ -4,6 +4,7 @@ from collections.abc import Callable
 
 from lib.helpers.hp_message_storage import HpMessageStorage
 from lib.helpers.hp_looped_task_manager import HpLoopedTaskManager
+from lib.helpers.resources.hp_resources_manager import HpResourcesManager, DATABASE_NAME
 from lib.helpers.constants.hp_indicators import *
 
 DATA_SAVE_INTERVAL = 6.0
@@ -54,11 +55,23 @@ class HpDBConnectionManager:
 
     @classmethod
     def connect(cls):
+        if not cls._ltm:
+            cls._set_task_manager()
+
+        cls._execute_init_queries()
         cls._ltm.start_process()
 
     @classmethod
     def disconnect(cls):
         cls._ltm.abort_process()
+
+    @classmethod
+    def _execute_init_queries(cls):
+        with cls._session_maker() as session:
+            s: Session = session
+            for query in HpResourcesManager.get_init_queries():
+                    s.execute(text(query))
+                    s.commit()
 
     @classmethod
     def _check_connection_health(cls) -> bool: 
@@ -75,10 +88,11 @@ class HpDBConnectionManager:
 
         messages = HpMessageStorage.get_save_staged()
         with cls._session_maker() as session:
+            s: Session = session
             for msg in messages:
                 try:
-                    session.add(msg)
-                    session.commit()
+                    s.add(msg)
+                    s.commit()
                 except:
                     err_flag = True
                     continue
@@ -87,8 +101,11 @@ class HpDBConnectionManager:
 
             
 if __name__ == '__main__':
-    from time import time
+    from time import time, sleep
+    
     hdcm = HpDBConnectionManager
-    hdcm.set_connection_string('postgresql://{user}:{password}@{host}:345/{database}')
-    import time
-    time.sleep(1)
+    hdcm.set_connection_string(f'postgresql://ur_logger:ur_logger_password@127.0.0.1:5432/UR_LOG_DATA')
+
+    hdcm.connect()
+    sleep(1)
+    hdcm.disconnect()
