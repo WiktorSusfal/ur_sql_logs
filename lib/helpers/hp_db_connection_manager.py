@@ -106,6 +106,15 @@ if __name__ == '__main__':
     hdcm = HpDBConnectionManager
     hdcm.set_connection_string(f'postgresql://ur_logger:ur_logger_password@127.0.0.1:5432/UR_LOG_DATA')
 
+    from lib.models.log_messages.md_comm_message import MDCommMessage
+    cm = MDCommMessage(bytes, str(), None)
+    from lib.models.md_robot_connection import MdRobotConnection
+    rc = MdRobotConnection('abc')
+    from lib.models.log_messages.md_key_message import MDKeyMessage
+    from lib.models.log_messages.md_base_message import Base
+    km = MDKeyMessage(bytes(), str(), None)
+    #Base.metadata.create_all(hdcm._engine)
+
     hdcm.connect()
     sleep(1)
     hdcm.disconnect()

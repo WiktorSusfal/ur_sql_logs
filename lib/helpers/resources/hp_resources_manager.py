@@ -52,4 +52,6 @@ class HpResourcesManager:
                                    , run_exp_msg_table_name=RUN_EXP_MSG_TABLE_NAME
                                    , key_msg_table_name=KEY_MSG_TABLE_NAME
                                    , comm_msg_table_name=COMM_MSG_TABLE_NAME
-                                   , robot_info_table_name=ROBOT_INFO_TABLE_NAME)
+                                   , robot_info_table_name=ROBOT_INFO_TABLE_NAME
+                                   , msg_foreign_key_column_name=MSG_FOREIGN_KEY_COLUMN_NAME
+                                   , robot_pk_column_name=ROBOT_PK_COLUMN_NAME)

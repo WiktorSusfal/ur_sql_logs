@@ -1,31 +1,28 @@
 import struct 
-
 from sqlalchemy import Column, String, DateTime, BigInteger, Sequence, ForeignKey
-from sqlalchemy.orm import declarative_base
-from sqlalchemy.ext.declarative import DeclarativeMeta
-
 from typing import Any
 from datetime import datetime
 
+from lib.models.components.common import Base
+
 from lib.helpers.constants.hp_backend_names import *
 
-Base: DeclarativeMeta = declarative_base()
-FK_COLUMN_NAME = '.'.join([SCHEMA_NAME, ROBOT_INFO_TABLE_NAME, ROBOT_PK_COLUMN_NAME])
+FK_COLUMN_REFERENCE = '.'.join([SCHEMA_NAME, ROBOT_INFO_TABLE_NAME, ROBOT_PK_COLUMN_NAME])
+
 
 class MDBaseMessage(Base):
 
     __abstract__ = True
-    __table_args__ = {'schema': SCHEMA_NAME}
 
     msg_seq = Sequence(SEQUENCE_NAME, schema=SCHEMA_NAME)
 
     message_id = Column(BigInteger, msg_seq, primary_key=True)
-    robot_id = Column(String, ForeignKey(FK_COLUMN_NAME))
+    robot_id = Column(String, ForeignKey(FK_COLUMN_REFERENCE), nullable=False)
     msg_type = Column(String)
     timestamp = Column(String)
     date_time = Column(DateTime)
     source = Column(String)
-    robot_message_type = Column(String)
+    robot_message_type = Column(String, nullable=False)
 
     def __init__(self, raw_msg: bytes, robot_id: str, capture_dt: datetime):
         self._offset = 0
@@ -67,4 +64,4 @@ class MDBaseMessage(Base):
 
 
 if __name__ == '__main__':
-    m = MDBaseMessage()
+    m = MDBaseMessage(bytes(), str(), None)

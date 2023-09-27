@@ -3,22 +3,22 @@ from collections.abc import Callable
 from datetime import datetime
 
 from uuid import uuid4
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, String, Float
 
 from lib.models.data_structures.ds_robot_connection_data import DsRobotConnectionData
+from lib.models.components.common import Base
 
 from lib.helpers.hp_message_parser import HpMessageParser
 from lib.helpers.hp_looped_task_manager import HpLoopedTaskManager
 from lib.helpers.constants.hp_backend_names import *
 from lib.helpers.constants.hp_indicators import *
 
-MdRobotConnBase = declarative_base()
 CONNECTION_ERRORS_THRESHOLD = 3
 CONNECTION_TIMEOUT = 1.5
 
 
-class MdRobotConnection(MdRobotConnBase):
+class MdRobotConnection(Base):
 
     object_quantity: int = 0
 
@@ -30,6 +30,12 @@ class MdRobotConnection(MdRobotConnBase):
     ip_address = Column(String)
     port = Column(Integer)
     read_frequency = Column(Float)
+
+    comm_msg    = relationship('MDCommMessage'      , backref='robot')
+    key_msg     = relationship('MDKeyMessage'       , backref='robot')
+    run_exp_msg = relationship('MDRunExpMessage'    , backref='robot')
+    safety_msg  = relationship('MDSafetyMessage'    , backref='robot')
+    ver_msg     = relationship('MDVersionMessage'   , backref='robot')
 
     def __init__(self, id: str = None, connection_data: DsRobotConnectionData = None):
         MdRobotConnection.object_quantity += 1

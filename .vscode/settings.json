@@ -3,6 +3,7 @@
         "PYTHONPATH": "${workspaceFolder}"
     },
     "cSpell.words": [
+        "backref",
         "dbcon",
         "dbconn",
         "dbdisconn",

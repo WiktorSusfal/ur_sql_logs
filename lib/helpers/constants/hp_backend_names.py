@@ -11,6 +11,7 @@ ROBOT_INFO_TABLE_NAME = 'robot_info'
 SEQUENCE_NAME = 'message_sequence'
 
 ROBOT_PK_COLUMN_NAME = 'id'
+MSG_FOREIGN_KEY_COLUMN_NAME = 'robot_id'
 
 DEFAULT_NAME = "ur_connection"
 DEFAULT_IP = '0.0.0.0'

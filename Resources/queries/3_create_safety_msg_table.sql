@@ -14,3 +14,9 @@ CREATE TABLE IF NOT EXISTS {schema_name}.{safety_msg_table_name} (
 	report_data varchar NULL,
 	CONSTRAINT {safety_msg_table_name}_pkey PRIMARY KEY (message_id)
 );
+CREATE INDEX "MDSafetyMessage_robot_info_fk" ON {schema_name}.{safety_msg_table_name} USING btree ({msg_foreign_key_column_name});
+
+
+ALTER TABLE {schema_name}.{safety_msg_table_name} 
+	ADD CONSTRAINT safety_message_robot_id_fkey FOREIGN KEY ({msg_foreign_key_column_name}) 
+	REFERENCES {schema_name}.{robot_info_table_name}({robot_pk_column_name});

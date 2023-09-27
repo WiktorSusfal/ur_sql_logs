@@ -14,3 +14,9 @@ CREATE TABLE IF NOT EXISTS {schema_name}.{version_msg_table_name} (
 	build_date varchar NULL,
 	CONSTRAINT {version_msg_table_name}_pkey PRIMARY KEY (message_id)
 );
+CREATE INDEX "MDVersionMessage_robot_info_fk" ON {schema_name}.{version_msg_table_name} USING btree ({msg_foreign_key_column_name});
+
+
+ALTER TABLE {schema_name}.{version_msg_table_name} 
+	ADD CONSTRAINT version_message_robot_id_fkey FOREIGN KEY ({msg_foreign_key_column_name}) 
+	REFERENCES {schema_name}.{robot_info_table_name}({robot_pk_column_name});
