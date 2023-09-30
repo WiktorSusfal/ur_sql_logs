@@ -46,8 +46,9 @@ class USLIPAddressValidator(QValidator):
     
     def validate(self, input_text: str, pos: int):
 
-        char, prev_char, dot_count = None, None, 0
+        char, prev_char, prev_2_char, dot_count = None, None, None, 0
         for i, c in enumerate(input_text):
+            prev_2_char = prev_char
             prev_char = char
             char = c
 
@@ -57,7 +58,10 @@ class USLIPAddressValidator(QValidator):
             if i == 0 and (char == '0' or char == '.'):
                 return QValidator.Invalid, input_text, pos
             
-            if i > 1 and char == '0' and prev_char == '.':
+            if i > 1 and char == '0' and prev_char == '0' and prev_2_char == '.':
+                return QValidator.Invalid, input_text, pos
+            
+            if i > 1 and char not in ('0', '.') and prev_char == '0' and prev_2_char == '.':
                 return QValidator.Invalid, input_text, pos
             
             if i > 1 and char == '.' and prev_char == '.':

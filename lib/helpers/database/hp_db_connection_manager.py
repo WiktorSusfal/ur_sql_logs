@@ -2,9 +2,9 @@ from sqlalchemy import create_engine, Engine, text
 from sqlalchemy.orm import sessionmaker, Session
 from collections.abc import Callable
 
-from lib.helpers.hp_message_storage import HpMessageStorage
-from lib.helpers.hp_looped_task_manager import HpLoopedTaskManager
-from lib.helpers.resources.hp_resources_manager import HpResourcesManager, DATABASE_NAME
+from lib.helpers.messages.hp_message_storage import HpMessageStorage
+from lib.helpers.utils.hp_looped_task_manager import HpLoopedTaskManager
+from lib.helpers.resources.hp_resources_manager import HpResourcesManager
 from lib.helpers.constants.hp_indicators import *
 
 DATA_SAVE_INTERVAL = 6.0
@@ -46,7 +46,7 @@ class HpDBConnectionManager:
     @classmethod
     def _set_task_manager(cls):
         cls._ltm = HpLoopedTaskManager(
-            main_task=cls._save_data
+            main_task=cls._save_robot_msgs
             ,main_interval=DATA_SAVE_INTERVAL
             ,health_check=cls._check_connection_health
             ,health_interval=HEALTH_CHECK_INTERVAL
@@ -83,7 +83,7 @@ class HpDBConnectionManager:
             return False
 
     @classmethod
-    def _save_data(cls) -> bool:
+    def _save_robot_msgs(cls) -> bool:
         err_flag = False
 
         messages = HpMessageStorage.get_save_staged()
@@ -97,6 +97,19 @@ class HpDBConnectionManager:
                     err_flag = True
                     continue
         
+        return not err_flag
+    
+    @classmethod
+    def save_robot_model(cls, model) -> bool:
+        err_flag = False 
+        try:
+            with cls._session_maker() as session:
+                s: Session = session
+                s.add(model)
+                s.commit()
+        except:
+            err_flag = True
+
         return not err_flag
 
             

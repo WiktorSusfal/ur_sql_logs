@@ -38,5 +38,12 @@ class MDVersionMessage(MDBaseMessage):
         self.build_date, o = self._read_char_array_as_string(rm, o, len_remain)
 
         self._offset = o
-
-
+    
+    def __repr__(self):
+        return  super().__repr__() + \
+                f"\n\t- project_name: {self.project_name}"\
+                f"\n\t- major_version: {self.major_version}"\
+                f"\n\t- minor_version: {self.minor_version}"\
+                f"\n\t- bugfix_version: {self.bugfix_version}"\
+                f"\n\t- build_number: {self.build_number}"\
+                f"\n\t- build_date: {self.build_date}"

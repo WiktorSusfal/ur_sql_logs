@@ -55,3 +55,13 @@ class MDCommMessage(MDBaseMessage):
       self.text_message, o = self._read_char_array_as_string(rm, o, len_remain)
 
       self._offset = o
+
+    def __repr__(self):
+        return  super().__repr__() + \
+                f"\n\t- code: {self.code}"\
+                f"\n\t- argument: {self.argument}"\
+                f"\n\t- report_level: {self.report_level}"\
+                f"\n\t- report_level_name: {self.report_level_name}"\
+                f"\n\t- data_type: {self.data_type}"\
+                f"\n\t- data: {self.data}"\
+                f"\n\t- text_message: {self.text_message}"

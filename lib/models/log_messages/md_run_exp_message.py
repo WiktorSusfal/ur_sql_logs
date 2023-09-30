@@ -32,3 +32,9 @@ class MDRunExpMessage(MDBaseMessage):
         self.text_message, o = self._read_char_array_as_string(rm, o, len_remain)
 
         self._offset = o
+    
+    def __repr__(self):
+        return  super().__repr__() + \
+                f"\n\t- script_line_no: {self.script_line_no}"\
+                f"\n\t- script_column_no: {self.script_column_no}"\
+                f"\n\t- text_message: {self.text_message}"

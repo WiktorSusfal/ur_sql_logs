@@ -5,8 +5,8 @@ import struct
 
 from lib.models.data_structures.ds_robot_msg_buffer import DsRobotMsgBuffer
 
-from lib.helpers.hp_message_decoder import HpMessageDecoder
-from lib.helpers.hp_looped_task_manager import HpLoopedTaskManager
+from lib.helpers.messages.hp_message_decoder import HpMessageDecoder
+from lib.helpers.utils.hp_looped_task_manager import HpLoopedTaskManager
 from lib.helpers.constants.hp_message_attributes import *
 
 PARSING_INTERVAL = 0.1

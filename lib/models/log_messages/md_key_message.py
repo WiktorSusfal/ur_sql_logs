@@ -36,3 +36,10 @@ class MDKeyMessage(MDBaseMessage):
         self.text_message, o = self._read_char_array_as_string(rm, o, len_remain)
 
         self._offset = o
+
+    def __repr__(self):
+        return  super().__repr__() + \
+                f"\n\t- code: {self.code}"\
+                f"\n\t- argument: {self.argument}"\
+                f"\n\t- title: {self.title}"\
+                f"\n\t- text_message: {self.text_message}"

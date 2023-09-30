@@ -3,7 +3,8 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from lib.models.md_robot_connection import MdRobotConnection
 from lib.models.data_structures.ds_robot_connection_data import DsRobotConnectionData
 
-from lib.helpers.hp_message_parser import HpMessageParser
+from lib.helpers.messages.hp_message_storage import HpMessageStorage
+from lib.helpers.database.hp_db_connection_manager import HpDBConnectionManager
 
 
 class VmRobotConnection(QObject):
@@ -37,11 +38,20 @@ class VmRobotConnection(QObject):
     def subscribe_to_model(self):
         self._robot_connection.subscribe_connection_status(
             self.connection_status_changed.emit)
-        HpMessageParser.subscribe_message_counter(
+        HpMessageStorage.subscribe_message_counter(
             self._robot_connection.id, self.message_counter_changed.emit)
         
     def unsubscribe_model(self):
         self._robot_connection.unsubscribe_connection_status(
             self.connection_status_changed.emit)
-        HpMessageParser.unsubscribe_message_counter(
+        HpMessageStorage.unsubscribe_message_counter(
             self._robot_connection.id, self.message_counter_changed.emit)
+        
+    def connect_to_robot(self):
+        self._robot_connection.connect()
+
+    def disconnect_from_robot(self):
+        self._robot_connection.disconnect()
+
+    def save_robot_model(self):
+        HpDBConnectionManager.save_robot_model(self._robot_connection)

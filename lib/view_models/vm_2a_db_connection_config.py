@@ -1,8 +1,8 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from lib.helpers.hp_db_connection_manager import HpDBConnectionManager
+from lib.helpers.database.hp_db_connection_manager import HpDBConnectionManager
 from lib.helpers.resources.hp_connection_config_data import HpConnectionConfigData
-from lib.helpers.hp_vm_utils import HpVmUtils
+from lib.helpers.utils.hp_vm_utils import HpVmUtils
 
 class VmDBConnectionConfig(QObject):
 

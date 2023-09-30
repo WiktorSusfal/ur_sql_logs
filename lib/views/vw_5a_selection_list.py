@@ -80,5 +80,5 @@ class VwSelectionList(USLBaseView):
 
 
 if __name__ == '__main__':
-    from lib.helpers.hp_visual_view_test_template import visual_test_preview
+    from lib.helpers.utils.hp_visual_view_test_template import visual_test_preview
     visual_test_preview(VwSelectionList())

@@ -2,7 +2,7 @@ from threading import Thread, Lock, Event
 from collections.abc import Callable
 from time import time, sleep
 
-from lib.helpers.hp_vm_utils import HpVmUtils
+from lib.helpers.utils.hp_vm_utils import HpVmUtils
 from lib.helpers.constants.hp_indicators import *
 
 DEFAULT_MAIN_TASK_INTERVAL = 15.0

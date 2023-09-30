@@ -38,5 +38,5 @@ class VwAppHome(USLBaseView):
         self._main_layout.setColumnMinimumWidth(0, 270)
 
 if __name__ == '__main__':
-    from lib.helpers.hp_visual_view_test_template import visual_test_preview
+    from lib.helpers.utils.hp_visual_view_test_template import visual_test_preview
     visual_test_preview(VwAppHome())

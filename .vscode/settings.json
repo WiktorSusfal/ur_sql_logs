@@ -17,6 +17,7 @@
         "qline",
         "REUSEADDR",
         "Roboto",
+        "RTDE",
         "sbar",
         "sessionmaker",
         "sqlalchemy",

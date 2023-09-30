@@ -10,8 +10,8 @@ from lib.models.log_messages.md_run_exp_message import MDRunExpMessage
 from lib.models.log_messages.md_safety_message import MDSafetyMessage
 from lib.models.log_messages.md_version_message import MDVersionMessage
 
-from lib.helpers.hp_message_storage import HpMessageStorage
-from lib.helpers.hp_looped_task_manager import HpLoopedTaskManager
+from lib.helpers.messages.hp_message_storage import HpMessageStorage
+from lib.helpers.utils.hp_looped_task_manager import HpLoopedTaskManager
 
 DECODING_INTERVAL = 0.1
 MSG_MODEL_TYPE_MAP: dict[int, type] = {
@@ -45,10 +45,10 @@ class HpMessageDecoder:
             return False
         
         msg_class = cls._get_msg_class(raw_msg.type)
-        if msg_class:
+        if  not msg_class:
             return False
         
-        msg_object = cls._get_msg_object(raw_msg.message, raw_msg.robot_id, raw_msg.capture_dt)
+        msg_object = cls._get_msg_object(msg_class, raw_msg.message, raw_msg.robot_id, raw_msg.capture_dt)
         msg_object.decode_message()
         HpMessageStorage.put_in_storage(msg_object, raw_msg.robot_id)
 
@@ -58,7 +58,7 @@ class HpMessageDecoder:
     def _get_msg_class(cls, msg_type: int) -> type:
         return MSG_MODEL_TYPE_MAP.get(msg_type, None)
     
-    @classmethod
+    @staticmethod
     def _get_msg_object(msg_class: type, msg: bytes, robot_id: str, capture_dt: datetime) -> MDBaseMessage:
         return msg_class(msg, robot_id, capture_dt)
     

@@ -4,7 +4,7 @@ from lib.view_models.vm_4_robot_connection import VmRobotConnection
 
 from lib.models.data_structures.ds_robot_connection_data import DsRobotConnectionData
 
-from lib.helpers.hp_vm_utils import HpVmUtils
+from lib.helpers.utils.hp_vm_utils import HpVmUtils
 
 
 class VmRobotDetails(QObject):
@@ -59,9 +59,15 @@ class VmRobotDetails(QObject):
         if self._vm_robot_connection:
             data = DsRobotConnectionData(self._name, self._ip_address, int(self._port), float(self._read_frequency))
             self._vm_robot_connection.update_data(data)
+            self._save_to_db()
+
+    @HpVmUtils.run_in_thread
+    def _save_to_db(self):
+        self._vm_robot_connection.save_robot_model()
+        
 
     def robot_connect(self):
-        pass
+        self._vm_robot_connection.connect_to_robot()
 
     def robot_disconnect(self):
-        pass
+        self._vm_robot_connection.disconnect_from_robot()

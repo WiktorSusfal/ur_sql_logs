@@ -8,8 +8,7 @@ MAX_MSG_LIST_SIZE = 25
 class HpMessageStorage:
 
     _messages: dict[str, list[MDBaseMessage] ] = dict()
-    _save_staged: list[MDBaseMessage] = dict()
-
+    _save_staged: list[MDBaseMessage] = list()
     _message_counter: dict[str, int] = dict()
     _message_counter_callbacks: dict[str, list[Callable[[int], None]] ] = dict()
 

@@ -1,16 +1,16 @@
 import socket
-from collections.abc import Callable
-from datetime import datetime
-
-from uuid import uuid4
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, String, Float
+
+from uuid import uuid4
+from collections.abc import Callable
+from datetime import datetime
 
 from lib.models.data_structures.ds_robot_connection_data import DsRobotConnectionData
 from lib.models.components.common import Base
 
-from lib.helpers.hp_message_parser import HpMessageParser
-from lib.helpers.hp_looped_task_manager import HpLoopedTaskManager
+from lib.helpers.messages.hp_message_parser import HpMessageParser
+from lib.helpers.utils.hp_looped_task_manager import HpLoopedTaskManager
 from lib.helpers.constants.hp_backend_names import *
 from lib.helpers.constants.hp_indicators import *
 
@@ -22,14 +22,14 @@ class MdRobotConnection(Base):
 
     object_quantity: int = 0
 
-    __tablename__ = ROBOT_INFO_TABLE_NAME
-    __table_args__ = {'schema': SCHEMA_NAME}
+    __tablename__   = ROBOT_INFO_TABLE_NAME
+    __table_args__  = {'schema': SCHEMA_NAME}
 
-    id = Column(String, primary_key=True)
-    name = Column(String)
-    ip_address = Column(String)
-    port = Column(Integer)
-    read_frequency = Column(Float)
+    id              = Column(String, primary_key=True)
+    name            = Column(String)
+    ip_address      = Column(String)
+    port            = Column(Integer)
+    read_frequency  = Column(Float)
 
     comm_msg    = relationship('MDCommMessage'      , backref='robot')
     key_msg     = relationship('MDKeyMessage'       , backref='robot')
@@ -52,8 +52,6 @@ class MdRobotConnection(Base):
         self.update_data(connection_data or DsRobotConnectionData())
 
         self._robot_connection =self._get_robot_connection()
-        
-        
     
     def update_data(self, data: DsRobotConnectionData):
         self.name = data.name or self._get_default_name()
@@ -103,3 +101,21 @@ class MdRobotConnection(Base):
             return True
         except:
             return False
+        
+if __name__ == '__main__':
+    from lib.helpers.messages.hp_message_storage import HpMessageStorage
+    from time import sleep
+
+    robot_id = uuid4()
+    
+    def message_arrived(count: int):
+        print("Message arrived, overall count: ", count)
+        last_msg_obj = HpMessageStorage._messages[robot_id][-1]
+        print(last_msg_obj)
+
+    rc = MdRobotConnection(robot_id, DsRobotConnectionData('robot_1', '127.0.0.1', 30001, 0.05))
+    HpMessageStorage.subscribe_message_counter(robot_id, message_arrived)
+
+    rc.connect()
+    sleep(30)
+    rc.disconnect
