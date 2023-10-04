@@ -6,6 +6,7 @@ from lib.views.components.validators import USLIntValidator, USLDoubleValidator,
 
 from lib.helpers.resources.hp_view_models_manager import HpViewModelsManager
 from lib.helpers.constants.hp_gui_tem_names import *
+from lib.helpers.constants.hp_indicators import *
 
 
 class VwItemDetails(USLBaseView):
@@ -19,6 +20,9 @@ class VwItemDetails(USLBaseView):
         self._ip_address_input = self._produce_line_edit(FORM_INPUT_NAME, USLIPAddressValidator(self))
         self._port_number_input = self._produce_line_edit(FORM_INPUT_NAME, USLIntValidator(1, 65535, self))
         self._read_freq_input = self._produce_line_edit(FORM_INPUT_NAME, USLDoubleValidator(0.0, 360.0, 1, self))
+
+        self._db_warning_label = qtw.QLabel("Warning: database not connected", self)
+        self._db_warning_label.setObjectName(WARNING_LABEL_NAME)
 
         main_form = qtw.QFormLayout()
         main_form.addRow(
@@ -47,7 +51,10 @@ class VwItemDetails(USLBaseView):
                                                        , button_name=ACTION_BUTTON_NAME)
 
         details_layout = qtw.QHBoxLayout()
-        details_layout.addLayout(main_form)
+        details_sublayout = qtw.QVBoxLayout()
+        details_sublayout.addLayout(main_form)
+        details_sublayout.addWidget(self._db_warning_label)
+        details_layout.addLayout(details_sublayout)
         details_layout.addWidget(self._robot_icon_label, stretch = 0)
 
         buttons_layout = qtw.QHBoxLayout()
@@ -60,7 +67,7 @@ class VwItemDetails(USLBaseView):
         main_layout = qtw.QVBoxLayout()
         main_layout.addLayout(details_layout)
         main_layout.addLayout(buttons_layout)
-        main_layout.addWidget(self._recent_messages_table)
+        main_layout.addWidget(self._recent_messages_table)  
 
         self.setLayout(main_layout)
 
@@ -82,6 +89,8 @@ class VwItemDetails(USLBaseView):
         self._model.port_changed.connect(self._port_number_input.setText)
         self._model.read_freq_changed.connect(self._read_freq_input.setText)
 
+        self._model.db_connect_status_changed.connect(self._db_connect_status_changed)
+
         self._robot_name_input.editingFinished.connect(
             lambda : self._model.set_name(self._robot_name_input.text()))
         self._ip_address_input.editingFinished.connect(
@@ -90,6 +99,12 @@ class VwItemDetails(USLBaseView):
             lambda : self._model.set_port(self._port_number_input.text()))
         self._read_freq_input.editingFinished.connect(
             lambda: self._model.set_read_frequency(self._read_freq_input.text()))
+        
+    def _db_connect_status_changed(self, status: int):
+        if status == HEALTH_OK:
+            self._db_warning_label.hide()
+        if status == HEALTH_LOST:
+            self._db_warning_label.show()
 
 
 if __name__ == '__main__':

@@ -5,6 +5,7 @@ from lib.view_models.vm_4_robot_connection import VmRobotConnection
 from lib.models.data_structures.ds_robot_connection_data import DsRobotConnectionData
 
 from lib.helpers.utils.hp_vm_utils import HpVmUtils
+from lib.helpers.database.hp_db_connection_manager import HpDBConnectionManager
 
 
 class VmRobotDetails(QObject):
@@ -13,6 +14,8 @@ class VmRobotDetails(QObject):
     ip_changed = pyqtSignal(str)
     port_changed = pyqtSignal(str)
     read_freq_changed = pyqtSignal(str)
+
+    db_connect_status_changed = pyqtSignal(int)
 
     def __init__(self):
         super(VmRobotDetails, self).__init__()
@@ -23,6 +26,8 @@ class VmRobotDetails(QObject):
         self._read_frequency: str = str()
 
         self._vm_robot_connection: VmRobotConnection = VmRobotConnection()
+
+        HpDBConnectionManager.subscribe_to_health_status(self.db_connect_status_changed.emit)
     
     @HpVmUtils.observable_property('_name', 'name_changed')
     def set_name(self, name: str):
@@ -65,7 +70,6 @@ class VmRobotDetails(QObject):
     def _save_to_db(self):
         self._vm_robot_connection.save_robot_model()
         
-
     def robot_connect(self):
         self._vm_robot_connection.connect_to_robot()
 

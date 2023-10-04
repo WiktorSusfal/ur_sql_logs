@@ -21,6 +21,7 @@
         "sbar",
         "sessionmaker",
         "sqlalchemy",
+        "sublayout",
         "trgt",
         "USLIP",
         "USLQ",

@@ -15,6 +15,11 @@ QLabel#HINT_LABEL {
     font-style: italic;
 }
 
+QLabel#WARNING_LABEL {
+    font-style: italic;
+    color: yellow;
+}
+
 QLabel#LIST_ITEM_TITLE_LABEL {
     margin-left: 10px;
     margin-top: 0px;
