@@ -11,7 +11,7 @@ from lib.models.log_messages.md_safety_message import MDSafetyMessage
 from lib.models.log_messages.md_version_message import MDVersionMessage
 
 from lib.helpers.messages.hp_message_storage import HpMessageStorage
-from lib.helpers.utils.hp_looped_task_manager import HpLoopedTaskManager
+from lib.helpers.utils.looped_tasks.hp_looped_task_manager import HpLoopedTaskManager
 
 DECODING_INTERVAL = 0.1
 MSG_MODEL_TYPE_MAP: dict[int, type] = {

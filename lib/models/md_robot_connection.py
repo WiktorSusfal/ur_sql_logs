@@ -10,7 +10,7 @@ from lib.models.data_structures.ds_robot_connection_data import DsRobotConnectio
 from lib.models.components.common import Base
 
 from lib.helpers.messages.hp_message_parser import HpMessageParser
-from lib.helpers.utils.hp_looped_task_manager import HpLoopedTaskManager
+from lib.helpers.utils.looped_tasks.hp_looped_task_manager import HpLoopedTaskManager
 from lib.helpers.constants.hp_backend_names import *
 from lib.helpers.constants.hp_indicators import *
 
@@ -58,8 +58,6 @@ class MdRobotConnection(Base):
         self.ip_address = data.ip_address or DEFAULT_IP
         self.port = data.port or DEFAULT_PORT
         self.read_frequency = data.read_freq or DEFAULT_READ_FREQ
-
-        self._ltm.set_arguments(main_interval=self.read_frequency)
 
     def _get_default_name(self) -> str:
         return '_'.join([DEFAULT_NAME, str(MdRobotConnection.object_quantity)])

@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from collections.abc import Callable
 
 from lib.helpers.messages.hp_message_storage import HpMessageStorage
-from lib.helpers.utils.hp_looped_task_manager import HpLoopedTaskManager
+from lib.helpers.utils.looped_tasks.hp_looped_task_manager import HpLoopedTaskManager
 from lib.helpers.resources.hp_resources_manager import HpResourcesManager
 from lib.helpers.constants.hp_indicators import *
 
@@ -58,20 +58,26 @@ class HpDBConnectionManager:
         if not cls._ltm:
             cls._set_task_manager()
 
-        cls._execute_init_queries()
-        cls._ltm.start_process()
+        status = cls._execute_init_queries()
+        if status:
+            cls._ltm.start_process()
 
     @classmethod
     def disconnect(cls):
         cls._ltm.abort_process()
 
     @classmethod
-    def _execute_init_queries(cls):
-        with cls._session_maker() as session:
-            s: Session = session
-            for query in HpResourcesManager.get_init_queries():
-                    s.execute(text(query))
-                    s.commit()
+    def _execute_init_queries(cls) -> bool:
+        try:
+            with cls._session_maker() as session:
+                s: Session = session
+                for query in HpResourcesManager.get_init_queries():
+                        s.execute(text(query))
+                        s.commit()
+            
+            return True
+        except:
+            return False
 
     @classmethod
     def _check_connection_health(cls) -> bool: 

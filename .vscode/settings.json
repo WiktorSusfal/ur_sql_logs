@@ -26,6 +26,7 @@
         "USLIP",
         "USLQ",
         "VMDB",
-        "VMUR"
+        "VMUR",
+        "waitfor"
     ]
 }
