@@ -13,18 +13,13 @@ class HpLoopedTaskManager:
         self._data_manager = HpTaskDataManager()
         self._tasks: dict[str, HpLoopedTask] = dict()
 
-    def register_task(self
-                        ,name: str
-                        ,function: Callable[..., bool]
-                        ,args: tuple = tuple()
-                        ,kwargs: dict = dict()
-                        ,interval: float = None
-                        ,max_errors: int = None):
+    def register_task(self, task: HpLoopedTask):
+        name = task.get_name()
         
         if name in self._tasks:
             raise Exception('Cannot register two tasks with the same name!')
-        
-        task = HpLoopedTask(self._data_manager, name, function, args, kwargs, interval, max_errors)
+
+        task.set_data_manager(self._data_manager)
         self._tasks[name] = task
 
     def set_task_status_dependency(self, master_task_name: str, child_task_name: str):
@@ -49,10 +44,13 @@ class HpLoopedTaskManager:
             task_thread.start()    
     
     def subscribe_to_health_status(self, task_name: str, func: Callable[[int], None]):
-        self._data_manager.subscribe_task_status(task_name, HEALTH_CALLBACKS, func)
+        self._data_manager.subscribe_task_info(task_name, HEALTH_CALLBACKS, func)
 
     def unsubscribe_health_status(self, task_name: str, func: Callable[[int], None]):
-        self._data_manager.unsubscribe_task_status(task_name, HEALTH_CALLBACKS, func)
+        self._data_manager.unsubscribe_task_info(task_name, HEALTH_CALLBACKS, func)
 
     def subscribe_to_process_status(self, task_name: str, func: Callable[[int], None]):
-        self._data_manager.subscribe_task_status(task_name, RUNNING_CALLBACKS, func)
+        self._data_manager.subscribe_task_info(task_name, RUNNING_CALLBACKS, func)
+
+    def unsubscribe_process_status(self, task_name: str, func: Callable[[int], None]):
+        self._data_manager.unsubscribe_task_info(task_name, RUNNING_CALLBACKS, func)

@@ -14,6 +14,9 @@ class CallbackCategory:
     task_name: str = None
     info_type: int = None
 
+    def __hash__(self):
+        return hash(self.task_name + str(self.info_type))
+
 
 class HpTaskDataManager:
 
@@ -66,18 +69,22 @@ class HpTaskDataManager:
         
             self._data[task_name].executed_once_event.set()
 
-    def set_running_info(self, task_name: str, value: bool):
-        self._set_info(task_name, value, RUNNING_INFO)
-        self._trigger_task_running_callbacks(task_name, value)
-        if not value:
-            self._clear_abort_flag()
+    def set_running_info(self, task_name: str, value: bool, force_notification: bool = False):
+        current_info = self._get_info(task_name, RUNNING_INFO)
+        if current_info != value or force_notification:
+            self._set_info(task_name, value, RUNNING_INFO)
+            self._trigger_task_running_callbacks(task_name, value)
+            if not value:
+                self._clear_abort_flag()
 
     def get_running_info(self, task_name: str) -> bool:
         return self._get_info(task_name, RUNNING_INFO)
 
-    def set_succeeded_info(self, task_name: str, value: bool):
-        self._set_info(task_name, value, SUCCEEDED_INFO)
-        self._trigger_task_health_callbacks(task_name, value)
+    def set_succeeded_info(self, task_name: str, value: bool, force_notification: bool = False):
+        current_info = self._get_info(task_name, SUCCEEDED_INFO)
+        if current_info != value or force_notification:
+            self._set_info(task_name, value, SUCCEEDED_INFO)
+            self._trigger_task_health_callbacks(task_name, value)
 
     def get_succeeded_info(self, task_name: str) -> bool:
         return self._get_info(task_name, SUCCEEDED_INFO)
@@ -105,14 +112,14 @@ class HpTaskDataManager:
         if self.all_task_finished():
             self.set_abort_flag(False)
 
-    def subscribe_task_status(self, task_name: str, category: int, func: Callable[[int, int], None]):
-        category = CallbackCategory(task_name, category)
+    def subscribe_task_info(self, task_name: str, info_type: int, func: Callable[[int, int], None]):
+        category = CallbackCategory(task_name, info_type)
         
         if func not in self._callbacks[category]:
             self._callbacks[category].append(func)
 
-    def unsubscribe_task_status(self, task_name: str, category: int, func: Callable[[int, int], None]):
-        category = CallbackCategory(task_name, category)
+    def unsubscribe_task_info(self, task_name: str, info_type: int, func: Callable[[int, int], None]):
+        category = CallbackCategory(task_name, info_type)
         
         if func in self._callbacks[category]:
             self._callbacks[category].remove(func)

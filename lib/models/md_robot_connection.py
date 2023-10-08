@@ -69,7 +69,7 @@ class MdRobotConnection(Base):
         self._ltm.subscribe_to_task_status(func)
 
     def unsubscribe_connection_status(self, func: Callable[[int], None]):
-        self._ltm.unsubscribe_task_status(func)
+        self._ltm.unsubscribe_task_info(func)
 
     def connect(self):
         self._robot_connection = self._get_robot_connection()
