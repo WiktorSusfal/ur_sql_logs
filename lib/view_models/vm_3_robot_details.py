@@ -16,6 +16,7 @@ class VmRobotDetails(QObject):
     read_freq_changed = pyqtSignal(str)
 
     db_connect_status_changed = pyqtSignal(int)
+    model_empty = pyqtSignal(bool)
 
     def __init__(self):
         super(VmRobotDetails, self).__init__()
@@ -25,7 +26,7 @@ class VmRobotDetails(QObject):
         self._port: str = str()
         self._read_frequency: str = str()
 
-        self._vm_robot_connection: VmRobotConnection = VmRobotConnection()
+        self._vm_robot_connection: VmRobotConnection = None
 
         HpDBConnectionManager.subscribe_to_health_status(self.db_connect_status_changed.emit)
     
@@ -47,6 +48,7 @@ class VmRobotDetails(QObject):
 
     def set_robot_connection_vmodel(self, vm_conn: VmRobotConnection):
         self._vm_robot_connection = vm_conn
+        self.model_empty.emit(vm_conn is None)
         self.update_interface_data()
         
     def update_interface_data(self):

@@ -4,6 +4,7 @@ from collections.abc import Callable
 
 from lib.helpers.messages.hp_message_storage import HpMessageStorage
 from lib.helpers.utils.looped_tasks.hp_looped_task_manager import HpLoopedTaskManager
+from lib.helpers.utils.looped_tasks.hp_looped_task import HpLoopedTask
 from lib.helpers.resources.hp_resources_manager import HpResourcesManager
 from lib.helpers.constants.hp_indicators import *
 
@@ -21,17 +22,21 @@ class HpDBConnectionManager:
 
     _ltm: HpLoopedTaskManager = None
 
+    _check_health_task_name = 'check_health'
+    _init_execute_task_name = 'init_execute'
+    _save_msg_task_name = 'save_msgs'
+
     @classmethod
     def subscribe_to_health_status(cls, func: Callable[[int], None]):
         if not cls._ltm:
             cls._set_task_manager()
-        cls._ltm.subscribe_to_health_status(func)
+        cls._ltm.subscribe_to_health_status(cls._check_health_task_name, func)
 
     @classmethod
     def subscribe_to_threads_status(cls, func: Callable[[int], None]):
         if not cls._ltm:
             cls._set_task_manager()
-        cls._ltm.subscribe_to_process_status(func)
+        cls._ltm.subscribe_to_process_status(cls._save_msg_task_name, func)
 
     @classmethod
     def set_connection_string(cls, connection_string: str):
@@ -45,22 +50,30 @@ class HpDBConnectionManager:
 
     @classmethod
     def _set_task_manager(cls):
-        cls._ltm = HpLoopedTaskManager(
-            main_task=cls._save_robot_msgs
-            ,main_interval=DATA_SAVE_INTERVAL
-            ,health_check=cls._check_connection_health
-            ,health_interval=HEALTH_CHECK_INTERVAL
-            ,max_health_errors=HEALTH_ERROR_THRESHOLD
-        )
+        health_task = HpLoopedTask(cls._check_health_task_name
+                                   , cls._check_connection_health
+                                   , interval=HEALTH_CHECK_INTERVAL
+                                   , max_errors=HEALTH_ERROR_THRESHOLD)
+        init_task = HpLoopedTask(cls._init_execute_task_name,cls._execute_init_queries(), interval=None)
+        save_task = HpLoopedTask(cls._save_msg_task_name, cls._save_robot_msgs, interval=DATA_SAVE_INTERVAL)
+
+        cls._ltm = HpLoopedTaskManager()
+        cls._ltm.register_task(health_task)
+        cls._ltm.register_task(init_task)
+        cls._ltm.register_task(save_task)
+
+        cls._ltm.set_task_execution_dependency(cls._check_health_task_name, cls._init_execute_task_name)
+        cls._ltm.set_task_execution_dependency(cls._init_execute_task_name, cls._save_msg_task_name)
+        
+        cls._ltm.set_task_status_dependency(cls._check_health_task_name, cls._init_execute_task_name)
+        cls._ltm.set_task_status_dependency(cls._check_health_task_name, cls._save_msg_task_name)
 
     @classmethod
     def connect(cls):
         if not cls._ltm:
             cls._set_task_manager()
-
-        status = cls._execute_init_queries()
-        if status:
-            cls._ltm.start_process()
+        
+        cls._ltm.start_process()
 
     @classmethod
     def disconnect(cls):
@@ -83,7 +96,8 @@ class HpDBConnectionManager:
     def _check_connection_health(cls) -> bool: 
         try:
             with cls._session_maker() as session:
-                session.execute(text("SELECT 1"))     
+                s: Session = session
+                s.execute(text("SELECT 1"))     
             return True
         except Exception as e:
             return False

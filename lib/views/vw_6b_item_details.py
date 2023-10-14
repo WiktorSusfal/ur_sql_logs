@@ -73,7 +73,7 @@ class VwItemDetails(USLBaseView):
 
         self._setup()
         self.show()
-
+        
     def _bind_buttons_to_commands(self):
         self._refresh_button.clicked.connect(self._model.update_interface_data)
         self._save_button.clicked.connect(self._model.save_interface_data)

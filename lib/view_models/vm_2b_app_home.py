@@ -29,4 +29,4 @@ class VmAppHome(QObject):
         if robot_connection == self.robot_details._vm_robot_connection:
             return
         
-        self.robot_details.set_robot_connection_vmodel(robot_connection or VmRobotConnection())
+        self.robot_details.set_robot_connection_vmodel(robot_connection)

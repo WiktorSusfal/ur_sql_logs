@@ -7,6 +7,7 @@ from lib.models.data_structures.ds_robot_msg_buffer import DsRobotMsgBuffer
 
 from lib.helpers.messages.hp_message_decoder import HpMessageDecoder
 from lib.helpers.utils.looped_tasks.hp_looped_task_manager import HpLoopedTaskManager
+from lib.helpers.utils.looped_tasks.hp_looped_task import HpLoopedTask
 from lib.helpers.constants.hp_message_attributes import *
 
 PARSING_INTERVAL = 0.1
@@ -59,7 +60,7 @@ class HpMessageParser:
 
     @classmethod
     def _get_task_manager(cls) -> HpLoopedTaskManager:
-        return HpLoopedTaskManager(
-                    main_task=cls._parse_messages
-                    ,main_interval=PARSING_INTERVAL
-                )
+        parse_task = HpLoopedTask(name='parsing_task', function=cls._parse_messages, interval=PARSING_INTERVAL)
+        ltm = HpLoopedTaskManager()
+        ltm.register_task(parse_task)
+        return ltm

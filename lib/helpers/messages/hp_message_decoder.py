@@ -12,6 +12,7 @@ from lib.models.log_messages.md_version_message import MDVersionMessage
 
 from lib.helpers.messages.hp_message_storage import HpMessageStorage
 from lib.helpers.utils.looped_tasks.hp_looped_task_manager import HpLoopedTaskManager
+from lib.helpers.utils.looped_tasks.hp_looped_task import HpLoopedTask
 
 DECODING_INTERVAL = 0.1
 MSG_MODEL_TYPE_MAP: dict[int, type] = {
@@ -73,7 +74,7 @@ class HpMessageDecoder:
 
     @classmethod
     def _get_task_manager(cls) -> HpLoopedTaskManager:
-        return HpLoopedTaskManager(
-                main_task=cls._decode_messages
-                ,main_interval=DECODING_INTERVAL
-            )
+        decode_task = HpLoopedTask(name='decoding_task', function=cls._decode_messages, interval=DECODING_INTERVAL)
+        ltm = HpLoopedTaskManager()
+        ltm.register_task(decode_task)
+        return ltm

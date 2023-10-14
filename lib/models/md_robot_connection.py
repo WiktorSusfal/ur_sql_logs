@@ -11,6 +11,7 @@ from lib.models.components.common import Base
 
 from lib.helpers.messages.hp_message_parser import HpMessageParser
 from lib.helpers.utils.looped_tasks.hp_looped_task_manager import HpLoopedTaskManager
+from lib.helpers.utils.looped_tasks.hp_looped_task import HpLoopedTask
 from lib.helpers.constants.hp_backend_names import *
 from lib.helpers.constants.hp_indicators import *
 
@@ -40,14 +41,10 @@ class MdRobotConnection(Base):
     def __init__(self, id: str = None, connection_data: DsRobotConnectionData = None):
         MdRobotConnection.object_quantity += 1
 
-        self._ltm = HpLoopedTaskManager(
-            main_task = self._get_robot_msg_buffer
-            ,main_interval = self.read_frequency
-            ,max_task_errors = CONNECTION_ERRORS_THRESHOLD
-            ,health_check = self._check_robot_connection
-            ,health_interval = None #check only once at the beginning
-        )
-        
+        self._check_health_task_name = 'check_health'
+        self._read_data_task_name = 'read_data'
+        self._ltm = self._get_task_manager()
+
         self.id = id or str(uuid4())
         self.update_data(connection_data or DsRobotConnectionData())
 
@@ -59,6 +56,22 @@ class MdRobotConnection(Base):
         self.port = data.port or DEFAULT_PORT
         self.read_frequency = data.read_freq or DEFAULT_READ_FREQ
 
+    def _get_task_manager(self) -> HpLoopedTaskManager:
+        health_task = HpLoopedTask(name=self._check_health_task_name, function=self._check_robot_connection, interval=None)
+        reading_task = HpLoopedTask(name=self._read_data_task_name
+                                    , function=self._get_robot_msg_buffer
+                                    , interval=self.read_frequency
+                                    , max_errors=CONNECTION_ERRORS_THRESHOLD)
+
+        ltm = HpLoopedTaskManager()
+        ltm.register_task(health_task)
+        ltm.register_task(reading_task)
+        
+        ltm.set_task_execution_dependency(self._check_health_task_name, self._read_data_task_name)
+        ltm.set_task_status_dependency(self._check_health_task_name, self._read_data_task_name)
+
+        return ltm
+        
     def _get_default_name(self) -> str:
         return '_'.join([DEFAULT_NAME, str(MdRobotConnection.object_quantity)])
 
@@ -66,10 +79,10 @@ class MdRobotConnection(Base):
         return DsRobotConnectionData(self.name, self.ip_address, self.port, self.read_frequency)
 
     def subscribe_connection_status(self, func: Callable[[int], None]):
-        self._ltm.subscribe_to_task_status(func)
+        self._ltm.subscribe_to_process_status(self._read_data_task_name, func)
 
     def unsubscribe_connection_status(self, func: Callable[[int], None]):
-        self._ltm.unsubscribe_task_info(func)
+        self._ltm.unsubscribe_process_status(self._read_data_task_name, func)
 
     def connect(self):
         self._robot_connection = self._get_robot_connection()

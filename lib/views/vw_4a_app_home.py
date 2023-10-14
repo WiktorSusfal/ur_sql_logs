@@ -2,7 +2,7 @@ import PyQt5.QtWidgets as qtw
 
 from lib.views.components.base_view import USLBaseView
 from lib.views.vw_5a_selection_list import VwSelectionList
-from lib.views.vw_5b_item_details import VwItemDetails
+from lib.views.vw_5b_item_details_stack import VwItemDetailsStack
 
 from lib.helpers.constants.hp_gui_tem_names import *
 
@@ -17,7 +17,7 @@ class VwAppHome(USLBaseView):
         self.setLayout(self._main_layout)
 
         self._main_layout.addWidget(VwSelectionList(parent=self), 0, 0)
-        self._main_layout.addWidget(VwItemDetails(parent=self), 0, 1)
+        self._main_layout.addWidget(VwItemDetailsStack(parent=self), 0, 1)
         self._style_grid_layout()
 
         self._setup()

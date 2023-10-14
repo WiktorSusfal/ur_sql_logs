@@ -26,6 +26,14 @@ QWidget#UR_ITEM_DETAILS {
     background-color: #2f3b52;
 }
 
+QWidget#UR_ITEM_DETAILS_STACK {   
+    background-color: #2f3b52;
+}
+
+QWidget#UR_ITEM_DETAILS_PLACEHOLDER {   
+    background-color: #2f3b52;
+}
+
 QWidget#UR_LIST_ITEM {   
     background-color: transparent;
 }
