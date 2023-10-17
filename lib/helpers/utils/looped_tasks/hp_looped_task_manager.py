@@ -13,6 +13,10 @@ class HpLoopedTaskManager:
         self._data_manager = HpTaskDataManager()
         self._tasks: dict[str, HpLoopedTask] = dict()
 
+    @property
+    def all_tasks_finished(self) -> bool:
+        return self._data_manager.all_task_finished()
+
     def register_task(self, task: HpLoopedTask):
         name = task.get_name()
         
@@ -30,12 +34,12 @@ class HpLoopedTaskManager:
 
     @HpVmUtils.run_in_thread
     def start_process(self):
-        if self._data_manager.all_task_finished():
+        if self.all_tasks_finished:
             self._start_worker_threads()
 
     @HpVmUtils.run_in_thread
     def abort_process(self):
-        if not self._data_manager.all_task_finished():
+        if not self.all_tasks_finished:
             self._data_manager.set_abort_flag(True)   
 
     def _start_worker_threads(self):

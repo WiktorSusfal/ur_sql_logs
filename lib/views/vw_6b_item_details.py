@@ -19,7 +19,7 @@ class VwItemDetails(USLBaseView):
         self._robot_name_input = self._produce_line_edit(FORM_INPUT_NAME)
         self._ip_address_input = self._produce_line_edit(FORM_INPUT_NAME, USLIPAddressValidator(self))
         self._port_number_input = self._produce_line_edit(FORM_INPUT_NAME, USLIntValidator(1, 65535, self))
-        self._read_freq_input = self._produce_line_edit(FORM_INPUT_NAME, USLDoubleValidator(0.0, 360.0, 1, self))
+        self._read_freq_input = self._produce_line_edit(FORM_INPUT_NAME, USLDoubleValidator(0.0, 360.0, 2, self))
 
         self._db_warning_label = qtw.QLabel("Warning: database not connected", self)
         self._db_warning_label.setObjectName(WARNING_LABEL_NAME)
@@ -90,6 +90,7 @@ class VwItemDetails(USLBaseView):
         self._model.read_freq_changed.connect(self._read_freq_input.setText)
 
         self._model.db_connect_status_changed.connect(self._db_connect_status_changed)
+        self._model.robot_connect_status_changed.connect(self._manage_robot_connect_buttons)
 
         self._robot_name_input.editingFinished.connect(
             lambda : self._model.set_name(self._robot_name_input.text()))
@@ -105,6 +106,10 @@ class VwItemDetails(USLBaseView):
             self._db_warning_label.hide()
         if status == HEALTH_LOST:
             self._db_warning_label.show()
+
+    def _manage_robot_connect_buttons(self, is_connected: bool):
+        self._connect_button.setDisabled(is_connected)
+        self._disconnect_button.setDisabled(not is_connected)
 
 
 if __name__ == '__main__':

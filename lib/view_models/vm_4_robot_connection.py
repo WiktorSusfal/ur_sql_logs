@@ -5,6 +5,7 @@ from lib.models.data_structures.ds_robot_connection_data import DsRobotConnectio
 
 from lib.helpers.messages.hp_message_storage import HpMessageStorage
 from lib.helpers.database.hp_db_connection_manager import HpDBConnectionManager
+from lib.helpers.constants.hp_indicators import *
 
 
 class VmRobotConnection(QObject):
@@ -18,6 +19,8 @@ class VmRobotConnection(QObject):
         self._robot_connection = MdRobotConnection()
         self.subscribe_to_model()
 
+        self.connected: bool = False
+
     @property
     def robot_connection_data(self):
         return self._robot_connection.produce_data_struct()
@@ -25,26 +28,14 @@ class VmRobotConnection(QObject):
     @property
     def robot_connection_name(self) -> str:
         return self.robot_connection_data.name
-    
-    def set_robot_connection(self, connection: MdRobotConnection): 
-        self.unsubscribe_model()
-        self._robot_connection = connection
-        self.connection_name_changed.emit(self.robot_connection_name)
-        self.subscribe_to_model()
 
     def update_data(self, data: DsRobotConnectionData):
         self._robot_connection.update_data(data)
 
     def subscribe_to_model(self):
         self._robot_connection.subscribe_connection_status(
-            self.connection_status_changed.emit)
+            self._connection_status_changed)
         HpMessageStorage.subscribe_message_counter(
-            self._robot_connection.id, self.message_counter_changed.emit)
-        
-    def unsubscribe_model(self):
-        self._robot_connection.unsubscribe_connection_status(
-            self.connection_status_changed.emit)
-        HpMessageStorage.unsubscribe_message_counter(
             self._robot_connection.id, self.message_counter_changed.emit)
         
     def connect_to_robot(self):
@@ -55,3 +46,7 @@ class VmRobotConnection(QObject):
 
     def save_robot_model(self):
         HpDBConnectionManager.save_robot_model(self._robot_connection)
+
+    def _connection_status_changed(self, status: int):
+        self.connected = False if status == THREADS_FINISHED else True
+        self.connection_status_changed.emit(self.connected)

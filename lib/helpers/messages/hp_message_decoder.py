@@ -34,6 +34,8 @@ class HpMessageDecoder:
     def put_in_queue(cls, raw_message: bytes, message_type: int, robot_id, capture_dt: datetime):
         if not cls._ltm:
             cls._ltm = cls._get_task_manager()
+        
+        if cls._ltm.all_tasks_finished:
             cls._ltm.start_process()
 
         with cls._data_lock:
@@ -51,6 +53,7 @@ class HpMessageDecoder:
         
         msg_object = cls._get_msg_object(msg_class, raw_msg.message, raw_msg.robot_id, raw_msg.capture_dt)
         msg_object.decode_message()
+        print('Putting in storage for: ', raw_msg.robot_id)
         HpMessageStorage.put_in_storage(msg_object, raw_msg.robot_id)
 
         return True

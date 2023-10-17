@@ -41,14 +41,14 @@ class MdRobotConnection(Base):
     def __init__(self, id: str = None, connection_data: DsRobotConnectionData = None):
         MdRobotConnection.object_quantity += 1
 
-        self._check_health_task_name = 'check_health'
-        self._read_data_task_name = 'read_data'
-        self._ltm = self._get_task_manager()
-
         self.id = id or str(uuid4())
         self.update_data(connection_data or DsRobotConnectionData())
 
         self._robot_connection =self._get_robot_connection()
+
+        self._check_health_task_name = 'check_health'
+        self._read_data_task_name = 'read_data'
+        self._ltm = self._get_task_manager()
     
     def update_data(self, data: DsRobotConnectionData):
         self.name = data.name or self._get_default_name()

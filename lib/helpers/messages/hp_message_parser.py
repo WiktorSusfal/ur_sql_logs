@@ -10,7 +10,7 @@ from lib.helpers.utils.looped_tasks.hp_looped_task_manager import HpLoopedTaskMa
 from lib.helpers.utils.looped_tasks.hp_looped_task import HpLoopedTask
 from lib.helpers.constants.hp_message_attributes import *
 
-PARSING_INTERVAL = 0.1
+PARSING_INTERVAL = 0.5
 
 class HpMessageParser:
 

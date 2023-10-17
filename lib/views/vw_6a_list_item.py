@@ -14,7 +14,7 @@ class VwListItem(USLBaseView):
         self.model = model
 
         self._robot_icon_label = self._produce_icon_label(r'robot/industrial-robot.png', 50, 50, label_name=LIST_ITEM_ICON_LABEL_NAME)
-        self._on_icon_label = self._produce_icon_label(r'connected/con48.png', 60, 20, label_name=LIST_ITEM_ICON_LABEL_NAME)
+        self._on_icon_label = self._produce_icon_label(r'connected/conn48.png', 60, 20, label_name=LIST_ITEM_ICON_LABEL_NAME)
         self._off_icon_label = self._produce_icon_label(r'disconnected/disconn48.png', 60, 20, label_name=LIST_ITEM_ICON_LABEL_NAME)
         self._mail_icon_label = self._produce_icon_label(r'mail/mail.png', 24, 24, label_name=LIST_ITEM_ICON_LABEL_NAME)
         
@@ -51,8 +51,12 @@ class VwListItem(USLBaseView):
 
     def _set_value_subscriptions(self):
         self.model.connection_name_changed.connect(self._title_label.setText)
-        self.model.message_counter_changed.connect(self._message_counter_label.setText)
-        self.model.connection_status_changed.connect(self._connection_indicator.setCurrentIndex)
+        self.model.message_counter_changed.connect(
+                lambda cnt: self._message_counter_label.setText(str(cnt))
+            )
+        self.model.connection_status_changed.connect(
+                lambda status: self._connection_indicator.setCurrentIndex(int(status))
+            )
 
     def _init_actions(self):
         pass

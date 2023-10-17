@@ -16,8 +16,10 @@ class VmRobotDetails(QObject):
     read_freq_changed = pyqtSignal(str)
 
     db_connect_status_changed = pyqtSignal(int)
+    robot_connect_status_changed = pyqtSignal(bool)
     model_empty = pyqtSignal(bool)
 
+    
     def __init__(self):
         super(VmRobotDetails, self).__init__()
 
@@ -47,8 +49,13 @@ class VmRobotDetails(QObject):
         self._read_frequency = frequency
 
     def set_robot_connection_vmodel(self, vm_conn: VmRobotConnection):
+        self._unsubscribe_model()
         self._vm_robot_connection = vm_conn
+        self._subscribe_to_model()
+
         self.model_empty.emit(vm_conn is None)
+        self._robot_connection_status_changed()
+
         self.update_interface_data()
         
     def update_interface_data(self):
@@ -77,3 +84,19 @@ class VmRobotDetails(QObject):
 
     def robot_disconnect(self):
         self._vm_robot_connection.disconnect_from_robot()
+
+    def _subscribe_to_model(self):
+        if self._vm_robot_connection is not None:
+            self._vm_robot_connection.connection_status_changed.connect(
+                self._robot_connection_status_changed
+            )
+
+    def _unsubscribe_model(self):
+        if self._vm_robot_connection is not None:
+            self._vm_robot_connection.connection_status_changed.disconnect(
+                self._robot_connection_status_changed
+            )
+
+    def _robot_connection_status_changed(self):
+        conn_status = self._vm_robot_connection.connected if self._vm_robot_connection is not None else False
+        self.robot_connect_status_changed.emit(conn_status)
