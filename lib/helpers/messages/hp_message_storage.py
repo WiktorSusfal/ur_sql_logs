@@ -3,7 +3,7 @@ from threading import Lock
 
 from lib.models.log_messages.md_base_message import MDBaseMessage
 
-MAX_MSG_LIST_SIZE = 25
+MAX_MSG_LIST_SIZE = 250
 
 class HpMessageStorage:
 

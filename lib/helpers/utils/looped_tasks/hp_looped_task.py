@@ -36,6 +36,9 @@ class HpLoopedTask:
         self._data_manager = dm
         self._data_manager.register_task(self._name)
 
+    def set_interval(self, interval: float):
+        self._interval = interval
+
     def set_dependency_task(self, task_name: str):
         self._health_checker_name = task_name
 
@@ -94,6 +97,3 @@ class HpLoopedTask:
         self._data_manager.set_abort_flag(abort_flag)
         self._data_manager.set_running_info(self._name, False, force_notification=True)
         self._data_manager.set_succeeded_info(self._name, task_status, force_notification=True)
-        
-        
-        

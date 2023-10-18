@@ -53,7 +53,6 @@ class HpMessageDecoder:
         
         msg_object = cls._get_msg_object(msg_class, raw_msg.message, raw_msg.robot_id, raw_msg.capture_dt)
         msg_object.decode_message()
-        print('Putting in storage for: ', raw_msg.robot_id)
         HpMessageStorage.put_in_storage(msg_object, raw_msg.robot_id)
 
         return True

@@ -41,20 +41,22 @@ class MdRobotConnection(Base):
     def __init__(self, id: str = None, connection_data: DsRobotConnectionData = None):
         MdRobotConnection.object_quantity += 1
 
-        self.id = id or str(uuid4())
-        self.update_data(connection_data or DsRobotConnectionData())
-
-        self._robot_connection =self._get_robot_connection()
-
         self._check_health_task_name = 'check_health'
         self._read_data_task_name = 'read_data'
         self._ltm = self._get_task_manager()
-    
+
+        self.id = id or str(uuid4())
+        self.update_data(connection_data or DsRobotConnectionData())
+
+        self._robot_connection = self._get_robot_connection()
+
     def update_data(self, data: DsRobotConnectionData):
         self.name = data.name or self._get_default_name()
         self.ip_address = data.ip_address or DEFAULT_IP
         self.port = data.port or DEFAULT_PORT
         self.read_frequency = data.read_freq or DEFAULT_READ_FREQ
+
+        self._ltm.set_task_interval(self._read_data_task_name, self.read_frequency)
 
     def _get_task_manager(self) -> HpLoopedTaskManager:
         health_task = HpLoopedTask(name=self._check_health_task_name, function=self._check_robot_connection, interval=None)
@@ -85,7 +87,6 @@ class MdRobotConnection(Base):
         self._ltm.unsubscribe_process_status(self._read_data_task_name, func)
 
     def connect(self):
-        self._robot_connection = self._get_robot_connection()
         self._ltm.start_process()
 
     def disconnect(self):
@@ -99,6 +100,7 @@ class MdRobotConnection(Base):
 
     def _check_robot_connection(self) -> bool:
         try: 
+            self._robot_connection = self._get_robot_connection()
             self._robot_connection.connect((self.ip_address, self.port))
             return True
         except Exception as e:
@@ -125,8 +127,13 @@ if __name__ == '__main__':
         print(last_msg_obj)
 
     rc = MdRobotConnection(robot_id, DsRobotConnectionData('robot_1', '127.0.0.1', 30001, 0.05))
-    HpMessageStorage.subscribe_message_counter(robot_id, message_arrived)
+    #HpMessageStorage.subscribe_message_counter(robot_id, message_arrived)
+    #rc._check_robot_connection()
+
+    #while True:
+    #    rc._get_robot_msg_buffer()
+    #    sleep(0.05)
 
     rc.connect()
     sleep(30)
-    rc.disconnect
+    rc.disconnect()

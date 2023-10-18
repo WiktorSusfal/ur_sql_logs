@@ -26,6 +26,9 @@ class HpLoopedTaskManager:
         task.set_data_manager(self._data_manager)
         self._tasks[name] = task
 
+    def set_task_interval(self, task_name: str, interval: float):
+        self._tasks[task_name].set_interval(interval)
+
     def set_task_status_dependency(self, master_task_name: str, child_task_name: str):
         self._tasks[child_task_name].set_dependency_task(master_task_name)
 

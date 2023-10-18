@@ -10,7 +10,7 @@ from lib.helpers.utils.looped_tasks.hp_looped_task_manager import HpLoopedTaskMa
 from lib.helpers.utils.looped_tasks.hp_looped_task import HpLoopedTask
 from lib.helpers.constants.hp_message_attributes import *
 
-PARSING_INTERVAL = 0.5
+PARSING_INTERVAL = 0.01
 
 class HpMessageParser:
 
@@ -35,15 +35,16 @@ class HpMessageParser:
             return False
         
         raw_message_data = set()
+        
         for raw_message in msg_buffer.get_primary_client_messages():
             if raw_message is None:
                 continue
-            
+
             start, end = ROBOT_MSG_TYPE_OFFSET, ROBOT_MSG_TYPE_OFFSET + ROBOT_MSG_TYPE_LEN
             raw_message_type = struct.unpack('!B', raw_message[start: end])[0]
             
             raw_message_data.add((raw_message, raw_message_type))
-        
+
         for data in raw_message_data:
             HpMessageDecoder.put_in_queue(*data, msg_buffer.robot_id, msg_buffer.capture_dt)
 

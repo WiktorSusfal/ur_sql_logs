@@ -31,6 +31,7 @@ class VmRobotConnection(QObject):
 
     def update_data(self, data: DsRobotConnectionData):
         self._robot_connection.update_data(data)
+        self.connection_name_changed.emit(data.name)
 
     def subscribe_to_model(self):
         self._robot_connection.subscribe_connection_status(
