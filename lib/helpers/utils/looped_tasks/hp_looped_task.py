@@ -67,8 +67,10 @@ class HpLoopedTask:
                     return
             
             start_time = time()
-            while time() - start_time < self._interval:
-                
+            waiting_iter = -1
+            while waiting_iter == -1 or time() - start_time < (self._interval or MIN_INTERVAL):
+                waiting_iter += 1
+
                 if (self._max_errors is not None and errors > self._max_errors) \
                         or self._data_manager.get_abort_flag():
                     

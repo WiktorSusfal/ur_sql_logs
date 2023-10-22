@@ -37,6 +37,14 @@ class MDKeyMessage(MDBaseMessage):
 
         self._offset = o
 
+    def _get_custom_data_as_dict(self) -> dict[str, str]:
+        return {
+                'line_no': str(self.code)
+                ,'column_no': str(self.argument)
+                ,'title': str(self.title)
+                ,'text_message': str(self.text_message)
+              }
+
     def __repr__(self):
         return  super().__repr__() + \
                 f"\n\t- code: {self.code}"\

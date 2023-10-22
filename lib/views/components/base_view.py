@@ -57,13 +57,17 @@ class USLBaseView(ABC, qtw.QWidget,  metaclass=_USLBaseViewMeta):
 
         return button
     
-    def _produce_icon_label(self, icon_rel_path: str, size_x: int, size_y: int, label_name: str = None) -> qtw.QLabel:
+    def _produce_icon_label(self, icon_rel_path: str, size_x: int, size_y: int
+                            , label_name: str = None, tooltip: str = None) -> qtw.QLabel:
         icon = qtg.QIcon(HpResourcesManager.get_icon_abs_path(icon_rel_path))
         icon_label = qtw.QLabel()
         icon_label.setPixmap(icon.pixmap(size_x, size_y))
 
         if label_name:
             icon_label.setObjectName(label_name)
+
+        if tooltip:
+            icon_label.setToolTip(tooltip)
 
         return icon_label
     

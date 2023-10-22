@@ -1,6 +1,6 @@
 import socket
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float, Boolean
 
 from uuid import uuid4
 from collections.abc import Callable
@@ -31,6 +31,7 @@ class MdRobotConnection(Base):
     ip_address      = Column(String)
     port            = Column(Integer)
     read_frequency  = Column(Float)
+    is_deleted      = Column(Boolean, default=False)
 
     comm_msg    = relationship('MDCommMessage'      , backref='robot')
     key_msg     = relationship('MDKeyMessage'       , backref='robot')
@@ -115,6 +116,18 @@ class MdRobotConnection(Base):
         except:
             return False
         
+    def __eq__(self, obj):
+        if not isinstance(obj, MdRobotConnection):
+            return False
+        
+        return self.id == obj.id and \
+                self.name == obj.name and \
+                self.ip_address == obj.ip_address and \
+                self.port == obj.port and \
+                self.read_frequency == obj.read_frequency and \
+                self.is_deleted == obj.is_deleted             
+
+
 if __name__ == '__main__':
     from lib.helpers.messages.hp_message_storage import HpMessageStorage
     from time import sleep

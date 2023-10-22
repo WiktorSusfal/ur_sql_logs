@@ -1,6 +1,7 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from lib.view_models.vm_4_robot_connection import VmRobotConnection
+from lib.view_models.vm_4a_robot_connection import VmRobotConnection
+from lib.view_models.vm_4b_message_data import VmMessageData
 
 from lib.models.data_structures.ds_robot_connection_data import DsRobotConnectionData
 
@@ -30,7 +31,15 @@ class VmRobotDetails(QObject):
 
         self._vm_robot_connection: VmRobotConnection = None
 
+        self.message_data_model = VmMessageData()
+        
         HpDBConnectionManager.subscribe_to_health_status(self.db_connect_status_changed.emit)
+    
+    def set_value_subscriptions(self):
+        self.name_changed.connect(self._check_model_in_db)
+        self.ip_changed.connect(self._check_model_in_db)
+        self.port_changed.connect(self._check_model_in_db)
+        self.read_freq_changed.connect(self._check_model_in_db)
     
     @HpVmUtils.observable_property('_name', 'name_changed')
     def set_name(self, name: str):
@@ -52,6 +61,8 @@ class VmRobotDetails(QObject):
         self._unsubscribe_model()
         self._vm_robot_connection = vm_conn
         self._subscribe_to_model()
+
+        self.message_data_model.set_robot_id(vm_conn.robot_id)
 
         self.model_empty.emit(vm_conn is None)
         self._robot_connection_status_changed()
@@ -78,6 +89,11 @@ class VmRobotDetails(QObject):
     @HpVmUtils.run_in_thread
     def _save_to_db(self):
         self._vm_robot_connection.save_robot_model()
+        self._vm_robot_connection.check_model_in_db()
+
+    @HpVmUtils.run_in_thread
+    def _check_model_in_db(self, arg):
+        self._vm_robot_connection.check_model_in_db()
         
     def robot_connect(self):
         self._vm_robot_connection.connect_to_robot()

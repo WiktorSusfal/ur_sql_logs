@@ -14,3 +14,8 @@ QLineEdit {
 QLineEdit:focus {
     border: 2px solid white;
 }
+
+QLineEdit:disabled {
+    background: #e3f6f5;
+    color: #2c698d;
+}

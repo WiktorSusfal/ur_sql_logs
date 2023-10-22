@@ -56,6 +56,15 @@ class MDCommMessage(MDBaseMessage):
 
       self._offset = o
 
+    def _get_custom_data_as_dict(self) -> dict[str, str]:
+        return {
+                'code': str(self.code)
+                ,'argument': str(self.argument)
+                ,'report_level': str(self.report_level_name)
+                ,'data': str(self.data)
+                ,'text_message': str(self.text_message)
+              }
+
     def __repr__(self):
         return  super().__repr__() + \
                 f"\n\t- code: {self.code}"\

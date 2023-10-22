@@ -13,8 +13,10 @@ class VwItemDetailsPlaceholder(USLBaseView):
         self.setObjectName(UR_ITEM_DETAILS_PLACEHOLDER_VIEW_NAME)
 
         self._robot_icon_label = self._produce_icon_label(r'robot/industrial-robot256.png', 256, 256)
+        
         self._info_label = qtw.QLabel('No item selected')
         self._info_label.setObjectName(HINT_LABEL_NAME)
+        
         main_layout = qtw.QVBoxLayout()
         main_layout.addStretch()
         main_layout.addWidget(self._robot_icon_label, stretch=0, alignment=qtc.Qt.AlignVCenter | qtc.Qt.AlignHCenter)

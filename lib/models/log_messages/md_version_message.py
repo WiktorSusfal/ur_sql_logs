@@ -38,6 +38,16 @@ class MDVersionMessage(MDBaseMessage):
         self.build_date, o = self._read_char_array_as_string(rm, o, len_remain)
 
         self._offset = o
+
+    def _get_custom_data_as_dict(self) -> dict[str, str]:
+        return {
+                'project_name': str(self.project_name)
+                ,'major_version': str(self.major_version)
+                ,'minor_version': str(self.minor_version)
+                ,'bugfix_version': str(self.bugfix_version)
+                ,'build_number': str(self.build_number)
+                ,'build_date': str(self.build_date)
+              }
     
     def __repr__(self):
         return  super().__repr__() + \

@@ -1,5 +1,5 @@
 from lib.view_models.vm_1_main import VmMain
-from lib.view_models.vm_4_robot_connection import VmRobotConnection
+from lib.view_models.vm_4a_robot_connection import VmRobotConnection
 
 class HpViewModelsManager: 
 

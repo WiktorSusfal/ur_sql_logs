@@ -19,7 +19,7 @@ class VwItemDetails(USLBaseView):
         self._robot_name_input = self._produce_line_edit(FORM_INPUT_NAME)
         self._ip_address_input = self._produce_line_edit(FORM_INPUT_NAME, USLIPAddressValidator(self))
         self._port_number_input = self._produce_line_edit(FORM_INPUT_NAME, USLIntValidator(1, 65535, self))
-        self._read_freq_input = self._produce_line_edit(FORM_INPUT_NAME, USLDoubleValidator(0.0, 360.0, 2, self))
+        self._read_interval_input = self._produce_line_edit(FORM_INPUT_NAME, USLDoubleValidator(0.0, 360.0, 2, self))
 
         self._db_warning_label = qtw.QLabel("Warning: database not connected", self)
         self._db_warning_label.setObjectName(WARNING_LABEL_NAME)
@@ -35,11 +35,21 @@ class VwItemDetails(USLBaseView):
             self._produce_named_label("Port Number: ", FORM_LABEL_NAME)
             ,self._port_number_input)
         main_form.addRow(
-            self._produce_named_label("Read Frequency: ", FORM_LABEL_NAME)
-            ,self._read_freq_input)
+            self._produce_named_label("Read interval: ", FORM_LABEL_NAME)
+            ,self._read_interval_input)
         
         self._robot_icon_label = self._produce_icon_label(r'robot/industrial-robot256.png', 200, 200)
+        
         self._recent_messages_table = qtw.QTableView()
+        self._recent_messages_table.horizontalHeader().setSectionsClickable(False)
+        self._recent_messages_table.verticalHeader().setSectionsClickable(False)
+        self._recent_messages_table.verticalHeader().setHidden(True)
+        self._recent_messages_table.horizontalHeader().setSectionResizeMode(qtw.QHeaderView.ResizeToContents)
+    
+        self._table_model = self._model.message_data_model
+        self._table_model.setParent(self)
+        
+        self._recent_messages_table.setModel(self._table_model)
 
         self._save_button = self._produce_button(icon_rel_path=r'save/save24.png', icon_size=20
                                                  , button_name=ACTION_BUTTON_NAME)
@@ -87,10 +97,10 @@ class VwItemDetails(USLBaseView):
         self._model.name_changed.connect(self._robot_name_input.setText)
         self._model.ip_changed.connect(self._ip_address_input.setText)
         self._model.port_changed.connect(self._port_number_input.setText)
-        self._model.read_freq_changed.connect(self._read_freq_input.setText)
+        self._model.read_freq_changed.connect(self._read_interval_input.setText)
 
         self._model.db_connect_status_changed.connect(self._db_connect_status_changed)
-        self._model.robot_connect_status_changed.connect(self._manage_robot_connect_buttons)
+        self._model.robot_connect_status_changed.connect(self._manage_gui_connection_based)
 
         self._robot_name_input.editingFinished.connect(
             lambda : self._model.set_name(self._robot_name_input.text()))
@@ -98,8 +108,8 @@ class VwItemDetails(USLBaseView):
             lambda : self._model.set_ip_address(self._ip_address_input.text()))
         self._port_number_input.editingFinished.connect(
             lambda : self._model.set_port(self._port_number_input.text()))
-        self._read_freq_input.editingFinished.connect(
-            lambda: self._model.set_read_frequency(self._read_freq_input.text()))
+        self._read_interval_input.editingFinished.connect(
+            lambda: self._model.set_read_frequency(self._read_interval_input.text()))
         
     def _db_connect_status_changed(self, status: int):
         if status == HEALTH_OK:
@@ -107,9 +117,13 @@ class VwItemDetails(USLBaseView):
         if status == HEALTH_LOST:
             self._db_warning_label.show()
 
-    def _manage_robot_connect_buttons(self, is_connected: bool):
+    def _manage_gui_connection_based(self, is_connected: bool):
         self._connect_button.setDisabled(is_connected)
         self._disconnect_button.setDisabled(not is_connected)
+
+        self._ip_address_input.setDisabled(is_connected)
+        self._port_number_input.setDisabled(is_connected)
+        self._read_interval_input.setDisabled(is_connected)
 
 
 if __name__ == '__main__':

@@ -2,7 +2,7 @@ import PyQt5.QtWidgets as qtw
 import PyQt5.QtCore as qtc
 
 from lib.views.components.base_view import USLBaseView
-from lib.view_models.vm_4_robot_connection import VmRobotConnection
+from lib.view_models.vm_4a_robot_connection import VmRobotConnection
 from lib.helpers.constants.hp_gui_tem_names import *
 
 
@@ -18,6 +18,16 @@ class VwListItem(USLBaseView):
         self._off_icon_label = self._produce_icon_label(r'disconnected/disconn48.png', 60, 20, label_name=LIST_ITEM_ICON_LABEL_NAME)
         self._mail_icon_label = self._produce_icon_label(r'mail/mail.png', 24, 24, label_name=LIST_ITEM_ICON_LABEL_NAME)
         
+        self._in_db_icon_label = self._produce_icon_label(r'connected/dbcon52.png', 24, 24
+                                                          , label_name=LIST_ITEM_ICON_LABEL_NAME
+                                                          , tooltip='Model up to date with database')
+        self._not_in_db_icon_label = self._produce_icon_label(r'disconnected/dbdisconn52.png', 24, 24
+                                                              , label_name=LIST_ITEM_ICON_LABEL_NAME
+                                                              , tooltip='Model not exists in database')
+        self._differences_db_icon_label = self._produce_icon_label(r'connection-errors/changes_in_db.png', 24, 24
+                                                              , label_name=LIST_ITEM_ICON_LABEL_NAME
+                                                              , tooltip='Model has not saved changes')
+
         self._title_label = qtw.QLabel(self.model.robot_connection_name)
         self._title_label.setObjectName(LIST_ITEM_TITLE_LABEL_NAME)
 
@@ -28,10 +38,16 @@ class VwListItem(USLBaseView):
         self._connection_indicator.addWidget(self._off_icon_label)
         self._connection_indicator.addWidget(self._on_icon_label)
 
+        self._db_saved_indicator = qtw.QStackedWidget()
+        self._db_saved_indicator.addWidget(self._not_in_db_icon_label)
+        self._db_saved_indicator.addWidget(self._in_db_icon_label)
+        self._db_saved_indicator.addWidget(self._differences_db_icon_label)
+
         details_layout = qtw.QHBoxLayout()
         details_layout.addWidget(self._connection_indicator, stretch = 0, alignment = qtc.Qt.AlignLeft | qtc.Qt.AlignVCenter)
         details_layout.addWidget(self._mail_icon_label, stretch = 0, alignment = qtc.Qt.AlignLeft | qtc.Qt.AlignVCenter)
         details_layout.addWidget(self._message_counter_label, stretch = 0, alignment = qtc.Qt.AlignLeft | qtc.Qt.AlignVCenter)
+        details_layout.addWidget(self._db_saved_indicator, stretch = 0, alignment = qtc.Qt.AlignLeft | qtc.Qt.AlignVCenter)
 
         info_layout = qtw.QVBoxLayout()
         info_layout.addWidget(self._title_label, stretch = 0, alignment = qtc.Qt.AlignTop)
@@ -57,6 +73,7 @@ class VwListItem(USLBaseView):
         self.model.connection_status_changed.connect(
                 lambda status: self._connection_indicator.setCurrentIndex(int(status))
             )
+        self.model.db_saved_status_changed.connect(self._db_saved_indicator.setCurrentIndex)
 
     def _init_actions(self):
         pass

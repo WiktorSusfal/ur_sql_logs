@@ -51,6 +51,14 @@ class MDSafetyMessage(MDBaseMessage):
 
         self._offset = o
 
+    def _get_custom_data_as_dict(self) -> dict[str, str]:
+        return {
+                'code': str(self.code)
+                ,'argument': str(self.argument)
+                ,'safety_mode_name': str(self.safety_mode_name)
+                ,'report_data': str(self.report_data)
+              }
+
     def __repr__(self):
         return  super().__repr__() + \
                 f"\n\t- code: {self.code}"\

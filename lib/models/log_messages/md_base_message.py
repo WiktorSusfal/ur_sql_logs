@@ -75,6 +75,13 @@ class MDBaseMessage(Base):
 
         return (char_array, (offset + length))
     
+    def _get_custom_data_as_dict(self) -> dict[str, str]:
+        raise NotImplementedError()
+    
+    def _get_custom_data_as_string(self) -> str:
+        data_dict = self._get_custom_data_as_dict()
+        return '{' + ', '.join([k + ': ' + v for k, v in data_dict.items()]) + ' }'
+    
     def __repr__(self):
         return  f"{self.__class__.__name__} object.\nMessage size: {self._msg_size}.\nColumns:"\
                 f"\n\t- robot_id: {self.robot_id}"\

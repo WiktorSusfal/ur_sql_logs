@@ -4,5 +4,6 @@ CREATE TABLE IF NOT EXISTS {schema_name}.{robot_info_table_name} (
 	ip_address varchar NULL,
 	port int4 NULL,
 	read_frequency float8 NULL,
+	is_deleted bool default false,
 	CONSTRAINT {robot_info_table_name}_pkey PRIMARY KEY (id)
 );
