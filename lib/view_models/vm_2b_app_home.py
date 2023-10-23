@@ -69,4 +69,4 @@ class VmAppHome(QObject):
                 self.add_connection(connection_view_model)
                 present = True
 
-            connection_view_model.check_model_in_db(model_data)
+            connection_view_model.check_model_in_db()

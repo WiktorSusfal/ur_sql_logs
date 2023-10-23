@@ -127,6 +127,7 @@ class HpDBConnectionManager:
             with cls._session_maker() as session:
                 s: Session = session
                 robot_models = s.query(MdRobotConnection).filter_by(is_deleted = False).all()
+                s.expunge_all()
                 cls._trigger_robot_models_get(robot_models)    
             return True
         except Exception as e:
@@ -155,6 +156,7 @@ class HpDBConnectionManager:
         try:
             with cls._session_maker() as session:
                 s: Session = session
+                s.expire_on_commit = False
                 s.add(model)
                 s.commit()
         except:
@@ -168,6 +170,7 @@ class HpDBConnectionManager:
             with cls._session_maker() as session:
                 s: Session = session
                 robot_model = s.query(MdRobotConnection).filter_by(id = robot_id).first()
+                s.expunge(robot_model)
                 return robot_model
         except Exception as e:
             return None

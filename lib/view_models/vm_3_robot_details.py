@@ -88,6 +88,8 @@ class VmRobotDetails(QObject):
 
     @HpVmUtils.run_in_thread
     def _save_to_db(self):
+        print('-------------------------------------------')
+        print('Saving to db')
         self._vm_robot_connection.save_robot_model()
         self._vm_robot_connection.check_model_in_db()
 

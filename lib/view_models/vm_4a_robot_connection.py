@@ -64,7 +64,7 @@ class VmRobotConnection(QObject):
     def _message_counter_changed(self, counter_val: int, **kwargs):
         self.message_counter_changed.emit(counter_val)
 
-    def check_model_in_db(self) -> int:
+    def check_model_in_db(self):
         status = self._compare_model_with_db()
         self.db_saved_status_changed.emit(status)
     
@@ -73,12 +73,16 @@ class VmRobotConnection(QObject):
         model_saved = 1
         model_has_changes = 2
 
+        
         robot_model = HpDBConnectionManager.get_robot_model_by_id(self.robot_id)
 
         if not robot_model:
+            print('comparing - not exists')
             return model_not_exists
 
         if self._robot_connection != robot_model:
+            print('comparing - not the same')
             return model_has_changes
         
+        print('comparing - the same')
         return model_saved

@@ -56,6 +56,7 @@ class MdRobotConnection(Base):
         self.ip_address = data.ip_address or DEFAULT_IP
         self.port = data.port or DEFAULT_PORT
         self.read_frequency = data.read_freq or DEFAULT_READ_FREQ
+        self.is_deleted = data.is_deleted
 
         self._ltm.set_task_interval(self._read_data_task_name, self.read_frequency)
 
@@ -79,7 +80,7 @@ class MdRobotConnection(Base):
         return '_'.join([DEFAULT_NAME, str(MdRobotConnection.object_quantity)])
 
     def produce_data_struct(self) -> DsRobotConnectionData:
-        return DsRobotConnectionData(self.name, self.ip_address, self.port, self.read_frequency)
+        return DsRobotConnectionData(self.name, self.ip_address, self.port, self.read_frequency, self.is_deleted)
 
     def subscribe_connection_status(self, func: Callable[[int], None]):
         self._ltm.subscribe_to_process_status(self._read_data_task_name, func)
@@ -120,12 +121,18 @@ class MdRobotConnection(Base):
         if not isinstance(obj, MdRobotConnection):
             return False
         
+        print('Comparing:\n', self, '\n', obj)
+        
         return self.id == obj.id and \
                 self.name == obj.name and \
                 self.ip_address == obj.ip_address and \
                 self.port == obj.port and \
                 self.read_frequency == obj.read_frequency and \
-                self.is_deleted == obj.is_deleted             
+                self.is_deleted == obj.is_deleted   
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(\n\tid={self.id}\n\tname={self.name}\n\tip_address={self.ip_address}"\
+                f"\n\tport={self.port}\n\tread_frequency={self.read_frequency}\n\tis_deleted={self.is_deleted}\n)"          
 
 
 if __name__ == '__main__':
@@ -140,6 +147,7 @@ if __name__ == '__main__':
         print(last_msg_obj)
 
     rc = MdRobotConnection(robot_id, DsRobotConnectionData('robot_1', '127.0.0.1', 30001, 0.05))
+    print(rc)
     #HpMessageStorage.subscribe_message_counter(robot_id, message_arrived)
     #rc._check_robot_connection()
 
@@ -147,6 +155,6 @@ if __name__ == '__main__':
     #    rc._get_robot_msg_buffer()
     #    sleep(0.05)
 
-    rc.connect()
-    sleep(30)
-    rc.disconnect()
+    #rc.connect()
+    #sleep(30)
+    #rc.disconnect()#
