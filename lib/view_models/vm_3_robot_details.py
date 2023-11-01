@@ -62,7 +62,8 @@ class VmRobotDetails(QObject):
         self._vm_robot_connection = vm_conn
         self._subscribe_to_model()
 
-        self.message_data_model.set_robot_id(vm_conn.robot_id)
+        id = vm_conn.robot_id if vm_conn else None
+        self.message_data_model.set_robot_id(id)
 
         self.model_empty.emit(vm_conn is None)
         self._robot_connection_status_changed()
