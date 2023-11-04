@@ -121,8 +121,6 @@ class MdRobotConnection(Base):
         if not isinstance(obj, MdRobotConnection):
             return False
         
-        print('Comparing:\n', self, '\n', obj)
-        
         return self.id == obj.id and \
                 self.name == obj.name and \
                 self.ip_address == obj.ip_address and \

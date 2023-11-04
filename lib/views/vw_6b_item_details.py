@@ -2,6 +2,7 @@ import PyQt5.QtWidgets as qtw
 import PyQt5.QtCore as qtc
 
 from lib.views.components.base_view import USLBaseView
+from lib.views.components.line_edit import USLLineEdit
 from lib.views.components.validators import USLIntValidator, USLDoubleValidator, USLIPAddressValidator
 
 from lib.helpers.resources.hp_view_models_manager import HpViewModelsManager
@@ -16,10 +17,10 @@ class VwItemDetails(USLBaseView):
         self.setObjectName(UR_ITEM_DETAILS_VIEW_NAME)
         self._model = HpViewModelsManager.robot_details_view_model
         
-        self._robot_name_input = self._produce_line_edit(FORM_INPUT_NAME)
-        self._ip_address_input = self._produce_line_edit(FORM_INPUT_NAME, USLIPAddressValidator(self))
-        self._port_number_input = self._produce_line_edit(FORM_INPUT_NAME, USLIntValidator(1, 65535, self))
-        self._read_interval_input = self._produce_line_edit(FORM_INPUT_NAME, USLDoubleValidator(0.0, 360.0, 2, self))
+        self._robot_name_input = USLLineEdit(FORM_INPUT_NAME)
+        self._ip_address_input = USLLineEdit(FORM_INPUT_NAME, USLIPAddressValidator(self))
+        self._port_number_input = USLLineEdit(FORM_INPUT_NAME, USLIntValidator(0, 65535, self))
+        self._read_interval_input = USLLineEdit(FORM_INPUT_NAME, USLDoubleValidator(0.0, 360.0, 2, self))
 
         self._db_warning_label = qtw.QLabel("Warning: database not connected", self)
         self._db_warning_label.setObjectName(WARNING_LABEL_NAME)
@@ -95,9 +96,16 @@ class VwItemDetails(USLBaseView):
     
     def _set_value_subscriptions(self):
         self._model.name_changed.connect(self._robot_name_input.setText)
+        self._model.name_pending_changes.connect(self._robot_name_input.set_changes_active)
+
         self._model.ip_changed.connect(self._ip_address_input.setText)
+        self._model.ip_pending_changes.connect(self._ip_address_input.set_changes_active)
+
         self._model.port_changed.connect(self._port_number_input.setText)
+        self._model.port_pending_changes.connect(self._port_number_input.set_changes_active)
+
         self._model.read_freq_changed.connect(self._read_interval_input.setText)
+        self._model.read_freq_pending_changes.connect(self._read_interval_input.set_changes_active)
 
         self._model.db_connect_status_changed.connect(self._db_connect_status_changed)
         self._model.robot_connect_status_changed.connect(self._manage_gui_connection_based)

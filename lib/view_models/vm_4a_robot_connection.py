@@ -1,10 +1,10 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from lib.models.md_robot_connection import MdRobotConnection
+from lib.models.factories.fmd_robot_connection import FmdRobotConnection
 from lib.models.data_structures.ds_robot_connection_data import DsRobotConnectionData
 
 from lib.helpers.messages.hp_message_storage import HpMessageStorage
-from lib.helpers.database.hp_db_connection_manager import HpDBConnectionManager
 from lib.helpers.constants.hp_indicators import *
 
 
@@ -15,12 +15,14 @@ class VmRobotConnection(QObject):
     message_counter_changed = pyqtSignal(int)
     db_saved_status_changed = pyqtSignal(int)
     
-    def __init__(self, model_id: str = None):
+    def __init__(self, model_factory: FmdRobotConnection, model_id: str = None):
         super(VmRobotConnection, self).__init__()
+        self._robot_conn_factory = model_factory
         self._robot_connection = MdRobotConnection(model_id)
         self.subscribe_to_model()
 
         self.connected: bool = False
+        self.db_saved_status: int = 0
 
     @property
     def robot_connection_data(self):
@@ -51,7 +53,7 @@ class VmRobotConnection(QObject):
         self._robot_connection.disconnect()
 
     def save_robot_model(self):
-        HpDBConnectionManager.save_robot_model(self._robot_connection)
+        self._robot_conn_factory.save_robot_model(self._robot_connection)
 
     def _connection_status_changed(self, status: int):
         self.connected = False if status == THREADS_FINISHED else True
@@ -65,24 +67,20 @@ class VmRobotConnection(QObject):
         self.message_counter_changed.emit(counter_val)
 
     def check_model_in_db(self):
-        status = self._compare_model_with_db()
-        self.db_saved_status_changed.emit(status)
+        self.db_saved_status = self._compare_model_with_db()
+        self.db_saved_status_changed.emit(self.db_saved_status)
     
     def _compare_model_with_db(self) -> int:
         model_not_exists = 0
         model_saved = 1
         model_has_changes = 2
 
-        
-        robot_model = HpDBConnectionManager.get_robot_model_by_id(self.robot_id)
+        robot_model = self._robot_conn_factory.get_robot_model_by_id(self.robot_id)
 
         if not robot_model:
-            print('comparing - not exists')
             return model_not_exists
 
         if self._robot_connection != robot_model:
-            print('comparing - not the same')
             return model_has_changes
         
-        print('comparing - the same')
         return model_saved

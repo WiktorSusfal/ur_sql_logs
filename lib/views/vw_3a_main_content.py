@@ -3,6 +3,7 @@ import PyQt5.QtWidgets as qtw
 from lib.views.components.base_view import USLBaseView
 from lib.views.vw_4b_db_connection_config import VwDBConnectionConfig
 from lib.views.vw_4a_app_home import VwAppHome
+from lib.views.vw_4c_help import VwHelp
 
 from lib.helpers.resources.hp_view_models_manager import HpViewModelsManager
 from lib.helpers.constants.hp_gui_tem_names import *
@@ -17,10 +18,12 @@ class VwMainContent(USLBaseView):
 
         self._home_widget = VwAppHome(parent=self)
         self._connection_config = VwDBConnectionConfig(parent=self)
+        self._help_widget = VwHelp(parent=self)
 
         self._widget_manager = qtw.QStackedWidget()
         self._widget_manager.addWidget(self._home_widget)
         self._widget_manager.addWidget(self._connection_config)
+        self._widget_manager.addWidget(self._help_widget)
         
         main_layout = qtw.QVBoxLayout()
         main_layout.addWidget(self._widget_manager, stretch=1)

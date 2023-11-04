@@ -24,9 +24,6 @@ class DsRobotMsgBuffer:
  
             b_part = self._get_buffer_part(offset+MAIN_MSG_TYPE_OFFSET, MAIN_MSG_TYPE_LEN)
             main_message_type = struct.unpack('!B', b_part)[0]
-
-            #if main_package_length == 0 or main_package_length > 4096:
-            #    break
             
             if main_message_type == PRIMARY_CLIENT_MSG_CODE:
                 b_part = self._get_buffer_part(offset, main_package_length)

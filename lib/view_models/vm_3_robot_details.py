@@ -12,14 +12,20 @@ from lib.helpers.database.hp_db_connection_manager import HpDBConnectionManager
 class VmRobotDetails(QObject):
 
     name_changed = pyqtSignal(str)
+    name_pending_changes = pyqtSignal(bool)
+
     ip_changed = pyqtSignal(str)
+    ip_pending_changes = pyqtSignal(bool)
+
     port_changed = pyqtSignal(str)
+    port_pending_changes = pyqtSignal(bool)
+
     read_freq_changed = pyqtSignal(str)
+    read_freq_pending_changes = pyqtSignal(bool)
 
     db_connect_status_changed = pyqtSignal(int)
     robot_connect_status_changed = pyqtSignal(bool)
     model_empty = pyqtSignal(bool)
-
     
     def __init__(self):
         super(VmRobotDetails, self).__init__()
@@ -29,17 +35,17 @@ class VmRobotDetails(QObject):
         self._port: str = str()
         self._read_frequency: str = str()
 
-        self._vm_robot_connection: VmRobotConnection = None
-
         self.message_data_model = VmMessageData()
-        
+
+        self._vm_robot_connection: VmRobotConnection = None
         HpDBConnectionManager.subscribe_to_health_status(self.db_connect_status_changed.emit)
+        self.set_value_subscriptions()
     
     def set_value_subscriptions(self):
-        self.name_changed.connect(self._check_model_in_db)
-        self.ip_changed.connect(self._check_model_in_db)
-        self.port_changed.connect(self._check_model_in_db)
-        self.read_freq_changed.connect(self._check_model_in_db)
+        self.name_changed.connect(self._check_model_in_cache)
+        self.ip_changed.connect(self._check_model_in_cache)
+        self.port_changed.connect(self._check_model_in_cache)
+        self.read_freq_changed.connect(self._check_model_in_cache)
     
     @HpVmUtils.observable_property('_name', 'name_changed')
     def set_name(self, name: str):
@@ -72,7 +78,7 @@ class VmRobotDetails(QObject):
         
     def update_interface_data(self):
         if self._vm_robot_connection:
-            conn_data = self._vm_robot_connection.robot_connection_data
+            conn_data = self._vm_robot_connection.robot_connection_data    
         else:
             conn_data = DsRobotConnectionData()
         
@@ -80,6 +86,9 @@ class VmRobotDetails(QObject):
         self.set_ip_address(conn_data.ip_address)
         self.set_port(str(conn_data.port))
         self.set_read_frequency(str(conn_data.read_freq))
+
+        if self._vm_robot_connection:
+            self._check_model_in_cache(None)
 
     def save_interface_data(self):
         if self._vm_robot_connection:
@@ -89,14 +98,21 @@ class VmRobotDetails(QObject):
 
     @HpVmUtils.run_in_thread
     def _save_to_db(self):
-        print('-------------------------------------------')
-        print('Saving to db')
         self._vm_robot_connection.save_robot_model()
         self._vm_robot_connection.check_model_in_db()
+        self._check_model_in_cache(None)
 
     @HpVmUtils.run_in_thread
     def _check_model_in_db(self, arg):
         self._vm_robot_connection.check_model_in_db()
+
+    def _check_model_in_cache(self, arg):
+        cached = self._vm_robot_connection.robot_connection_data
+        
+        self.name_pending_changes.emit(self._name != cached.name)
+        self.ip_pending_changes.emit(self._ip_address != cached.ip_address)
+        self.port_pending_changes.emit(int(self._port or '-1') != cached.port)
+        self.read_freq_pending_changes.emit(float(self._read_frequency or '-1') != cached.read_freq)
         
     def robot_connect(self):
         self._vm_robot_connection.connect_to_robot()

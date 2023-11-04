@@ -42,6 +42,7 @@ class VwListItem(USLBaseView):
         self._db_saved_indicator.addWidget(self._not_in_db_icon_label)
         self._db_saved_indicator.addWidget(self._in_db_icon_label)
         self._db_saved_indicator.addWidget(self._differences_db_icon_label)
+        self._db_saved_indicator.setCurrentIndex(self.model.db_saved_status)
 
         details_layout = qtw.QHBoxLayout()
         details_layout.addWidget(self._connection_indicator, stretch = 0, alignment = qtc.Qt.AlignLeft | qtc.Qt.AlignVCenter)

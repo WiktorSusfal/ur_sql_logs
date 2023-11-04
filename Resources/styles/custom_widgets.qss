@@ -18,6 +18,10 @@ QWidget#APPLICATION_HOME_VIEW {
     background-color: transparent;
 }
 
+QWidget#HELP_VIEW {   
+    background-color: #2f3b52;
+}
+
 QWidget#UR_SELECTION_LIST_VIEW {   
     background-color: #2f3b52;
 }

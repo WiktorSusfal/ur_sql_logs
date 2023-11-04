@@ -2,6 +2,8 @@
 __pycache__/
 __pycache__
 Client_InterfacesV3.14andV5.9.xlsx
+*.xlsx
 ur_logger_env
 .vscode
 tmp/
+.vscode/
