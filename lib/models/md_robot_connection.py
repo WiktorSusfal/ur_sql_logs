@@ -1,3 +1,6 @@
+"""Contains class which represents robot connection - business model. 
+This class is responsible for continuous message reading from robot."""
+
 import socket
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, String, Float, Boolean
@@ -20,6 +23,8 @@ CONNECTION_TIMEOUT = 1.5
 
 
 class MdRobotConnection(Base):
+    """Class which represents robot connection - business model. 
+    This class is responsible for continuous message reading from robot."""
 
     object_quantity: int = 0
 
@@ -130,29 +135,4 @@ class MdRobotConnection(Base):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(\n\tid={self.id}\n\tname={self.name}\n\tip_address={self.ip_address}"\
-                f"\n\tport={self.port}\n\tread_frequency={self.read_frequency}\n\tis_deleted={self.is_deleted}\n)"          
-
-
-if __name__ == '__main__':
-    from lib.helpers.messages.hp_message_storage import HpMessageStorage
-    from time import sleep
-
-    robot_id = uuid4()
-    
-    def message_arrived(count: int):
-        print("Message arrived, overall count: ", count)
-        last_msg_obj = HpMessageStorage._messages[robot_id][-1]
-        print(last_msg_obj)
-
-    rc = MdRobotConnection(robot_id, DsRobotConnectionData('robot_1', '127.0.0.1', 30001, 0.05))
-    print(rc)
-    #HpMessageStorage.subscribe_message_counter(robot_id, message_arrived)
-    #rc._check_robot_connection()
-
-    #while True:
-    #    rc._get_robot_msg_buffer()
-    #    sleep(0.05)
-
-    #rc.connect()
-    #sleep(30)
-    #rc.disconnect()#
+                f"\n\tport={self.port}\n\tread_frequency={self.read_frequency}\n\tis_deleted={self.is_deleted}\n)"

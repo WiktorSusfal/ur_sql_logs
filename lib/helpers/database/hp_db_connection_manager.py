@@ -1,3 +1,6 @@
+"""Contains class which maintains database connection and 
+performs periodically saves of messages read from robot. """
+
 from sqlalchemy import create_engine, Engine, text
 from sqlalchemy.orm import sessionmaker, Session
 from collections.abc import Callable
@@ -14,6 +17,8 @@ HEALTH_ERROR_THRESHOLD = 3
 
 
 class HpDBConnectionManager:
+    """Class which maintains database connection and 
+    performs periodically saves of messages read from robot."""
 
     _connection_string: str = str()
     

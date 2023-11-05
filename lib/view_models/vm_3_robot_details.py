@@ -87,8 +87,7 @@ class VmRobotDetails(QObject):
         self.set_port(str(conn_data.port))
         self.set_read_frequency(str(conn_data.read_freq))
 
-        if self._vm_robot_connection:
-            self._check_model_in_cache(None)
+        self._check_model_in_cache(None)
 
     def save_interface_data(self):
         if self._vm_robot_connection:
@@ -107,12 +106,15 @@ class VmRobotDetails(QObject):
         self._vm_robot_connection.check_model_in_db()
 
     def _check_model_in_cache(self, arg):
+        if self._vm_robot_connection is None:
+            return
+        
         cached = self._vm_robot_connection.robot_connection_data
         
-        self.name_pending_changes.emit(self._name != cached.name)
-        self.ip_pending_changes.emit(self._ip_address != cached.ip_address)
-        self.port_pending_changes.emit(int(self._port or '-1') != cached.port)
-        self.read_freq_pending_changes.emit(float(self._read_frequency or '-1') != cached.read_freq)
+        self.name_pending_changes.emit(not cached.compare_name(self._name))
+        self.ip_pending_changes.emit(not cached.compare_ip_address(self._ip_address))
+        self.port_pending_changes.emit(not cached.compare_port(self._port))
+        self.read_freq_pending_changes.emit(not cached.compare_read_freq(self._read_frequency))
         
     def robot_connect(self):
         self._vm_robot_connection.connect_to_robot()

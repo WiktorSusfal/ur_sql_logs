@@ -1,3 +1,6 @@
+"""Contains method which displays any PyQt5 widget object inside new window 
+with all predefined qss styles active (stored in resources folder)."""
+
 import PyQt5.QtWidgets as qtw
 import sys as sys
 
@@ -7,6 +10,8 @@ _test_view_app = qtw.QApplication(sys.argv)
 _test_view_app.setStyleSheet(HpResourcesManager.get_styles_code())
 
 def visual_test_preview(target_widget: qtw.QWidget):
+    """Displays any PyQt5 widget object inside new window 
+        with all predefined qss styles active (stored in resources folder)."""
     
     class HpVisualTestWidget(qtw.QMainWindow):
 
@@ -20,7 +25,3 @@ def visual_test_preview(target_widget: qtw.QWidget):
 
     app_main_gui = HpVisualTestWidget(target_widget)
     sys.exit(_test_view_app.exec_())
-
-
-if __name__ == '__main__':
-    visual_test_preview(qtw.QLabel('Test Label Widget'))

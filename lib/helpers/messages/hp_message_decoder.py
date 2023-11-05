@@ -1,3 +1,6 @@
+"""Contains class which decodes bytes of particular robot's message into given set of values. 
+Creates relevant message object and passes it to the message storage in cache."""
+
 from queue import Queue
 from threading import Lock
 from datetime import datetime
@@ -24,6 +27,8 @@ MSG_MODEL_TYPE_MAP: dict[int, type] = {
                                     }
 
 class HpMessageDecoder:
+    """Class which decodes bytes of particular robot's message into given set of values. 
+    Creates relevant message object and passes it to the message storage in cache."""
 
     _data_lock: Lock = Lock()
     _input_messages: Queue[DsRobotRawMessage] = Queue(1000)

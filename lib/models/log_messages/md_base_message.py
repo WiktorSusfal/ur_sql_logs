@@ -90,8 +90,3 @@ class MDBaseMessage(Base):
                 f"\n\t- source: {self.source}"\
                 f"\n\t- source_name: {self.source_name}"\
                 f"\n\t- robot_message_type: {self.robot_message_type}"
-    
-
-if __name__ == '__main__':
-    m = MDBaseMessage(bytes(), 'custom_robot_id', datetime(2023, 9, 30))
-    print(m)

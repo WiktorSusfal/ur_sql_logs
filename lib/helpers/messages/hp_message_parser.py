@@ -1,3 +1,6 @@
+"""Contains class which parses raw bytes stream into set of streams with their message types assigned.
+Filters out not supported message types. Passes prepared set to the message decoder."""
+
 from threading import Lock
 from queue import Queue
 from datetime import datetime
@@ -13,6 +16,8 @@ from lib.helpers.constants.hp_message_attributes import *
 PARSING_INTERVAL = 0.01
 
 class HpMessageParser:
+    """Class which parses raw bytes stream into set of streams with their message types assigned.
+    Filters out not supported message types. Passes prepared set to the message decoder."""
 
     _data_lock: Lock = Lock()
     _input_buffers: Queue[DsRobotMsgBuffer] = Queue(1000)

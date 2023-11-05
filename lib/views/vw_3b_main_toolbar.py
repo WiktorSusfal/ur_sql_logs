@@ -39,8 +39,3 @@ class VwMainToolbar(USLBaseView):
 
     def _set_value_subscriptions(self):
         pass
-    
-
-if __name__ == '__main__':
-    from lib.helpers.utils.hp_visual_view_test_template import visual_test_preview
-    visual_test_preview(VwMainToolbar())

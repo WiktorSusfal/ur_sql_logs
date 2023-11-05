@@ -1,8 +1,11 @@
+"""Contains class which provides some basic and universal functionalities for other modules."""
+
 from PyQt5.QtCore import pyqtSignal
 from threading import Thread
 
 
 class HpVmUtils:
+    """Class which provides some basic and universal functionalities for other modules."""
 
     @staticmethod
     def observable_property(property_name: str, signal_name: str):

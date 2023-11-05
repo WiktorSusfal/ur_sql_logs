@@ -132,8 +132,3 @@ class VwItemDetails(USLBaseView):
         self._ip_address_input.setDisabled(is_connected)
         self._port_number_input.setDisabled(is_connected)
         self._read_interval_input.setDisabled(is_connected)
-
-
-if __name__ == '__main__':
-    from lib.helpers.utils.hp_visual_view_test_template import visual_test_preview
-    visual_test_preview(VwItemDetails())

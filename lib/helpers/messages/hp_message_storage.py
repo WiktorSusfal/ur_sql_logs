@@ -1,3 +1,6 @@
+"""Contains class which stores message objects in cache. 
+Introduces feature of counting messages for particular robot and notifying when decoded message is ready."""
+
 from collections.abc import Callable
 from threading import Lock
 
@@ -6,6 +9,8 @@ from lib.models.log_messages.md_base_message import MDBaseMessage
 MAX_MSG_LIST_SIZE = 250
 
 class HpMessageStorage:
+    """Class which stores message objects in cache. 
+    Introduces feature of counting messages for particular robot and notifying when decoded message is ready."""
 
     _messages: dict[str, list[MDBaseMessage] ] = dict()
     _save_staged: list[MDBaseMessage] = list()

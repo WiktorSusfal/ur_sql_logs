@@ -37,7 +37,3 @@ class USLLineEdit(qtw.QLineEdit):
     def set_changes_active(self, changes_state: bool):
         self._changes_active = changes_state
         self.repaint()
-
-if __name__ == '__main__':
-    from lib.helpers.utils.hp_visual_view_test_template import visual_test_preview
-    visual_test_preview(USLLineEdit())

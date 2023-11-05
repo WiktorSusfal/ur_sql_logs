@@ -1,3 +1,5 @@
+"""Contains class which provides database connection definitions from yaml config file."""
+
 import yaml
 import os
 
@@ -9,6 +11,7 @@ CONFIG_PATH = os.path.normpath(os.path.join(SCRIPT_PATH, CONFIG_REL_PATH, CONN_C
 
 
 class HpConnectionConfigData:
+    """Class which provides database connection definitions from yaml config file."""
 
     _configs_cached: list[dict] = list()
 
@@ -56,8 +59,3 @@ class HpConnectionConfigData:
                         conn_data.get('database', str())
             
         raise Exception(f'Connection {connection_name} not present in connections config file')
-        
-
-if __name__ == '__main__':
-    print(HpConnectionConfigData.get_db_connection_names())
-    print(HpConnectionConfigData.get_db_connection_string('postgres_dev', 'abc'))

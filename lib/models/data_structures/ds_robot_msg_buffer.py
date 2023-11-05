@@ -1,3 +1,5 @@
+"""Contains data class which encapsulate raw robot message buffer, robot id and capture date time."""
+
 import struct
 from dataclasses import dataclass
 from typing import Generator
@@ -7,6 +9,7 @@ from lib.helpers.constants.hp_message_attributes import *
 
 @dataclass
 class DsRobotMsgBuffer:
+    """Data class which encapsulate raw robot message buffer, robot id and capture date time."""
     buffer: bytes = None
     robot_id: str = None
     capture_dt: datetime = None

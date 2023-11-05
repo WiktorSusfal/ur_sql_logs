@@ -35,8 +35,3 @@ class VwItemDetailsPlaceholder(USLBaseView):
 
     def _init_actions(self):
         pass
-
-
-if __name__ == '__main__':
-    from lib.helpers.utils.hp_visual_view_test_template import visual_test_preview
-    visual_test_preview(VwItemDetailsPlaceholder())

@@ -77,8 +77,3 @@ class VwSelectionList(USLBaseView):
             item_vmodel: VmRobotConnection = item_widget.model
         
         self._model.change_current_connection(item_vmodel)
-
-
-if __name__ == '__main__':
-    from lib.helpers.utils.hp_visual_view_test_template import visual_test_preview
-    visual_test_preview(VwSelectionList())

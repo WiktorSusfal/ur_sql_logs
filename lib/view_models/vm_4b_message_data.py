@@ -12,6 +12,7 @@ from lib.helpers.utils.looped_tasks.hp_looped_task_manager import HpLoopedTaskMa
 MAX_ITEMS = 25
 REFRESH_DATA_INTERVAL = 0.1
 
+
 class VmMessageData(QStandardItemModel):
 
     def __init__(self, parent=None):

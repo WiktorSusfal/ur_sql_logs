@@ -57,9 +57,4 @@ class VwMain(USLBaseView):
             scroll_area.setHorizontalScrollBarPolicy(h_sbar_policy)
 
         scroll_area.setWidgetResizable(True)
-        return scroll_area 
-
-
-if __name__ == '__main__':
-    from lib.helpers.utils.hp_visual_view_test_template import visual_test_preview
-    visual_test_preview(VwMain())
+        return scroll_area

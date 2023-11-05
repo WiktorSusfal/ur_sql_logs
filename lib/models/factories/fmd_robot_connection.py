@@ -1,3 +1,7 @@
+"""Contains class which produces robot connection model objects. 
+Model production can be invoked by user action or by new database connection established.
+Also provides methods for updating existing model's data (in database) and deleting the models."""
+
 from PyQt5.QtCore import QObject, pyqtSignal
 from threading import Lock
 
@@ -9,6 +13,9 @@ from lib.helpers.utils.hp_vm_utils import HpVmUtils
 
 
 class FmdRobotConnection(QObject):
+    """Class which produces robot connection model objects. 
+    Model production can be invoked by user action or by new database connection established.
+    Also provides methods for updating existing model's data (in database) and deleting the models."""
 
     robot_models_get = pyqtSignal(list)
 

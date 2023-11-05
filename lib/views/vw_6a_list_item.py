@@ -78,9 +78,3 @@ class VwListItem(USLBaseView):
 
     def _init_actions(self):
         pass
-
-
-if __name__ == '__main__':
-    from lib.helpers.utils.hp_visual_view_test_template import visual_test_preview
-    model = VmRobotConnection()
-    visual_test_preview(VwListItem(model))

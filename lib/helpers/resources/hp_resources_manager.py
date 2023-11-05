@@ -1,3 +1,6 @@
+"""Contains class which provides particular resources 
+- icons' absolute paths, parsed sql queries code or qss styles."""
+
 import os 
 from typing import Generator
 
@@ -18,6 +21,8 @@ QUERY_FILE_EXTENSION = '.sql'
 
 
 class HpResourcesManager:
+    """Class which provides particular resources 
+    - icons' absolute paths, parsed sql queries code or qss styles."""
 
     @classmethod
     def get_styles_code(cls) -> str:
