@@ -49,6 +49,12 @@ class HpDBConnectionManager:
         cls._ltm.subscribe_to_process_status(cls._save_msg_task_name, func)
 
     @classmethod
+    def subscribe_to_init_queries_status(cls, func: Callable[[int], None]):
+        if not cls._ltm:
+            cls._set_task_manager()
+        cls._ltm.subscribe_to_health_status(cls._init_execute_task_name, func)
+
+    @classmethod
     def set_connection_string(cls, connection_string: str):
         cls._connection_string = connection_string
         cls._set_connection()

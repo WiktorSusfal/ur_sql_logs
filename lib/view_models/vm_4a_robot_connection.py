@@ -18,7 +18,7 @@ class VmRobotConnection(QObject):
     def __init__(self, model_factory: FmdRobotConnection, model_id: str = None):
         super(VmRobotConnection, self).__init__()
         self._robot_conn_factory = model_factory
-        self._robot_connection = MdRobotConnection(model_id)
+        self._robot_connection = self._robot_conn_factory.create_robot_model(model_id)
         self.subscribe_to_model()
 
         self.connected: bool = False
