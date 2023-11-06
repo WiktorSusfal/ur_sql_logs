@@ -42,3 +42,11 @@ QLabel#LIST_ITEM_ICON_LABEL {
 QLabel#FORM_ICON_LABEL { 
     margin-left: 10px;
 }
+
+QLabel#TITLE_LABEL,
+QLabel#TITLE_ICON_LABEL {
+    padding: 0px;
+    margin: 0px;
+    border: None;
+    font-weight: bold;
+}

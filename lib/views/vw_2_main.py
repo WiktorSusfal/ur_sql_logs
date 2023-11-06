@@ -13,7 +13,7 @@ class VwMain(USLBaseView):
     def __init__(self, parent=None):
         super(VwMain, self).__init__(parent=parent)
         self.setObjectName(CUSTOM_VIEW_WIDGET_NAME)
-
+        
         self._main_layout = qtw.QGridLayout()
         self._main_layout.setObjectName(MAIN_GRID_LAYOUT_NAME)
         self.setLayout(self._main_layout)

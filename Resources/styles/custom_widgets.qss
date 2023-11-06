@@ -41,3 +41,11 @@ QWidget#UR_ITEM_DETAILS_PLACEHOLDER {
 QWidget#UR_LIST_ITEM {   
     background-color: transparent;
 }
+
+QWidget#TITLE_BAR {   
+    background-color: #2f3b52;
+    height: 25px;
+    margin: 0px;
+    padding: 0px;
+    border: None;
+}
