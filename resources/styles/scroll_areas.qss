@@ -1,0 +1,17 @@
+QScrollArea {
+    background: transparent;
+    border: 0px;
+    margin: 0px;
+    padding: 0px;
+    min-width: 120px;
+}
+
+QScrollArea#TOOLBAR_SCROLL_AREA{
+    height: 65px;
+    max-height: 65px;
+    min-height: 65px;
+}
+
+QScrollArea#CONTENT_SCROLL_AREA{
+    min-height: 200px;
+}

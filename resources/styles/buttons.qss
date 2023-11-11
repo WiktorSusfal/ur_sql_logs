@@ -1,0 +1,62 @@
+QPushButton {
+    background: transparent;
+    color: white;
+    border-radius: 5px;
+    font-family: Roboto; 
+    font-size: 15px;
+    font-weight: regular;
+}
+
+QPushButton#TITLEBAR_BUTTON {
+    width: 25px;
+    height: 25px;
+    min-width: 25px;
+    max-width: 25px;
+    margin: 0px;
+    padding: 0px;
+    border: None;
+}
+
+QPushButton#TOOLBAR_BUTTON {
+    width: 55px;
+    height: 55px;
+    min-width: 55px;
+    max-width: 55px;
+}
+
+QPushButton#ACTION_BUTTON,
+QPushButton#LIST_ACTION_BUTTON  {
+    background: #2c698d;
+    width: 135px;
+    height: 30px;
+    min-width: 135px;
+    max-width: 135px;
+}
+
+QPushButton#LIST_ACTION_BUTTON {
+    font-size: 25px;
+}
+
+QPushButton#ACTION_BUTTON:hover, 
+QPushButton#TOOLBAR_BUTTON:hover,
+QPushButton#LIST_ACTION_BUTTON:hover {
+    border: 2px solid;
+    border-color: #e3f6f5;
+}
+
+QPushButton#TITLEBAR_BUTTON:hover {
+    background: #bae8e8; 
+}
+
+QPushButton#ACTION_BUTTON:pressed,  
+QPushButton#TOOLBAR_BUTTON:pressed,
+QPushButton#LIST_ACTION_BUTTON:pressed {
+    border-style: inset;
+    background: #bae8e8;
+}
+
+QPushButton#ACTION_BUTTON:disabled ,
+QPushButton#LIST_ACTION_BUTTON:disabled {
+    background: #e3f6f5;
+    color: #bae8e8;
+}
