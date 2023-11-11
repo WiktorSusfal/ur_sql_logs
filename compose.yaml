@@ -26,12 +26,12 @@ services:
       ROBOT_MODEL: UR10
 
   # optionally - second robot
-  ur_sim_2:
-    image: universalrobots/ursim_e-series
-    ports:
-      - 127.0.0.2:5900:5900
-      - 127.0.0.2:30001:30001
-      - 127.0.0.2:6080:6080
+  #ur_sim_2:
+  #  image: universalrobots/ursim_e-series
+  #  ports:
+  #    - 127.0.0.2:5900:5900
+  #    - 127.0.0.2:30001:30001
+  #    - 127.0.0.2:6080:6080
  
 
  

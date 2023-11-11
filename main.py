@@ -8,5 +8,5 @@ from lib.helpers.resources.hp_resources_manager import HpResourcesManager
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     app.setStyleSheet(HpResourcesManager.get_styles_code())
-    main_view = VwMainWindow()  
+    main_view = VwMainWindow()
     sys.exit(app.exec_())

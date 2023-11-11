@@ -67,7 +67,6 @@ class FmdRobotConnection(QObject):
         model.is_deleted = True
 
         cached_model_data =  self._get_robot_model_data_from_cache(model_id=model.id)
-        print('db present: ', cached_model_data.db_present)
         if cached_model_data.db_present:
             self.save_robot_model(model)
 
@@ -108,8 +107,5 @@ class FmdRobotConnection(QObject):
                 cached_model = self._get_robot_model_from_cache(model.id)
                 
                 if cached_model is None: 
-                    self._robot_connection_models.append(MdRobotModelStatus(model=model, session_added=False, db_present=True))
+                    self._robot_connection_models.append(MdRobotModelStatus(model=model, session_added=True, db_present=True))
                     continue
-
-                model_data = model.produce_data_struct()
-                cached_model.update_data(model_data)

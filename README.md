@@ -1,7 +1,7 @@
 # UR SQL Logger
 Application for saving log messages read from industrial robot to a SQL database.
 
-Presentation videos (YouTube) - [link].
+Presentation video (YouTube) - [https://youtu.be/Qyen2PXdwu4].
 
 ## Basic information:
 * language: Python 3.10.2
@@ -35,8 +35,16 @@ More details in relevant README.md files in particular folders.
 ## Application description
 Application connects to multiple robots and captures log messages using TCP/IP socket connection. Bytes stream received is decoded and stored in cache - as message objects. Then, the messages are saved in the database automatically, after predefined time interval. 
 
+![app_home](.\resources\docs\images\app_home.png)
+
 User chooses relevant DB connection (so far DB connections are defined using config\db_connections.yml file). User can connect to this database and see connection status. 
+
+![db_config](.\resources\docs\images\db_config.png)
 
 Then user can add multiple robot connections and save them in the database. Each connection can be connected and disconnected independently from the robot. The messages are being saved all the time in the background, if the database connection is active. Last messages received are shown in the GUI interface. 
 
 Log messages from robots can be captured even without working database connection - the messages are displayed in the GUI but not stored in database. After connecting to the database, robot connections data present in cache will be merged with the data that came from the database. Connection definitions which not existed in the database earlier must be saved manually.
+
+## Database structure
+
+![DatabaseStructure](.\resources\docs\log_docs\db_schema.drawio.png)

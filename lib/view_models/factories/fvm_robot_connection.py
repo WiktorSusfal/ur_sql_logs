@@ -65,7 +65,6 @@ class FvmRobotConnection(QObject):
             model_data = model.produce_data_struct()
             
             connection_view_model, is_created = self._create_or_get_conn_vm(model.id)
-            connection_view_model.update_data(model_data)
             connection_view_model.check_model_in_db()
 
             if is_created:
