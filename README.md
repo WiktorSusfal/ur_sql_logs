@@ -35,7 +35,7 @@ More details in relevant README.md files in particular folders.
 ## Application description
 Application connects to multiple robots and captures log messages using TCP/IP socket connection. Bytes stream received is decoded and stored in cache - as message objects. Then, the messages are saved in the database automatically, after predefined time interval. 
 
-![app_home](.\resources\docs\images\app_home.png)
+![app_home](./resources/docs/images/app_home.PNG)
 
 User chooses relevant DB connection (so far DB connections are defined using config\db_connections.yml file). User can connect to this database and see connection status. 
 
