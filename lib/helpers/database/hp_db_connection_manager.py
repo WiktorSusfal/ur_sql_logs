@@ -140,6 +140,7 @@ class HpDBConnectionManager:
         messages = HpMessageStorage.get_save_staged()
         with cls._session_maker() as session:
             s: Session = session
+            s.expire_on_commit = False
             for msg in messages:
                 try:
                     s.add(msg)

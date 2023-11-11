@@ -19,7 +19,7 @@ from lib.helpers.constants.hp_backend_names import *
 from lib.helpers.constants.hp_indicators import *
 
 CONNECTION_ERRORS_THRESHOLD = 3
-CONNECTION_TIMEOUT = None
+CONNECTION_TIMEOUT = 0.5
 
 
 class MdRobotConnection(Base):
@@ -51,7 +51,7 @@ class MdRobotConnection(Base):
         self._read_data_task_name = 'read_data'
         self._ltm = self._get_task_manager()
         self.subscribe_connection_status(self._dispose_connection)
-
+    
         self.id = id or str(uuid4())
         self.update_data(connection_data or DsRobotConnectionData())
 

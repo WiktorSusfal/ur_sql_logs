@@ -16,7 +16,8 @@ from lib.helpers.utils.hp_vm_utils import HpVmUtils
 @dataclass
 class MdRobotModelStatus:
     model: MdRobotConnection = None
-    is_saved: bool = False
+    session_added: bool = False
+    db_present: bool = False
 
 
 class FmdRobotConnection(QObject):
@@ -40,7 +41,7 @@ class FmdRobotConnection(QObject):
             return rm
         
         rm = MdRobotConnection(model_id)
-        self._robot_connection_models.append(MdRobotModelStatus(model=rm, is_saved=False))
+        self._robot_connection_models.append(MdRobotModelStatus(model=rm, session_added=False, db_present=False))
         return rm
     
     def get_robot_model_by_id(self, robot_id: str) -> MdRobotConnection:
@@ -52,36 +53,40 @@ class FmdRobotConnection(QObject):
     def save_robot_model(self, model: MdRobotConnection):
         s = HpDBConnectionManager.get_session()
         if s is not None:
-
-            if self._is_model_present(model):
+            if self._is_model_present_in_db(model):
                 s.merge(model)
             else:
                 s.add(model)
             s.commit()
+            
             model_data = self._get_robot_model_data_from_cache(model.id)
-            model_data.is_saved = True
+            model_data.session_added = True
+            model_data.db_present = True
 
-            self._check_if_deletion(model)
+    def delete_robot_model(self, model: MdRobotConnection):
+        model.is_deleted = True
 
-    def _is_model_present(self, model: MdRobotConnection) -> bool:
+        cached_model_data =  self._get_robot_model_data_from_cache(model_id=model.id)
+        print('db present: ', cached_model_data.db_present)
+        if cached_model_data.db_present:
+            self.save_robot_model(model)
+
+        with self._data_lock:
+            self._robot_connection_models.remove(cached_model_data)
+
+    def _is_model_present_in_db(self, model: MdRobotConnection) -> bool:
         rd = self._get_robot_model_data_from_cache(model_id=model.id)
         
         if rd is None:
             return False
-        return rd.is_saved
+        return rd.session_added
 
     def _get_robot_model_from_cache(self, model_id: str) -> MdRobotConnection:
         return next((data.model for data in  self._robot_connection_models if data.model.id == model_id), None)
     
     def _get_robot_model_data_from_cache(self, model_id: str) -> MdRobotModelStatus:
         return next((data for data in  self._robot_connection_models if data.model.id == model_id), None)
-    
-    def _check_if_deletion(self, model: MdRobotConnection):
-        with self._data_lock:
-            if model.is_deleted == True:
-                model_data = self._get_robot_model_data_from_cache(model.id)
-                self._robot_connection_models.remove(model_data)
-
+                
     @HpVmUtils.run_in_thread
     def _get_robot_connection_models(self, db_status: int): 
         if db_status != HEALTH_OK:
@@ -90,6 +95,10 @@ class FmdRobotConnection(QObject):
         s = HpDBConnectionManager.get_session()
         if s is not None:
             robot_models = s.query(MdRobotConnection).filter_by(is_deleted = False).all()
+    
+            for rm in robot_models:
+                rm.__init__(rm.id, rm.produce_data_struct())
+
             self._merge_models_data(robot_models)
             self.robot_models_get.emit(robot_models)
 
@@ -99,7 +108,7 @@ class FmdRobotConnection(QObject):
                 cached_model = self._get_robot_model_from_cache(model.id)
                 
                 if cached_model is None: 
-                    self._robot_connection_models.append(MdRobotModelStatus(model=model, is_saved=False))
+                    self._robot_connection_models.append(MdRobotModelStatus(model=model, session_added=False, db_present=True))
                     continue
 
                 model_data = model.produce_data_struct()

@@ -1,6 +1,5 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from lib.models.md_robot_connection import MdRobotConnection
 from lib.models.factories.fmd_robot_connection import FmdRobotConnection
 from lib.models.data_structures.ds_robot_connection_data import DsRobotConnectionData
 
@@ -60,9 +59,8 @@ class VmRobotConnection(QObject):
         self.connection_status_changed.emit(self.connected)
 
     def mark_as_deleted(self):
-        self._robot_connection.is_deleted = True
-        self.save_robot_model() 
-
+        self._robot_conn_factory.delete_robot_model(self._robot_connection)
+        
     def _message_counter_changed(self, counter_val: int, **kwargs):
         self.message_counter_changed.emit(counter_val)
 
