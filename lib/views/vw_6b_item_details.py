@@ -4,6 +4,7 @@ import PyQt5.QtCore as qtc
 from lib.views.components.base_view import USLBaseView
 from lib.views.components.line_edit import USLLineEdit
 from lib.views.components.validators import USLIntValidator, USLDoubleValidator, USLIPAddressValidator
+from lib.views.components.table_view import USLTableView
 
 from lib.helpers.resources.hp_view_models_manager import HpViewModelsManager
 from lib.helpers.constants.hp_gui_tem_names import *
@@ -41,16 +42,7 @@ class VwItemDetails(USLBaseView):
         
         self._robot_icon_label = self._produce_icon_label(r'robot/industrial-robot256.png', 200, 200)
         
-        self._recent_messages_table = qtw.QTableView()
-        self._recent_messages_table.horizontalHeader().setSectionsClickable(False)
-        self._recent_messages_table.verticalHeader().setSectionsClickable(False)
-        self._recent_messages_table.verticalHeader().setHidden(True)
-        self._recent_messages_table.horizontalHeader().setSectionResizeMode(qtw.QHeaderView.ResizeToContents)
-    
-        self._table_model = self._model.message_data_model
-        self._table_model.setParent(self)
-        
-        self._recent_messages_table.setModel(self._table_model)
+        self._recent_messages_table = USLTableView(parent=self, model=self._model.message_data_model)
 
         self._save_button = self._produce_button(icon_rel_path=r'save/save24.png', icon_size=20
                                                  , button_name=ACTION_BUTTON_NAME)

@@ -24,6 +24,9 @@ class HpVmUtils:
     
     @staticmethod
     def run_in_thread(func):
+        """
+        Creates new daemon Thread object and runs it with decorated method.
+        """
         def wrapper(*args, **kwargs):
             t = Thread(target=func, args=args, kwargs=kwargs, daemon=True)
             t.start()

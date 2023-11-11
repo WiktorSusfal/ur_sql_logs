@@ -19,7 +19,7 @@ from lib.helpers.constants.hp_backend_names import *
 from lib.helpers.constants.hp_indicators import *
 
 CONNECTION_ERRORS_THRESHOLD = 3
-CONNECTION_TIMEOUT = 1.5
+CONNECTION_TIMEOUT = None
 
 
 class MdRobotConnection(Base):
@@ -50,6 +50,7 @@ class MdRobotConnection(Base):
         self._check_health_task_name = 'check_health'
         self._read_data_task_name = 'read_data'
         self._ltm = self._get_task_manager()
+        self.subscribe_connection_status(self._dispose_connection)
 
         self.id = id or str(uuid4())
         self.update_data(connection_data or DsRobotConnectionData())
@@ -99,6 +100,11 @@ class MdRobotConnection(Base):
     def disconnect(self):
         self._ltm.abort_process()
 
+    def _dispose_connection(self, status: int):
+        if status == THREADS_FINISHED:
+            self._robot_connection.close()
+            self._robot_connection.detach()
+
     def _get_robot_connection(self) -> socket.socket:
         robot_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         robot_connection.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -111,6 +117,7 @@ class MdRobotConnection(Base):
             self._robot_connection.connect((self.ip_address, self.port))
             return True
         except Exception as e:
+            print(e)
             return False
     
     def _get_robot_msg_buffer(self) -> bool:

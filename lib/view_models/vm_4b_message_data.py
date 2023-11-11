@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5 import QtCore as qtc
-from threading import Thread, Lock
+from threading import Lock
 
 from lib.models.log_messages.md_base_message import MDBaseMessage
 
@@ -10,10 +10,12 @@ from lib.helpers.utils.looped_tasks.hp_looped_task import HpLoopedTask
 from lib.helpers.utils.looped_tasks.hp_looped_task_manager import HpLoopedTaskManager
 
 MAX_ITEMS = 25
-REFRESH_DATA_INTERVAL = 0.1
+REFRESH_DATA_INTERVAL = 0.5
 
 
 class VmMessageData(QStandardItemModel):
+
+    init_message_added = qtc.pyqtSignal(bool)
 
     def __init__(self, parent=None):
         super(VmMessageData, self).__init__(parent)
@@ -22,43 +24,90 @@ class VmMessageData(QStandardItemModel):
         self._horizontal_labels = ['type', 'timestamp', 'source', 'rmsg_type', 'custom data']
         self.setHorizontalHeaderLabels(self._horizontal_labels)
 
-        self._data_lock = Lock()
-        self._data_thread_list: list[Thread] = list()
+        self._staged_data_lock = Lock()
+        self._control_lock = Lock()
+
+        self._staged_rows = set()
+        self._reload_flag = False
 
         self._ltm = self._set_task_manager()
         self._ltm.start_process()
 
-    def _set_task_manager(self) -> HpLoopedTaskManager:
-        task = HpLoopedTask('UPDATE_TASK', self._manage_update_tasks, interval=REFRESH_DATA_INTERVAL)
-        ltm = HpLoopedTaskManager()
-        ltm.register_task(task)
-        return ltm
-
     def set_robot_id(self, robot_id: str):
         HpMessageStorage.unsubscribe_message_counter(self._robot_id, self._message_arrived)
+        HpMessageStorage.subscribe_message_counter(robot_id, self._message_arrived)
+
         self._robot_id = robot_id
         self._robot_id_changed()
         
     @HpVmUtils.run_in_thread
     def _robot_id_changed(self):
-        self._refresh_dataset()
-        HpMessageStorage.subscribe_message_counter(self._robot_id, self._message_arrived)
-
-    def _refresh_dataset(self):
+        self._refresh_staged_rows()
+        self._set_reload_data_flag(True)
+   
+    def _refresh_staged_rows(self):
         current_messages = HpMessageStorage.get_robot_messages(self._robot_id, MAX_ITEMS)
-        thread = Thread(target=self._reload_data, args=(current_messages, ))
-        self._schedule_thread(thread, clear_existing=True)
+        self._append_staged_rows(current_messages, clear_existing=True)
+
+    def _append_staged_rows(self, stg_rows: list[MDBaseMessage], clear_existing: bool = False):
+        with self._staged_data_lock:
+            if clear_existing:
+                self._staged_rows.clear()
+
+            self._staged_rows = self._staged_rows.union(set(stg_rows))
+    
+    def _append_staged_row(self, staged_row: MDBaseMessage):
+        with self._staged_data_lock:
+            self._staged_rows.add(staged_row)
+    
+    def _get_staged_rows(self) -> set[MDBaseMessage]:
+        with self._staged_data_lock:
+            result = self._staged_rows.copy()
+            self._staged_rows.clear()
+            return result
+        
+    def _set_reload_data_flag(self, status: bool):
+        with self._control_lock:
+            self._reload_flag = status
+
+    def _get_reload_data_flag(self):
+        with self._control_lock:
+            return self._reload_flag
 
     @HpVmUtils.run_in_thread
     def _message_arrived(self, overall_count: int, **kwargs):
-        last_message = kwargs.get('last_message', None)
+        last_message: MDBaseMessage = kwargs.get('last_message', None)
         if not last_message:
             return
         
-        thread = Thread(target=self._append_message, args=(last_message, ))
-        self._schedule_thread(thread)
-        
-    def _append_message(self, message: MDBaseMessage):
+        self._append_staged_row(last_message)
+
+    def _set_task_manager(self) -> HpLoopedTaskManager:
+        task = HpLoopedTask('UPDATE_TASK', self._update_data, interval=REFRESH_DATA_INTERVAL)
+        ltm = HpLoopedTaskManager()
+        ltm.register_task(task)
+        return ltm
+    
+    def _update_data(self):
+        reload_flag = self._get_reload_data_flag()
+        if reload_flag:
+            self._reload_data()
+        else:
+            self._append_data()
+
+    def _reload_data(self):
+        self._set_reload_data_flag(False)
+        self.clear()
+        self.setHorizontalHeaderLabels(self._horizontal_labels)
+        self._append_data()
+
+    def _append_data(self):
+        staged_rows = self._get_staged_rows()
+        staged_rows = sorted(staged_rows, key=lambda sr: sr.date_time)
+        for sr in staged_rows:
+            self._append_row(sr)
+
+    def _append_row(self, message: MDBaseMessage):
         next_row = self.rowCount()
         items = self._build_data_row(message)
 
@@ -68,13 +117,9 @@ class VmMessageData(QStandardItemModel):
                 next_row -= 1
             self.setItem(next_row, idx, item)
 
-    def _reload_data(self, msg_list: list[MDBaseMessage]):
-        self.clear()
-        self.setHorizontalHeaderLabels(self._horizontal_labels)
-
-        for msg in msg_list:
-            self._append_message(msg)
-        
+        if next_row == 0:
+            self.init_message_added.emit(True)
+  
     def _build_data_row(self, message: MDBaseMessage) -> list[QStandardItem]:
         m = message
         items: list[QStandardItem] = list()
@@ -92,24 +137,3 @@ class VmMessageData(QStandardItemModel):
         item = QStandardItem(str(value))
         item.setFlags(item.flags() & ~qtc.Qt.ItemIsEditable)
         return item
-        
-    def _schedule_thread(self, thread: Thread, clear_existing: bool = False):
-        with self._data_lock:
-            if clear_existing:
-                self._data_thread_list.clear()
-            self._data_thread_list.append(thread)
-
-    def _get_next_thread(self) -> Thread:
-        with self._data_lock:
-            if len(self._data_thread_list) > 0: 
-                return self._data_thread_list.pop(0)
-            return None
-            
-    def _manage_update_tasks(self) -> bool:
-        thread = self._get_next_thread()
-        
-        if thread:
-            thread.start()
-            thread.join()
-
-        return True

@@ -17,7 +17,7 @@ from lib.helpers.messages.hp_message_storage import HpMessageStorage
 from lib.helpers.utils.looped_tasks.hp_looped_task_manager import HpLoopedTaskManager
 from lib.helpers.utils.looped_tasks.hp_looped_task import HpLoopedTask
 
-DECODING_INTERVAL = 0.1
+DECODING_INTERVAL = 0.01
 MSG_MODEL_TYPE_MAP: dict[int, type] = {
                                         3: MDVersionMessage,
                                         7: MDKeyMessage,

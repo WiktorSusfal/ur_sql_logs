@@ -17,7 +17,8 @@ class VwMainWindow(qtw.QMainWindow):
     def __init__(self):
         super(VwMainWindow, self).__init__()
         self.setObjectName(MAIN_WINDOW_NAME)
-        flags=qtc.Qt.WindowFlags(qtc.Qt.FramelessWindowHint | qtc.Qt.WindowStaysOnTopHint)
+        
+        flags=qtc.Qt.WindowFlags(qtc.Qt.FramelessWindowHint)
         self.setWindowFlags(flags)
         self.setGeometry(INIT_POS_X, INIT_POS_Y, INIT_SIZE_X, INIT_SIZE_Y)
     
