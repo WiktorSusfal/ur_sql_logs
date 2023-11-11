@@ -47,4 +47,4 @@ Log messages from robots can be captured even without working database connectio
 
 ## Database structure
 
-![DatabaseStructure](./resources/docs/images/db_schema.drawio.PNG)
+![DatabaseStructure](./resources/docs/log_docs/db_schema.drawio.PNG)
